@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turista por México</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; }
+    .title-font { font-family: 'Fredoka', sans-serif; }
+    
+    @keyframes bounce-soft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+    @keyframes dice-roll {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(90deg) scale(1.2); }
+      50% { transform: rotate(180deg) scale(1); }
+      75% { transform: rotate(270deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .animate-bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+    .animate-dice { animation: dice-roll 0.5s ease-out; }
+    
+    .board-cell {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .board-cell:hover {
+      transform: scale(1.05);
+      z-index: 10;
+    }
+    .board-cell.current {
+      animation: pulse-glow 1s ease-in-out infinite;
+    }
+    .board-cell.owned {
+      border-width: 3px;
+    }
+    
+    .license-badge {
+      background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+      border: 2px solid #f59e0b;
+    }
+    
+    .mexico-gradient {
+      background: linear-gradient(135deg, #006847 0%, #ffffff 50%, #ce1126 100%);
+    }
+    
+    .card-flip {
+      perspective: 1000px;
+    }
+    .card-flip-inner {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .card-flip.flipped .card-flip-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .scroll-container {
+      scrollbar-width: thin;
+      scrollbar-color: #059669 #d1fae5;
+    }
+    .scroll-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scroll-container::-webkit-scrollbar-track {
+      background: #d1fae5;
+      border-radius: 4px;
+    }
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: #059669;
+      border-radius: 4px;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-emerald-800 via-emerald-600 to-emerald-900 overflow-auto m-0 p-0">
+  <div id="app" class="w-full h-full overflow-auto"><!-- Pantalla de Inicio -->
+   <div id="start-screen" class="min-h-full flex flex-col items-center justify-center p-4">
+    <div class="text-center mb-6 animate-slide-up">
+     <div class="text-6xl mb-2">
+      🇲🇽
+     </div>
+     <h1 id="main-title" class="title-font text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-2">Turista por México</h1>
+     <p class="text-emerald-100 text-lg">¡Conoce los 32 estados jugando!</p>
+    </div><!-- Selección de Dificultad -->
+    <div class="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-2xl max-w-md w-full animate-slide-up" style="animation-delay: 0.2s">
+     <h2 class="title-font text-xl font-bold text-emerald-800 mb-4 text-center">🎮 Selecciona Dificultad</h2>
+     <div class="space-y-3"><button onclick="startGame('facil')" class="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+       <div class="flex items-center justify-between"><span class="text-2xl">🌵</span>
+        <div class="text-left flex-1 ml-3">
+         <div class="text-lg">
+          Fácil - Explorador
+         </div>
+         <div class="text-xs opacity-90">
+          $50,000 • 25 turnos • 16 estados
+         </div>
+        </div><span class="text-2xl">→</span>
+       </div></button> <button onclick="startGame('medio')" class="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+       <div class="flex items-center justify-between"><span class="text-2xl">🏛️</span>
+        <div class="text-left flex-1 ml-3">
+         <div class="text-lg">
+          Medio - Viajero
+         </div>
+         <div class="text-xs opacity-90">
+          $35,000 • 20 turnos • 24 estados
+         </div>
+        </div><span class="text-2xl">→</span>
+       </div></button> <button onclick="startGame('dificil')" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+       <div class="flex items-center justify-between"><span class="text-2xl">🦅</span>
+        <div class="text-left flex-1 ml-3">
+         <div class="text-lg">
+          Difícil - Conocedor
+         </div>
+         <div class="text-xs opacity-90">
+          $25,000 • 15 turnos • 32 estados
+         </div>
+        </div><span class="text-2xl">→</span>
+       </div></button>
+     </div>
+     <div class="mt-6 p-3 bg-emerald-50 rounded-xl border-2 border-emerald-200">
+      <p class="text-emerald-700 text-sm text-center">🎯 <strong>Objetivo:</strong> Compra la mayor cantidad de propiedades antes de que terminen tus turnos</p>
+     </div>
+    </div><!-- Créditos -->
+    <div class="mt-6 text-center animate-slide-up" style="animation-delay: 0.3s">
+     <p class="text-emerald-100 text-sm">💚 Creado con amor por <span id="author-display" class="font-bold">Mtra. María Fernanda Flores Valenzuela</span></p>
+     <p class="text-emerald-200 text-xs mt-1">© 2026 • Todos los derechos reservados</p>
+    </div>
+   </div><!-- Pantalla de Juego -->
+   <div id="game-screen" class="hidden min-h-full flex flex-col p-2 md:p-4"><!-- Header del Juego -->
+    <div class="bg-white/95 backdrop-blur rounded-xl p-3 mb-3 shadow-lg">
+     <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2"><span class="text-2xl">🇲🇽</span>
+       <h1 id="game-title" class="title-font text-lg md:text-xl font-bold text-emerald-800">Turista por México</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+       <div class="bg-emerald-100 rounded-lg px-3 py-1"><span class="text-emerald-600 text-xs">Dinero</span>
+        <div id="money-display" class="font-bold text-emerald-800 text-lg">
+         $50,000
+        </div>
+       </div>
+       <div class="bg-amber-100 rounded-lg px-3 py-1"><span class="text-amber-600 text-xs">Propiedades</span>
+        <div id="properties-display" class="font-bold text-amber-800 text-lg">
+         0
+        </div>
+       </div>
+       <div class="bg-red-100 rounded-lg px-3 py-1"><span class="text-red-600 text-xs">Turnos</span>
+        <div id="turns-display" class="font-bold text-red-800 text-lg">
+         20
+        </div>
+       </div>
+      </div><button onclick="showHelp()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold transition-colors"> ❓ Ayuda </button>
+     </div>
+    </div><!-- Área Principal -->
+    <div class="flex-1 flex flex-col lg:flex-row gap-3 min-h-0"><!-- Tablero -->
+     <div class="flex-1 bg-white/95 backdrop-blur rounded-xl p-3 shadow-lg overflow-auto scroll-container">
+      <div id="game-board" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 min-w-fit"><!-- El tablero se genera dinámicamente -->
+      </div>
+     </div><!-- Panel Lateral -->
+     <div class="lg:w-80 flex flex-col gap-3"><!-- Dado y Controles -->
+      <div class="bg-white/95 backdrop-blur rounded-xl p-4 shadow-lg text-center">
+       <div id="dice-container" class="mb-4">
+        <div id="dice" class="text-6xl cursor-pointer select-none" onclick="rollDice()">
+         🎲
+        </div>
+        <p id="dice-result" class="text-emerald-700 font-bold mt-2">¡Tira el dado!</p>
+       </div><button id="roll-btn" onclick="rollDice()" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg text-lg"> 🎲 Tirar Dado </button>
+      </div><!-- Info de Casilla Actual -->
+      <div id="current-cell-info" class="bg-white/95 backdrop-blur rounded-xl p-4 shadow-lg flex-1 overflow-auto scroll-container">
+       <h3 class="title-font text-lg font-bold text-emerald-800 mb-2">📍 Posición Actual</h3>
+       <div id="cell-details" class="text-gray-700">
+        <p class="text-center text-gray-500">Tira el dado para comenzar tu aventura</p>
+       </div>
+      </div><!-- Propiedades Compradas -->
+      <div class="bg-white/95 backdrop-blur rounded-xl p-4 shadow-lg max-h-40 overflow-auto scroll-container">
+       <h3 class="title-font text-sm font-bold text-amber-800 mb-2">🏠 Mis Propiedades</h3>
+       <div id="my-properties" class="text-xs text-gray-600">
+        <p class="text-center text-gray-400">Aún no tienes propiedades</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Modal de Evento -->
+   <div id="event-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-up">
+     <div id="event-icon" class="text-6xl text-center mb-4">
+      🎉
+     </div>
+     <h2 id="event-title" class="title-font text-2xl font-bold text-center mb-3 text-gray-800">¡Evento!</h2>
+     <p id="event-description" class="text-gray-600 text-center mb-4"></p>
+     <div id="event-amount" class="text-2xl font-bold text-center mb-4"></div>
+     <div id="event-actions" class="space-y-2"><!-- Acciones dinámicas -->
+     </div>
+    </div>
+   </div><!-- Modal de Compra -->
+   <div id="buy-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-up">
+     <div id="state-emoji" class="text-6xl text-center mb-3">
+      🏛️
+     </div>
+     <h2 id="state-name" class="title-font text-2xl font-bold text-center mb-2 text-emerald-800"></h2>
+     <p id="state-fact" class="text-gray-600 text-center mb-4 italic"></p>
+     <div class="bg-emerald-50 rounded-xl p-4 mb-4">
+      <div class="flex justify-between items-center mb-2"><span class="text-gray-600">Precio:</span> <span id="state-price" class="font-bold text-emerald-700 text-xl"></span>
+      </div>
+      <div class="flex justify-between items-center"><span class="text-gray-600">Tu dinero:</span> <span id="your-money" class="font-bold text-gray-800"></span>
+      </div>
+      <hr class="my-2 border-emerald-200">
+      <div class="flex justify-between items-center"><span class="text-gray-600">Después de comprar:</span> <span id="money-after" class="font-bold"></span>
+      </div>
+     </div>
+     <div class="flex gap-3"><button id="buy-btn" onclick="confirmPurchase()" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all"> ✅ Comprar </button> <button onclick="closeBuyModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all"> ❌ No gracias </button>
+     </div>
+    </div>
+   </div><!-- Modal de Ayuda -->
+   <div id="help-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl animate-slide-up max-h-[90%] overflow-auto">
+     <h2 class="title-font text-2xl font-bold text-center mb-4 text-emerald-800">📚 ¿Cómo Jugar?</h2>
+     <div class="space-y-4 text-gray-700">
+      <div class="flex gap-3"><span class="text-2xl">🎲</span>
+       <div><strong>Tira el dado</strong> para moverte por el tablero y descubrir los estados de México.
+       </div>
+      </div>
+      <div class="flex gap-3"><span class="text-2xl">🏠</span>
+       <div><strong>Compra propiedades</strong> cuando caigas en un estado. Cada uno tiene datos curiosos reales.
+       </div>
+      </div>
+      <div class="flex gap-3"><span class="text-2xl">💰</span>
+       <div><strong>Casillas de recompensa</strong> te dan dinero extra del banco.
+       </div>
+      </div>
+      <div class="flex gap-3"><span class="text-2xl">⚠️</span>
+       <div><strong>Casillas de multa</strong> te quitan dinero por situaciones graciosas típicas de cada región.
+       </div>
+      </div>
+      <div class="flex gap-3"><span class="text-2xl">🏆</span>
+       <div><strong>Objetivo:</strong> Compra la mayor cantidad de propiedades antes de que terminen tus turnos.
+       </div>
+      </div>
+     </div>
+     <div class="mt-4 p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+      <p class="text-amber-700 text-sm text-center">💡 <strong>Tip:</strong> Administra bien tu dinero para poder comprar más estados</p>
+     </div><button onclick="closeHelp()" class="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all"> ¡Entendido! 👍 </button>
+    </div>
+   </div><!-- Modal de Fin de Juego -->
+   <div id="end-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-up">
+     <div class="text-6xl text-center mb-4">
+      🏆
+     </div>
+     <h2 class="title-font text-2xl font-bold text-center mb-3 text-emerald-800">¡Fin del Viaje!</h2>
+     <div id="end-stats" class="bg-emerald-50 rounded-xl p-4 mb-4 space-y-2"><!-- Estadísticas -->
+     </div>
+     <div id="end-message" class="text-center text-gray-700 mb-4"></div>
+     <div class="flex gap-3"><button onclick="restartGame()" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all"> 🔄 Jugar de nuevo </button> <button onclick="goToStart()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all"> 🏠 Inicio </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // ============ DATOS DE LOS ESTADOS DE MÉXICO ============
+    const statesData = [
+      { name: "Aguascalientes", emoji: "🍇", fact: "Famoso por su Feria de San Marcos, la más grande de México", price: 3500, region: "centro" },
+      { name: "Baja California", emoji: "🍷", fact: "Produce el 90% del vino mexicano en el Valle de Guadalupe", price: 5500, region: "norte" },
+      { name: "Baja California Sur", emoji: "🐋", fact: "Hogar del arco de Cabo San Lucas y avistamiento de ballenas", price: 6000, region: "norte" },
+      { name: "Campeche", emoji: "🏰", fact: "Única ciudad amurallada de México, patrimonio de la humanidad", price: 4000, region: "sur" },
+      { name: "Chiapas", emoji: "🦜", fact: "Tiene la selva Lacandona y las impresionantes cascadas de Agua Azul", price: 4500, region: "sur" },
+      { name: "Chihuahua", emoji: "🏜️", fact: "El estado más grande de México, hogar de las Barrancas del Cobre", price: 5000, region: "norte" },
+      { name: "Ciudad de México", emoji: "🏛️", fact: "Capital del país, construida sobre el antiguo lago de Texcoco", price: 8000, region: "centro" },
+      { name: "Coahuila", emoji: "🦕", fact: "Se han encontrado más fósiles de dinosaurios que en cualquier otro estado", price: 4500, region: "norte" },
+      { name: "Colima", emoji: "🌋", fact: "Tiene el volcán más activo de México: el Volcán de Fuego", price: 3000, region: "occidente" },
+      { name: "Durango", emoji: "🎬", fact: "Conocido como 'Tierra del Cine' por sus paisajes usados en películas", price: 4000, region: "norte" },
+      { name: "Estado de México", emoji: "🗻", fact: "Hogar de las pirámides de Teotihuacán y el Nevado de Toluca", price: 5500, region: "centro" },
+      { name: "Guanajuato", emoji: "🎭", fact: "Sus calles subterráneas fueron ríos y su Festival Cervantino es famoso mundial", price: 5000, region: "centro" },
+      { name: "Guerrero", emoji: "🏖️", fact: "Acapulco fue el primer destino turístico internacional de México", price: 4500, region: "sur" },
+      { name: "Hidalgo", emoji: "⛏️", fact: "Cuna de los pastes, herencia de mineros ingleses de Cornwall", price: 3500, region: "centro" },
+      { name: "Jalisco", emoji: "🎺", fact: "Cuna del tequila, el mariachi y la charrería, íconos de México", price: 6500, region: "occidente" },
+      { name: "Michoacán", emoji: "🦋", fact: "Cada año millones de mariposas monarca llegan a sus bosques", price: 5000, region: "occidente" },
+      { name: "Morelos", emoji: "🌺", fact: "Llamado 'la eterna primavera' por su clima templado todo el año", price: 4000, region: "centro" },
+      { name: "Nayarit", emoji: "🏝️", fact: "Las Islas Marietas tienen una playa escondida dentro de un cráter", price: 4500, region: "occidente" },
+      { name: "Nuevo León", emoji: "🏔️", fact: "El Cerro de la Silla es símbolo de Monterrey, capital industrial", price: 6000, region: "norte" },
+      { name: "Oaxaca", emoji: "🫓", fact: "Tiene 16 grupos indígenas y es cuna del mezcal y los chapulines", price: 5500, region: "sur" },
+      { name: "Puebla", emoji: "🍫", fact: "Cuna del mole poblano y los chiles en nogada, platillos emblemáticos", price: 5000, region: "centro" },
+      { name: "Querétaro", emoji: "🏺", fact: "Aquí se firmó la Constitución de 1917, la actual de México", price: 5000, region: "centro" },
+      { name: "Quintana Roo", emoji: "🐠", fact: "Tiene el segundo arrecife más grande del mundo y cenotes únicos", price: 7000, region: "sur" },
+      { name: "San Luis Potosí", emoji: "🌵", fact: "El Sótano de las Golondrinas es uno de los abismos más profundos", price: 4000, region: "centro" },
+      { name: "Sinaloa", emoji: "🦐", fact: "Produce el mejor camarón de México y es cuna de la banda sinaloense", price: 4500, region: "norte" },
+      { name: "Sonora", emoji: "🌮", fact: "Famoso por su carne asada, los mejores cortes del país", price: 5000, region: "norte" },
+      { name: "Tabasco", emoji: "🍫", fact: "Cuna del chocolate, los olmecas lo cultivaron hace 3,000 años", price: 4000, region: "sur" },
+      { name: "Tamaulipas", emoji: "🦅", fact: "La Reserva de El Cielo es una de las más biodiversas de México", price: 4500, region: "norte" },
+      { name: "Tlaxcala", emoji: "🎪", fact: "El estado más pequeño, famoso por su carnaval de huehues", price: 3000, region: "centro" },
+      { name: "Veracruz", emoji: "☕", fact: "Principal productor de café y sede del carnaval más alegre", price: 5500, region: "golfo" },
+      { name: "Yucatán", emoji: "🏛️", fact: "Hogar de Chichén Itzá, una de las 7 maravillas del mundo moderno", price: 6500, region: "sur" },
+      { name: "Zacatecas", emoji: "⛪", fact: "Su centro histórico rosa es Patrimonio de la Humanidad", price: 4000, region: "centro" }
+    ];
+
+    // Eventos especiales (recompensas y multas)
+    const rewardEvents = [
+      { title: "¡Herencia de la abuelita!", description: "Tu abuelita te dejó unos ahorritos guardados en su ropero", amount: 3000, emoji: "👵" },
+      { title: "¡Ganaste la lotería!", description: "Compraste un 'raspadito' y te sacaste un premio", amount: 4000, emoji: "🎰" },
+      { title: "¡Bono del banco!", description: "El banco te da un bono por ser buen cliente", amount: 2500, emoji: "🏦" },
+      { title: "¡Encontraste dinero!", description: "Encontraste un billete en tu chamarra vieja", amount: 1500, emoji: "💵" },
+      { title: "¡Premio de feria!", description: "Te ganaste el premio mayor en el tiro al blanco", amount: 2000, emoji: "🎯" },
+      { title: "¡Venta de garage!", description: "Vendiste cosas que ya no usabas en un bazar", amount: 2500, emoji: "🏷️" },
+      { title: "¡Aguinaldo sorpresa!", description: "Tu tío te dio tu aguinaldo adelantado", amount: 3500, emoji: "🎁" },
+      { title: "¡Rifa ganada!", description: "Te ganaste la rifa del 15 de septiembre", amount: 2000, emoji: "🎫" }
+    ];
+
+    const penaltyEvents = [
+      { title: "Multa en Sonora", description: "Te multaron por hacer carne asada en vía pública sin permiso", amount: -2000, emoji: "🥩", state: "Sonora" },
+      { title: "Multa en Jalisco", description: "Te cacharon cantando mariachi a las 3am y los vecinos se quejaron", amount: -1500, emoji: "🎤", state: "Jalisco" },
+      { title: "Multa en Yucatán", description: "Quisiste llevarte una piedrita de Chichén Itzá de recuerdo", amount: -2500, emoji: "🪨", state: "Yucatán" },
+      { title: "Multa en CDMX", description: "Tu coche no pasó la verificación vehicular", amount: -2000, emoji: "🚗", state: "CDMX" },
+      { title: "Multa en Oaxaca", description: "Te pasaste de mezcales en la Guelaguetza", amount: -1500, emoji: "🥴", state: "Oaxaca" },
+      { title: "Multa en Veracruz", description: "Bailaste danzón en la plaza sin el vestuario adecuado", amount: -1000, emoji: "💃", state: "Veracruz" },
+      { title: "Multa en Nuevo León", description: "Te comiste 20 tacos de trompo y no pudiste pagar la cuenta completa", amount: -1800, emoji: "🌮", state: "Nuevo León" },
+      { title: "Multa en Quintana Roo", description: "Tocaste un coral en el arrecife y la patrulla marina te vio", amount: -2200, emoji: "🐚", state: "Quintana Roo" },
+      { title: "Multa en Michoacán", description: "Espantaste a las mariposas monarca tomando selfies con flash", amount: -2000, emoji: "🦋", state: "Michoacán" },
+      { title: "Multa en Puebla", description: "Te acabaste todo el mole de la olla antes de que sirvieran a los demás", amount: -1200, emoji: "🍲", state: "Puebla" },
+      { title: "Multa en Guanajuato", description: "Gritaste muy fuerte en el callejón del beso y asustaste a las parejas", amount: -1000, emoji: "💋", state: "Guanajuato" },
+      { title: "Multa en Chiapas", description: "Te metiste a nadar en Agua Azul donde estaba prohibido", amount: -1800, emoji: "🏊", state: "Chiapas" }
+    ];
+
+    // ============ ESTADO DEL JUEGO ============
+    let gameState = {
+      difficulty: 'medio',
+      money: 35000,
+      turnsLeft: 20,
+      position: 0,
+      ownedProperties: [],
+      board: [],
+      isRolling: false,
+      currentCell: null
+    };
+
+    const difficultySettings = {
+      facil: { money: 50000, turns: 25, statesCount: 16 },
+      medio: { money: 35000, turns: 20, statesCount: 24 },
+      dificil: { money: 25000, turns: 15, statesCount: 32 }
+    };
+
+    // ============ CONFIGURACIÓN DEL ELEMENTO ============
+    const defaultConfig = {
+      game_title: "Turista por México",
+      author_name: "Mtra. María Fernanda Flores Valenzuela"
+    };
+
+    let config = { ...defaultConfig };
+
+    function updateUI() {
+      const title = config.game_title || defaultConfig.game_title;
+      const author = config.author_name || defaultConfig.author_name;
+      
+      document.getElementById('main-title').textContent = title;
+      document.getElementById('game-title').textContent = title;
+      document.getElementById('author-display').textContent = author;
+    }
+
+    // Inicializar SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (newConfig) => {
+          config = { ...newConfig };
+          updateUI();
+        },
+        mapToCapabilities: (cfg) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (cfg) => new Map([
+          ["game_title", cfg.game_title || defaultConfig.game_title],
+          ["author_name", cfg.author_name || defaultConfig.author_name]
+        ])
+      });
+    }
+
+    // ============ FUNCIONES DEL JUEGO ============
+    
+    function startGame(difficulty) {
+      const settings = difficultySettings[difficulty];
+      
+      // Seleccionar estados según dificultad
+      let selectedStates = [...statesData];
+      if (settings.statesCount < 32) {
+        selectedStates = shuffleArray(statesData).slice(0, settings.statesCount);
+      }
+      
+      // Crear tablero con estados y eventos
+      const board = createBoard(selectedStates);
+      
+      gameState = {
+        difficulty,
+        money: settings.money,
+        turnsLeft: settings.turns,
+        position: 0,
+        ownedProperties: [],
+        board,
+        isRolling: false,
+        currentCell: null
+      };
+      
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      
+      updateGameUI();
+      renderBoard();
+    }
+
+    function createBoard(states) {
+      const board = [];
+      const totalCells = states.length + 8; // Estados + eventos
+      
+      // Distribuir eventos
+      const eventPositions = [];
+      const interval = Math.floor(totalCells / 8);
+      for (let i = 1; i <= 8; i++) {
+        eventPositions.push(i * interval - Math.floor(Math.random() * 3));
+      }
+      
+      let stateIndex = 0;
+      for (let i = 0; i < totalCells; i++) {
+        if (eventPositions.includes(i) && stateIndex < states.length) {
+          // Casilla de evento
+          const isReward = Math.random() > 0.5;
+          if (isReward) {
+            const reward = rewardEvents[Math.floor(Math.random() * rewardEvents.length)];
+            board.push({ type: 'reward', ...reward });
+          } else {
+            const penalty = penaltyEvents[Math.floor(Math.random() * penaltyEvents.length)];
+            board.push({ type: 'penalty', ...penalty });
+          }
+        } else if (stateIndex < states.length) {
+          // Casilla de estado
+          board.push({ type: 'state', ...states[stateIndex], owned: false });
+          stateIndex++;
+        }
+      }
+      
+      return board;
+    }
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('game-board');
+      boardEl.innerHTML = '';
+      
+      gameState.board.forEach((cell, index) => {
+        const cellEl = document.createElement('div');
+        cellEl.className = `board-cell rounded-lg p-2 text-center transition-all ${getCellClass(cell, index)}`;
+        cellEl.innerHTML = getCellContent(cell, index);
+        cellEl.onclick = () => showCellInfo(cell, index);
+        boardEl.appendChild(cellEl);
+      });
+    }
+
+    function getCellClass(cell, index) {
+      let classes = 'border-2 ';
+      
+      if (index === gameState.position) {
+        classes += 'current ring-4 ring-yellow-400 ';
+      }
+      
+      if (cell.type === 'state') {
+        if (cell.owned) {
+          classes += 'owned bg-emerald-200 border-emerald-500 ';
+        } else {
+          classes += 'bg-blue-50 border-blue-300 hover:bg-blue-100 ';
+        }
+      } else if (cell.type === 'reward') {
+        classes += 'bg-amber-50 border-amber-400 hover:bg-amber-100 ';
+      } else if (cell.type === 'penalty') {
+        classes += 'bg-red-50 border-red-300 hover:bg-red-100 ';
+      }
+      
+      return classes;
+    }
+
+    function getCellContent(cell, index) {
+      const positionMarker = index === gameState.position ? '<div class="absolute -top-1 -right-1 text-lg animate-bounce-soft">📍</div>' : '';
+      
+      if (cell.type === 'state') {
+        return `
+          <div class="relative">
+            ${positionMarker}
+            <div class="text-2xl mb-1">${cell.emoji}</div>
+            <div class="text-xs font-semibold text-gray-700 leading-tight">${cell.name}</div>
+            ${cell.owned ? '<div class="text-xs text-emerald-600 font-bold">✓ Tuyo</div>' : `<div class="text-xs text-blue-600">$${cell.price.toLocaleString()}</div>`}
+          </div>
+        `;
+      } else if (cell.type === 'reward') {
+        return `
+          <div class="relative">
+            ${positionMarker}
+            <div class="text-2xl mb-1">${cell.emoji}</div>
+            <div class="text-xs font-semibold text-amber-700">¡Recompensa!</div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="relative">
+            ${positionMarker}
+            <div class="text-2xl mb-1">${cell.emoji}</div>
+            <div class="text-xs font-semibold text-red-600">¡Multa!</div>
+          </div>
+        `;
+      }
+    }
+
+    function rollDice() {
+      if (gameState.isRolling || gameState.turnsLeft <= 0) return;
+      
+      gameState.isRolling = true;
+      const diceEl = document.getElementById('dice');
+      const rollBtn = document.getElementById('roll-btn');
+      
+      diceEl.classList.add('animate-dice');
+      rollBtn.disabled = true;
+      rollBtn.classList.add('opacity-50');
+      
+      // Animación del dado
+      const diceEmojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+      let rollCount = 0;
+      const rollInterval = setInterval(() => {
+        diceEl.textContent = diceEmojis[Math.floor(Math.random() * 6)];
+        rollCount++;
+        if (rollCount > 10) {
+          clearInterval(rollInterval);
+          
+          const result = Math.floor(Math.random() * 6) + 1;
+          diceEl.textContent = diceEmojis[result - 1];
+          diceEl.classList.remove('animate-dice');
+          
+          document.getElementById('dice-result').textContent = `¡Sacaste ${result}!`;
+          
+          // Mover jugador
+          setTimeout(() => movePlayer(result), 500);
+        }
+      }, 100);
+    }
+
+    function movePlayer(steps) {
+      const newPosition = (gameState.position + steps) % gameState.board.length;
+      gameState.position = newPosition;
+      gameState.turnsLeft--;
+      
+      renderBoard();
+      updateGameUI();
+      
+      const currentCell = gameState.board[newPosition];
+      gameState.currentCell = currentCell;
+      
+      // Procesar casilla
+      setTimeout(() => {
+        if (currentCell.type === 'state') {
+          showStateInfo(currentCell, newPosition);
+        } else if (currentCell.type === 'reward') {
+          showRewardEvent(currentCell);
+        } else if (currentCell.type === 'penalty') {
+          showPenaltyEvent(currentCell);
+        }
+      }, 300);
+    }
+
+    function showStateInfo(state, index) {
+      const cellDetails = document.getElementById('cell-details');
+      
+      if (state.owned) {
+        cellDetails.innerHTML = `
+          <div class="text-center">
+            <div class="text-4xl mb-2">${state.emoji}</div>
+            <h4 class="font-bold text-emerald-800 text-lg">${state.name}</h4>
+            <p class="text-sm text-gray-600 italic mt-2">"${state.fact}"</p>
+            <div class="mt-3 bg-emerald-100 rounded-lg p-2">
+              <span class="text-emerald-700 font-semibold">✓ ¡Ya es tuyo!</span>
+            </div>
+          </div>
+        `;
+        enableNextTurn();
+      } else {
+        cellDetails.innerHTML = `
+          <div class="text-center">
+            <div class="text-4xl mb-2">${state.emoji}</div>
+            <h4 class="font-bold text-emerald-800 text-lg">${state.name}</h4>
+            <p class="text-sm text-gray-600 italic mt-2">"${state.fact}"</p>
+            <div class="mt-3 bg-blue-100 rounded-lg p-2">
+              <span class="text-blue-700 font-semibold">Precio: $${state.price.toLocaleString()}</span>
+            </div>
+          </div>
+        `;
+        
+        // Mostrar modal de compra
+        if (gameState.money >= state.price) {
+          showBuyModal(state, index);
+        } else {
+          cellDetails.innerHTML += `
+            <div class="mt-3 bg-red-100 rounded-lg p-2">
+              <span class="text-red-600 text-sm">💸 No tienes suficiente dinero</span>
+            </div>
+          `;
+          enableNextTurn();
+        }
+      }
+    }
+
+    function showBuyModal(state, index) {
+      const modal = document.getElementById('buy-modal');
+      const moneyAfter = gameState.money - state.price;
+      
+      document.getElementById('state-emoji').textContent = state.emoji;
+      document.getElementById('state-name').textContent = state.name;
+      document.getElementById('state-fact').textContent = `"${state.fact}"`;
+      document.getElementById('state-price').textContent = `$${state.price.toLocaleString()}`;
+      document.getElementById('your-money').textContent = `$${gameState.money.toLocaleString()}`;
+      document.getElementById('money-after').textContent = `$${moneyAfter.toLocaleString()}`;
+      document.getElementById('money-after').className = moneyAfter >= 0 ? 'font-bold text-emerald-600' : 'font-bold text-red-600';
+      
+      document.getElementById('buy-btn').onclick = () => confirmPurchase(state, index);
+      
+      modal.classList.remove('hidden');
+    }
+
+    function confirmPurchase(state, index) {
+      if (!state) {
+        state = gameState.currentCell;
+        index = gameState.position;
+      }
+      
+      gameState.money -= state.price;
+      gameState.board[index].owned = true;
+      gameState.ownedProperties.push(state);
+      
+      closeBuyModal();
+      renderBoard();
+      updateGameUI();
+      updatePropertiesList();
+      
+      // Mostrar confirmación
+      showEventModal(
+        '🎉',
+        '¡Felicidades!',
+        `Ahora eres dueño de ${state.name}`,
+        `<span class="text-emerald-600">-$${state.price.toLocaleString()}</span>`,
+        () => {
+          enableNextTurn();
+          checkGameEnd();
+        }
+      );
+    }
+
+    function closeBuyModal() {
+      document.getElementById('buy-modal').classList.add('hidden');
+      enableNextTurn();
+    }
+
+    function showRewardEvent(event) {
+      gameState.money += event.amount;
+      updateGameUI();
+      
+      showEventModal(
+        event.emoji,
+        event.title,
+        event.description,
+        `<span class="text-emerald-600">+$${event.amount.toLocaleString()}</span>`,
+        () => {
+          enableNextTurn();
+          checkGameEnd();
+        }
+      );
+    }
+
+    function showPenaltyEvent(event) {
+      gameState.money += event.amount; // amount es negativo
+      updateGameUI();
+      
+      showEventModal(
+        event.emoji,
+        event.title,
+        event.description,
+        `<span class="text-red-600">$${event.amount.toLocaleString()}</span>`,
+        () => {
+          enableNextTurn();
+          checkGameEnd();
+        }
+      );
+    }
+
+    function showEventModal(emoji, title, description, amountHtml, onClose) {
+      const modal = document.getElementById('event-modal');
+      document.getElementById('event-icon').textContent = emoji;
+      document.getElementById('event-title').textContent = title;
+      document.getElementById('event-description').textContent = description;
+      document.getElementById('event-amount').innerHTML = amountHtml;
+      
+      document.getElementById('event-actions').innerHTML = `
+        <button onclick="closeEventModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all">
+          ¡Entendido! 👍
+        </button>
+      `;
+      
+      modal.classList.remove('hidden');
+      window.currentEventCallback = onClose;
+    }
+
+    function closeEventModal() {
+      document.getElementById('event-modal').classList.add('hidden');
+      if (window.currentEventCallback) {
+        window.currentEventCallback();
+        window.currentEventCallback = null;
+      }
+    }
+
+    function showCellInfo(cell, index) {
+      const cellDetails = document.getElementById('cell-details');
+      
+      if (cell.type === 'state') {
+        cellDetails.innerHTML = `
+          <div class="text-center">
+            <div class="text-4xl mb-2">${cell.emoji}</div>
+            <h4 class="font-bold text-emerald-800 text-lg">${cell.name}</h4>
+            <p class="text-sm text-gray-600 italic mt-2">"${cell.fact}"</p>
+            <div class="mt-3 ${cell.owned ? 'bg-emerald-100' : 'bg-blue-100'} rounded-lg p-2">
+              ${cell.owned 
+                ? '<span class="text-emerald-700 font-semibold">✓ ¡Ya es tuyo!</span>' 
+                : `<span class="text-blue-700 font-semibold">Precio: $${cell.price.toLocaleString()}</span>`}
+            </div>
+          </div>
+        `;
+      } else if (cell.type === 'reward') {
+        cellDetails.innerHTML = `
+          <div class="text-center">
+            <div class="text-4xl mb-2">${cell.emoji}</div>
+            <h4 class="font-bold text-amber-700 text-lg">Casilla de Recompensa</h4>
+            <p class="text-sm text-gray-600 mt-2">Si caes aquí, recibirás dinero del banco</p>
+          </div>
+        `;
+      } else {
+        cellDetails.innerHTML = `
+          <div class="text-center">
+            <div class="text-4xl mb-2">${cell.emoji}</div>
+            <h4 class="font-bold text-red-600 text-lg">Casilla de Multa</h4>
+            <p class="text-sm text-gray-600 mt-2">Si caes aquí, tendrás que pagar una multa</p>
+          </div>
+        `;
+      }
+    }
+
+    function enableNextTurn() {
+      gameState.isRolling = false;
+      const rollBtn = document.getElementById('roll-btn');
+      rollBtn.disabled = false;
+      rollBtn.classList.remove('opacity-50');
+      
+      if (gameState.turnsLeft <= 0) {
+        showGameEnd();
+      }
+    }
+
+    function checkGameEnd() {
+      if (gameState.turnsLeft <= 0 || gameState.money < 0) {
+        showGameEnd();
+      }
+    }
+
+    function showGameEnd() {
+      const modal = document.getElementById('end-modal');
+      const endStats = document.getElementById('end-stats');
+      const endMessage = document.getElementById('end-message');
+      
+      const propertiesCount = gameState.ownedProperties.length;
+      const totalValue = gameState.ownedProperties.reduce((sum, p) => sum + p.price, 0);
+      
+      endStats.innerHTML = `
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Propiedades compradas:</span>
+          <span class="font-bold text-emerald-700 text-xl">${propertiesCount}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Valor total:</span>
+          <span class="font-bold text-amber-700">$${totalValue.toLocaleString()}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Dinero restante:</span>
+          <span class="font-bold ${gameState.money >= 0 ? 'text-emerald-600' : 'text-red-600'}">$${gameState.money.toLocaleString()}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Dificultad:</span>
+          <span class="font-bold text-blue-600 capitalize">${gameState.difficulty}</span>
+        </div>
+      `;
+      
+      // Mensajes según rendimiento
+      let message = '';
+      if (propertiesCount >= 10) {
+        message = '🌟 ¡Increíble! Eres un verdadero conocedor de México. ¡Felicidades!';
+      } else if (propertiesCount >= 6) {
+        message = '🎉 ¡Muy bien! Conoces bastante de nuestro hermoso país.';
+      } else if (propertiesCount >= 3) {
+        message = '👍 ¡Buen intento! Sigue explorando México.';
+      } else {
+        message = '💪 No te rindas, ¡México tiene mucho por descubrir!';
+      }
+      
+      endMessage.innerHTML = `<p class="text-lg">${message}</p>`;
+      
+      modal.classList.remove('hidden');
+    }
+
+    function updateGameUI() {
+      document.getElementById('money-display').textContent = `$${gameState.money.toLocaleString()}`;
+      document.getElementById('properties-display').textContent = gameState.ownedProperties.length;
+      document.getElementById('turns-display').textContent = gameState.turnsLeft;
+      
+      // Cambiar color si el dinero es bajo
+      const moneyDisplay = document.getElementById('money-display');
+      if (gameState.money < 3000) {
+        moneyDisplay.classList.add('text-red-600');
+        moneyDisplay.classList.remove('text-emerald-800');
+      } else {
+        moneyDisplay.classList.remove('text-red-600');
+        moneyDisplay.classList.add('text-emerald-800');
+      }
+    }
+
+    function updatePropertiesList() {
+      const container = document.getElementById('my-properties');
+      
+      if (gameState.ownedProperties.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-400">Aún no tienes propiedades</p>';
+        return;
+      }
+      
+      container.innerHTML = gameState.ownedProperties.map(p => `
+        <div class="flex items-center gap-2 py-1 border-b border-gray-100 last:border-0">
+          <span>${p.emoji}</span>
+          <span class="flex-1 truncate">${p.name}</span>
+          <span class="text-emerald-600 font-semibold">$${p.price.toLocaleString()}</span>
+        </div>
+      `).join('');
+    }
+
+    function showHelp() {
+      document.getElementById('help-modal').classList.remove('hidden');
+    }
+
+    function closeHelp() {
+      document.getElementById('help-modal').classList.add('hidden');
+    }
+
+    function restartGame() {
+      document.getElementById('end-modal').classList.add('hidden');
+      startGame(gameState.difficulty);
+    }
+
+    function goToStart() {
+      document.getElementById('end-modal').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.remove('hidden');
+    }
+
+    // Inicializar UI
+    updateUI();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d10af4a9235e66c',t:'MTc3MTYxODYxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
