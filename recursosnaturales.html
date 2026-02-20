@@ -1,1 +1,445 @@
-h
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio de Creación</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    .font-title { font-family: 'Fredoka One', cursive; }
+    .font-body { font-family: 'Nunito', sans-serif; }
+    
+    @keyframes bubble {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.1); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+    }
+    
+    @keyframes sparkle {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+      100% { transform: scale(0) rotate(360deg); opacity: 0; }
+    }
+    
+    @keyframes success-pop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .bubble-animation { animation: bubble 2s ease-in-out infinite; }
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .success-animation { animation: success-pop 0.5s ease-out forwards; }
+    
+    .resource-card {
+      transition: all 0.3s ease;
+      cursor: grab;
+    }
+    .resource-card:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+    .resource-card:active {
+      cursor: grabbing;
+    }
+    .resource-card.selected {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+    }
+    
+    .mixing-zone {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border: 2px dashed #8b5cf6;
+      transition: all 0.3s ease;
+    }
+    .mixing-zone.active {
+      border-color: #22c55e;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+    }
+    
+    .lab-bg {
+      background: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .level-btn {
+      transition: all 0.3s ease;
+    }
+    .level-btn:hover {
+      transform: scale(1.05);
+    }
+    .level-btn.active {
+      transform: scale(1.1);
+    }
+
+    .scroll-container {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+    }
+    .scroll-container::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .scroll-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.5);
+      border-radius: 3px;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body lab-bg text-white overflow-hidden">
+  <div id="app" class="h-full flex flex-col"><!-- Header -->
+   <header class="glass-effect px-2 py-2 text-center relative overflow-hidden flex-shrink-0">
+    <div class="absolute top-1 left-2 text-2xl float-animation" style="animation-delay: 0s;">
+     🧪
+    </div>
+    <div class="absolute top-1 right-2 text-2xl float-animation" style="animation-delay: 0.5s;">
+     ⚗️
+    </div>
+    <h1 id="game-title" class="font-title text-lg md:text-xl bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">🔬 Laboratorio de Creación 🔬</h1>
+    <p class="text-purple-200 text-xs mt-0.5">¡Mezcla recursos y crea objetos!</p>
+   </header><!-- Level Selection -->
+   <div class="flex justify-center gap-2 p-1 flex-wrap flex-shrink-0 bg-opacity-50"><button onclick="setLevel(1)" id="level-1" class="level-btn active px-3 py-1 text-xs md:text-sm rounded-full bg-gradient-to-r from-green-400 to-emerald-500 font-bold text-white shadow-lg">🌱 Básico</button> <button onclick="setLevel(2)" id="level-2" class="level-btn px-3 py-1 text-xs md:text-sm rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 font-bold text-white shadow-lg opacity-80">⭐ Intermedio</button> <button onclick="setLevel(3)" id="level-3" class="level-btn px-3 py-1 text-xs md:text-sm rounded-full bg-gradient-to-r from-purple-400 to-pink-500 font-bold text-white shadow-lg opacity-80">🚀 Avanzado</button>
+   </div><!-- Main Game Area -->
+   <div class="flex-1 flex flex-col lg:flex-row gap-1 p-1 overflow-hidden" style="min-height: 0;"><!-- Resources Panel -->
+    <div class="lg:w-1/3 glass-effect rounded-lg p-1 flex flex-col" style="min-height: 0;">
+     <h2 class="font-title text-xs text-center text-yellow-300">📦 Recursos</h2>
+     <div id="resources-grid" class="grid grid-cols-4 gap-1 overflow-y-auto scroll-container flex-1">
+     </div>
+    </div><!-- Mixing Area -->
+    <div class="lg:w-2/3 flex flex-col gap-1 overflow-hidden" style="min-height: 0;"><!-- Mixing Zone -->
+     <div class="glass-effect rounded-lg p-1 flex flex-col" style="flex: 1.2; min-height: 0;">
+      <h2 class="font-title text-xs text-center text-cyan-300">🧫 Mezcla</h2>
+      <div id="mixing-zone" class="mixing-zone flex-1 rounded-lg flex items-center justify-center gap-1 p-1 flex-wrap overflow-hidden">
+       <p id="mixing-hint" class="text-purple-300 text-center text-xs">Selecciona recursos</p>
+      </div>
+      <div class="flex justify-center gap-1 mt-1 flex-wrap flex-shrink-0"><button onclick="clearMixing()" class="px-2 py-0.5 text-xs bg-gradient-to-r from-red-400 to-rose-500 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">🗑️ Limpiar</button> <button onclick="createItem()" class="px-3 py-0.5 text-xs bg-gradient-to-r from-green-400 to-emerald-500 rounded-full font-bold shadow-lg hover:scale-105 transition-transform pulse-glow">✨ ¡CREAR!</button>
+      </div>
+     </div><!-- Result Area -->
+     <div id="result-area" class="glass-effect rounded-lg p-1 text-center hidden" style="flex: 0.9; min-height: 0; overflow-y-auto;">
+      <div id="result-content" class="text-xs"></div>
+     </div><!-- Discovered Items -->
+     <div class="glass-effect rounded-lg p-1 flex-shrink-0 overflow-hidden" style="height: 65px;">
+      <h2 class="font-title text-xs text-center text-pink-300">🏆 Creados <span id="discovered-count">0</span>/<span id="total-count">0</span></h2>
+      <div id="discovered-grid" class="flex gap-0.5 overflow-x-auto scroll-container pb-0.5">
+       <p id="no-discoveries" class="text-purple-300 text-xs text-center w-full">¡Experimenta! 🔬</p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Footer -->
+   <footer class="glass-effect px-1 py-1 text-center flex-shrink-0">
+    <p id="author-credit" class="text-xs text-purple-200 font-semibold">❤️ MATERIAL CREADO CON AMOR POR MTRA. MARIA FERNANDA FLORES VALENZUELA ❤️</p>
+   </footer>
+  </div>
+  <script>
+    // Default config
+    const defaultConfig = {
+      game_title: '🔬 Laboratorio de Creación 🔬',
+      author_credit: 'MTRA. MARIA FERNANDA FLORES VALENZUELA'
+    };
+
+    // Resources data
+    const allResources = {
+      madera: { name: 'Madera', emoji: '🪵', level: 1 },
+      grafito: { name: 'Grafito', emoji: '⬛', level: 1 },
+      agua: { name: 'Agua', emoji: '💧', level: 1 },
+      tierra: { name: 'Tierra', emoji: '🟫', level: 1 },
+      semilla: { name: 'Semilla', emoji: '🌰', level: 1 },
+      fuego: { name: 'Fuego', emoji: '🔥', level: 1 },
+      piedra: { name: 'Piedra', emoji: '🪨', level: 1 },
+      arena: { name: 'Arena', emoji: '🏖️', level: 1 },
+      metal: { name: 'Metal', emoji: '🔩', level: 2 },
+      tela: { name: 'Tela', emoji: '🧵', level: 2 },
+      cristal: { name: 'Cristal', emoji: '💎', level: 2 },
+      papel: { name: 'Papel', emoji: '📄', level: 2 },
+      pintura: { name: 'Pintura', emoji: '🎨', level: 2 },
+      plastico: { name: 'Plástico', emoji: '🥤', level: 2 },
+      goma: { name: 'Goma', emoji: '🧽', level: 2 },
+      cuerda: { name: 'Cuerda', emoji: '🪢', level: 2 },
+      electricidad: { name: 'Electricidad', emoji: '⚡', level: 3 },
+      chip: { name: 'Chip', emoji: '🔲', level: 3 },
+      engranaje: { name: 'Engranaje', emoji: '⚙️', level: 3 },
+      bateria: { name: 'Batería', emoji: '🔋', level: 3 },
+      iman: { name: 'Imán', emoji: '🧲', level: 3 },
+      lente: { name: 'Lente', emoji: '🔍', level: 3 },
+      motor: { name: 'Motor', emoji: '🏭', level: 3 },
+      pantalla: { name: 'Pantalla', emoji: '📺', level: 3 }
+    };
+
+    // Recipes
+    const recipes = {
+      'grafito+madera': { name: 'Lápiz', emoji: '✏️', level: 1, message: '¡Creaste un lápiz!' },
+      'agua+tierra': { name: 'Lodo', emoji: '🟤', level: 1, message: '¡Hiciste lodo!' },
+      'agua+semilla+tierra': { name: 'Planta', emoji: '🌱', level: 1, message: '¡Una planta crece!' },
+      'fuego+madera': { name: 'Fogata', emoji: '🏕️', level: 1, message: '¡Una fogata caliente!' },
+      'arena+fuego': { name: 'Vidrio', emoji: '🪟', level: 1, message: '¡Arena convertida en vidrio!' },
+      'piedra+piedra': { name: 'Chispa', emoji: '✨', level: 1, message: '¡Chispas al chocar!' },
+      'agua+fuego': { name: 'Vapor', emoji: '💨', level: 1, message: '¡Vapor!' },
+      'tierra+semilla': { name: 'Maceta', emoji: '🪴', level: 1, message: '¡Una maceta!' },
+      'metal+madera': { name: 'Martillo', emoji: '🔨', level: 2, message: '¡Un martillo!' },
+      'tela+tela': { name: 'Ropa', emoji: '👕', level: 2, message: '¡Ropa cosida!' },
+      'papel+pintura': { name: 'Dibujo', emoji: '🖼️', level: 2, message: '¡Un dibujo artístico!' },
+      'cristal+metal': { name: 'Espejo', emoji: '🪞', level: 2, message: '¡Un espejo brillante!' },
+      'madera+cuerda': { name: 'Arco', emoji: '🏹', level: 2, message: '¡Un arco!' },
+      'papel+papel': { name: 'Libro', emoji: '📚', level: 2, message: '¡Un libro!' },
+      'plastico+agua': { name: 'Botella', emoji: '🍶', level: 2, message: '¡Una botella!' },
+      'metal+fuego': { name: 'Espada', emoji: '⚔️', level: 2, message: '¡Una espada forjada!' },
+      'goma+grafito': { name: 'Borrador', emoji: '🧹', level: 2, message: '¡Un borrador!' },
+      'tela+cuerda': { name: 'Mochila', emoji: '🎒', level: 2, message: '¡Una mochila!' },
+      'cristal+arena': { name: 'Reloj Arena', emoji: '⏳', level: 2, message: '¡Un reloj de arena!' },
+      'metal+metal': { name: 'Cadena', emoji: '⛓️', level: 2, message: '¡Una cadena fuerte!' },
+      'chip+electricidad': { name: 'Computadora', emoji: '💻', level: 3, message: '¡Una computadora!' },
+      'bateria+motor': { name: 'Carro', emoji: '🚗', level: 3, message: '¡Un automóvil!' },
+      'lente+metal': { name: 'Telescopio', emoji: '🔭', level: 3, message: '¡Un telescopio!' },
+      'engranaje+engranaje': { name: 'Reloj', emoji: '⏰', level: 3, message: '¡Un reloj mecánico!' },
+      'pantalla+chip': { name: 'Tablet', emoji: '📱', level: 3, message: '¡Una tablet!' },
+      'iman+metal': { name: 'Brújula', emoji: '🧭', level: 3, message: '¡Una brújula!' },
+      'electricidad+cristal': { name: 'Bombilla', emoji: '💡', level: 3, message: '¡Una bombilla!' },
+      'motor+engranaje': { name: 'Robot', emoji: '🤖', level: 3, message: '¡Un robot increíble!' },
+      'bateria+pantalla': { name: 'Celular', emoji: '📲', level: 3, message: '¡Un celular!' },
+      'lente+lente': { name: 'Microscopio', emoji: '🔬', level: 3, message: '¡Un microscopio!' },
+      'chip+bateria': { name: 'Drone', emoji: '🛸', level: 3, message: '¡Un dron volador!' },
+      'electricidad+motor': { name: 'Ventilador', emoji: '🌀', level: 3, message: '¡Un ventilador!' }
+    };
+
+    // Game state
+    let currentLevel = 1;
+    let selectedResources = [];
+    let discoveredItems = new Set();
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('game-title').textContent = config.game_title || defaultConfig.game_title;
+          document.getElementById('author-credit').textContent = `❤️ MATERIAL CREADO CON AMOR POR ${config.author_credit || defaultConfig.author_credit} ❤️`;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['game_title', config.game_title || defaultConfig.game_title],
+          ['author_credit', config.author_credit || defaultConfig.author_credit]
+        ])
+      });
+    }
+
+    function setLevel(level) {
+      currentLevel = level;
+      clearMixing();
+      
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`level-${i}`);
+        if (i === level) {
+          btn.classList.add('active');
+          btn.style.opacity = '1';
+        } else {
+          btn.classList.remove('active');
+          btn.style.opacity = '0.8';
+        }
+      }
+      
+      renderResources();
+      updateDiscoveredCount();
+    }
+
+    function renderResources() {
+      const grid = document.getElementById('resources-grid');
+      grid.innerHTML = '';
+      
+      Object.entries(allResources).forEach(([key, resource]) => {
+        if (resource.level <= currentLevel) {
+          const card = document.createElement('div');
+          card.className = 'resource-card glass-effect rounded-lg p-1 text-center';
+          card.dataset.resource = key;
+          card.onclick = () => toggleResource(key);
+          card.innerHTML = `
+            <div class="text-xl">${resource.emoji}</div>
+            <div class="text-xs font-semibold text-white truncate">${resource.name}</div>
+          `;
+          grid.appendChild(card);
+        }
+      });
+    }
+
+    function toggleResource(resourceKey) {
+      const card = document.querySelector(`[data-resource="${resourceKey}"]`);
+      
+      if (selectedResources.includes(resourceKey)) {
+        selectedResources = selectedResources.filter(r => r !== resourceKey);
+        card.classList.remove('selected');
+      } else {
+        if (selectedResources.length < 3) {
+          selectedResources.push(resourceKey);
+          card.classList.add('selected');
+        }
+      }
+      
+      updateMixingZone();
+    }
+
+    function updateMixingZone() {
+      const zone = document.getElementById('mixing-zone');
+      
+      if (selectedResources.length === 0) {
+        zone.classList.remove('active');
+        zone.innerHTML = '<p id="mixing-hint" class="text-purple-300 text-center text-xs">Selecciona recursos</p>';
+      } else {
+        zone.classList.add('active');
+        zone.innerHTML = selectedResources.map(key => {
+          const resource = allResources[key];
+          return `
+            <div class="glass-effect rounded-lg p-1 text-center bubble-animation">
+              <div class="text-2xl">${resource.emoji}</div>
+              <div class="text-xs font-semibold truncate">${resource.name}</div>
+            </div>
+          `;
+        }).join('<span class="text-xl text-purple-300">+</span>');
+      }
+    }
+
+    function clearMixing() {
+      selectedResources = [];
+      document.querySelectorAll('.resource-card.selected').forEach(card => {
+        card.classList.remove('selected');
+      });
+      updateMixingZone();
+      hideResult();
+    }
+
+    function createItem() {
+      if (selectedResources.length < 2) {
+        showResult(false, '🤔', 'Necesitas 2+ recursos', '');
+        return;
+      }
+
+      const sorted = [...selectedResources].sort();
+      const recipeKey = sorted.join('+');
+      
+      let result = recipes[recipeKey];
+      
+      if (!result && selectedResources.length === 3) {
+        const combos = [
+          [sorted[0], sorted[1]].join('+'),
+          [sorted[0], sorted[2]].join('+'),
+          [sorted[1], sorted[2]].join('+')
+        ];
+        for (const combo of combos) {
+          if (recipes[combo]) {
+            result = recipes[combo];
+            break;
+          }
+        }
+      }
+
+      if (result && result.level <= currentLevel) {
+        discoveredItems.add(result.name);
+        showResult(true, result.emoji, result.name, result.message);
+        updateDiscoveredGrid();
+        updateDiscoveredCount();
+      } else {
+        showResult(false, '❌', 'Nada pasó', 'Sigue experimentando!');
+      }
+    }
+
+    function showResult(success, emoji, title, message) {
+      const resultArea = document.getElementById('result-area');
+      const resultContent = document.getElementById('result-content');
+      
+      resultArea.classList.remove('hidden');
+      resultContent.innerHTML = `
+        <div class="${success ? 'success-animation' : ''}">
+          <div class="text-5xl mb-1">${emoji}</div>
+          <h3 class="font-title text-lg ${success ? 'text-green-300' : 'text-red-300'}">${title}</h3>
+          <p class="text-purple-200 text-xs mt-1">${message}</p>
+        </div>
+      `;
+      
+      if (success) {
+        createSparkles(resultArea);
+      }
+    }
+
+    function hideResult() {
+      document.getElementById('result-area').classList.add('hidden');
+    }
+
+    function createSparkles(container) {
+      const sparkles = ['✨', '⭐', '🌟', '💫'];
+      for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+        sparkle.style.cssText = `
+          position: absolute;
+          font-size: 16px;
+          left: ${Math.random() * 80 + 10}%;
+          top: ${Math.random() * 80 + 10}%;
+          animation: sparkle 1s ease-out forwards;
+          pointer-events: none;
+        `;
+        container.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1000);
+      }
+    }
+
+    function updateDiscoveredGrid() {
+      const grid = document.getElementById('discovered-grid');
+      const noDiscoveries = document.getElementById('no-discoveries');
+      
+      if (discoveredItems.size > 0) {
+        if (noDiscoveries) noDiscoveries.remove();
+        
+        const discoveredRecipes = Object.values(recipes).filter(r => 
+          discoveredItems.has(r.name) && r.level <= currentLevel
+        );
+        
+        grid.innerHTML = discoveredRecipes.map(item => `
+          <div class="glass-effect rounded-lg p-0.5 text-center flex-shrink-0">
+            <div class="text-lg">${item.emoji}</div>
+            <div class="text-xs font-semibold truncate">${item.name}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function updateDiscoveredCount() {
+      const totalForLevel = Object.values(recipes).filter(r => r.level <= currentLevel).length;
+      const discoveredForLevel = Object.values(recipes).filter(r => 
+        r.level <= currentLevel && discoveredItems.has(r.name)
+      ).length;
+      
+      document.getElementById('discovered-count').textContent = discoveredForLevel;
+      document.getElementById('total-count').textContent = totalForLevel;
+    }
+
+    renderResources();
+    updateDiscoveredCount();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d10a892a709db62',t:'MTc3MTYxODM0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
