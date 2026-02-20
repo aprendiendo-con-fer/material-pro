@@ -5,153 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Material Pro</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<script src="/_sdk/element_sdk.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-/* ====== Estilos generales ====== */
-*{box-sizing:border-box;}
-body{font-family:'Nunito',sans-serif;}
-.font-fredoka{font-family:'Fredoka',sans-serif;}
-.font-nunito{font-family:'Nunito',sans-serif;}
-.gradient-bg{background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);}
-.card-gradient{background: linear-gradient(145deg,#ffffff 0%,#f0f4ff 100%);}
-.menu-btn{transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
-.menu-btn:hover{transform: scale(1.08) translateY(-5px);}
-.menu-btn:active{transform: scale(1.15);}
-.floating{animation: floating 3s ease-in-out infinite;}
-@keyframes floating{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-.floating-delay-1{animation-delay:0.5s;}
-.floating-delay-2{animation-delay:1s;}
-.floating-delay-3{animation-delay:1.5s;}
-.wiggle:hover{animation: wiggle 0.5s ease-in-out;}
-@keyframes wiggle{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-5deg);}75%{transform:rotate(5deg);}}
-.input-field{transition: all 0.3s ease;}
-.input-field:focus{transform:scale(1.02);box-shadow:0 0 0 4px rgba(102,126,234,0.3);}
-.scroll-container{scrollbar-width: thin; scrollbar-color: #764ba2 #f0f4ff;}
-.scroll-container::-webkit-scrollbar{width:8px;}
-.scroll-container::-webkit-scrollbar-track{background:#f0f4ff; border-radius:10px;}
-.scroll-container::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#667eea,#764ba2);border-radius:10px;}
-.pulse-border{animation:pulse-border 2s ease-in-out infinite;}
-@keyframes pulse-border{0%,100%{border-color:#FFB800;}50%{border-color:#FF6B6B;}}
-.icon-bounce{display:inline-block;animation:icon-bounce 2s ease-in-out infinite;}
-@keyframes icon-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-.btn-lenguajes{background: linear-gradient(135deg,#FF6B6B 0%,#FF8E53 100%); box-shadow:0 8px 25px rgba(255,107,107,0.4);}
-.btn-lenguajes:hover{box-shadow:0 12px 35px rgba(255,107,107,0.6);}
-.btn-saberes{background: linear-gradient(135deg,#4ECDC4 0%,#44A08D 100%); box-shadow:0 8px 25px rgba(78,205,196,0.4);}
-.btn-saberes:hover{box-shadow:0 12px 35px rgba(78,205,196,0.6);}
-.btn-etica{background: linear-gradient(135deg,#A770EF 0%,#CF8BF3 50%,#FDB99B 100%); box-shadow:0 8px 25px rgba(167,112,239,0.4);}
-.btn-etica:hover{box-shadow:0 12px 35px rgba(167,112,239,0.6);}
-.btn-humano{background: linear-gradient(135deg,#5B86E5 0%,#36D1DC 100%); box-shadow:0 8px 25px rgba(91,134,229,0.4);}
-.btn-humano:hover{box-shadow:0 12px 35px rgba(91,134,229,0.6);}
+  * { box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; margin:0; height:100%; }
+
+  .font-fredoka { font-family: 'Fredoka', sans-serif; }
+  .menu-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .menu-btn:hover { transform: scale(1.08) translateY(-5px); }
+  .menu-btn:active { transform: scale(1.15); }
+
+  .floating { animation: floating 3s ease-in-out infinite; }
+  @keyframes floating { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+  .floating-delay-1 { animation-delay:0.5s; }
+  .floating-delay-2 { animation-delay:1s; }
+  .floating-delay-3 { animation-delay:1.5s; }
+
+  .sparkle { animation: sparkle 2s ease-in-out infinite; }
+  @keyframes sparkle { 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.6; transform:scale(1.2);} }
+
+  .wiggle:hover { animation: wiggle 0.5s ease-in-out; }
+  @keyframes wiggle { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-5deg);} 75%{transform:rotate(5deg);} }
+
+  .btn-lenguajes { background: linear-gradient(135deg,#FF6B6B 0%,#FF8E53 100%); box-shadow: 0 8px 25px rgba(255,107,107,0.4); }
+  .btn-lenguajes:hover { box-shadow: 0 12px 35px rgba(255,107,107,0.6); }
+  .btn-saberes { background: linear-gradient(135deg,#4ECDC4 0%,#44A08D 100%); box-shadow:0 8px 25px rgba(78,205,196,0.4);}
+  .btn-saberes:hover { box-shadow:0 12px 35px rgba(78,205,196,0.6);}
+  .btn-etica { background: linear-gradient(135deg,#A770EF 0%,#CF8BF3 50%,#FDB99B 100%); box-shadow:0 8px 25px rgba(167,112,239,0.4);}
+  .btn-etica:hover { box-shadow:0 12px 35px rgba(167,112,239,0.6);}
+  .btn-humano { background: linear-gradient(135deg,#5B86E5 0%,#36D1DC 100%); box-shadow:0 8px 25px rgba(91,134,229,0.4);}
+  .btn-humano:hover { box-shadow:0 12px 35px rgba(91,134,229,0.6);}
 </style>
-
 </head>
-<body class="h-full font-nunito">
-<div id="app" class="h-full w-full gradient-bg overflow-auto">
+<body class="h-full bg-gradient-to-b from-amber-100 via-orange-50 to-yellow-100">
 
-<!-- ====== Pantalla de Login ====== -->
-<div id="login-screen" class="min-h-full w-full flex items-center justify-center p-4">
-  <div class="card-gradient rounded-3xl shadow-2xl p-8 w-full max-w-md relative overflow-hidden">
-    <!-- Título y logo -->
-    <div class="text-center mb-8">
-      <div class="text-6xl mb-4 icon-bounce">🎨</div>
-      <h1 id="login-title" class="text-4xl font-fredoka font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">Material Pro</h1>
-      <p class="text-gray-500 mt-2 text-sm">Recursos educativos interactivos</p>
-    </div>
+<div id="app" class="h-full w-full overflow-auto p-6">
 
-    <!-- Formulario -->
-    <form id="login-form" class="space-y-5">
-      <div>
-        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">🔑 Contraseña de Acceso</label>
-        <input type="password" id="password" name="password" class="input-field w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-gray-700" placeholder="Ingresa la contraseña" required>
-      </div>
-      <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-r-lg text-sm">
-        <span class="font-semibold">⚠️ Error:</span> Contraseña incorrecta
-      </div>
-      <button type="submit" class="w-full py-4 rounded-xl font-bold text-white text-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">🚀 Ingresar</button>
-    </form>
-  </div>
-</div>
-
-<!-- ====== Pantalla Principal (Menú) ====== -->
-<div id="main-screen" class="hidden min-h-full w-full p-4 md:p-8">
-  <div class="max-w-4xl mx-auto text-center">
-    <h1 id="main-title" class="text-5xl md:text-7xl font-fredoka font-bold text-white drop-shadow-lg mb-2">Material Pro</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <button class="menu-btn btn-lenguajes rounded-3xl p-6 text-white wiggle">
-        <div class="flex flex-col items-center gap-3">
-          <span class="text-5xl">📖</span>
-          <span class="text-xl md:text-2xl font-fredoka font-bold">Lenguajes</span>
-        </div>
-      </button>
-      <button onclick="irATiendita()" class="menu-btn btn-saberes rounded-3xl p-6 text-white wiggle">
-        <div class="flex flex-col items-center gap-3">
-          <span class="text-5xl">🔬</span>
-          <span class="text-xl md:text-2xl font-fredoka font-bold">Saberes y Pensamientos Científicos</span>
-        </div>
-      </button>
-      <button class="menu-btn btn-etica rounded-3xl p-6 text-white wiggle">
-        <div class="flex flex-col items-center gap-3">
-          <span class="text-5xl">🌿</span>
-          <span class="text-xl md:text-2xl font-fredoka font-bold">Ética, Naturaleza y Sociedades</span>
-        </div>
-      </button>
-      <button class="menu-btn btn-humano rounded-3xl p-6 text-white wiggle">
-        <div class="flex flex-col items-center gap-3">
-          <span class="text-5xl">👨‍👩‍👧‍👦</span>
-          <span class="text-xl md:text-2xl font-fredoka font-bold">De lo Humano a lo Comunitario</span>
-        </div>
-      </button>
+  <!-- Título -->
+  <div class="text-center mb-8">
+    <div class="text-6xl mb-4 icon-bounce">🎨</div>
+    <h1 class="text-5xl md:text-7xl font-fredoka font-bold text-orange-600 drop-shadow-lg mb-2">Material Pro</h1>
+    <div class="flex justify-center gap-2 text-2xl sparkle">
+      <span>📚</span><span>🎨</span><span>🎯</span><span>🌟</span>
     </div>
   </div>
+
+  <!-- Botones del Menú -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Lenguajes -->
+    <button class="menu-btn btn-lenguajes rounded-3xl p-6 text-white wiggle">
+      <div class="flex flex-col items-center gap-3">
+        <span class="text-5xl">📖</span>
+        <span class="text-xl md:text-2xl font-fredoka font-bold">Lenguajes</span>
+        <span class="text-sm opacity-90">Lectura, escritura y más</span>
+      </div>
+    </button>
+
+    <!-- Saberes (a Tiendita) -->
+    <button onclick="irATiendita()" class="menu-btn btn-saberes rounded-3xl p-6 text-white wiggle">
+      <div class="flex flex-col items-center gap-3">
+        <span class="text-5xl">🔬</span>
+        <span class="text-xl md:text-2xl font-fredoka font-bold text-center">Saberes y Pensamientos Científicos</span>
+        <span class="text-sm opacity-90">Ciencia y descubrimientos</span>
+      </div>
+    </button>
+
+    <!-- Ética -->
+    <button class="menu-btn btn-etica rounded-3xl p-6 text-white wiggle">
+      <div class="flex flex-col items-center gap-3">
+        <span class="text-5xl">🌿</span>
+        <span class="text-xl md:text-2xl font-fredoka font-bold text-center">Ética, Naturaleza y Sociedades</span>
+        <span class="text-sm opacity-90">Valores y comunidad</span>
+      </div>
+    </button>
+
+    <!-- De lo Humano a lo Comunitario -->
+    <button class="menu-btn btn-humano rounded-3xl p-6 text-white wiggle">
+      <div class="flex flex-col items-center gap-3">
+        <span class="text-5xl">👨‍👩‍👧‍👦</span>
+        <span class="text-xl md:text-2xl font-fredoka font-bold text-center">De lo Humano a lo Comunitario</span>
+        <span class="text-sm opacity-90">Convivencia y desarrollo</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Créditos -->
+  <div class="text-center mt-6">
+    <p class="text-sm text-orange-700">Material elaborado por Mtra. María Fernanda Flores Valenzuela</p>
+  </div>
+
 </div>
 
 <script>
-// ==========================================
-// CONTRASEÑA MAESTRA
-const CONTRASEÑA_MAESTRA = "Pro20-26*";
-
-// Estado de la app
-let termsAccepted = false;
-
-// Referencias a elementos
-const loginScreen = document.getElementById('login-screen');
-const mainScreen = document.getElementById('main-screen');
-const loginForm = document.getElementById('login-form');
-const errorMessage = document.getElementById('error-message');
-
-// Función para verificar contraseña
-function verificarContraseña(password){
-  return password === CONTRASEÑA_MAESTRA;
-}
-
-// Mostrar pantalla específica
-function mostrarPantalla(pantalla){
-  loginScreen.classList.add('hidden');
-  mainScreen.classList.add('hidden');
-  if(pantalla==='login') loginScreen.classList.remove('hidden');
-  if(pantalla==='main') mainScreen.classList.remove('hidden');
-}
-
-// Manejar login
-loginForm.addEventListener('submit', function(e){
-  e.preventDefault();
-  const password = document.getElementById('password').value;
-  if(verificarContraseña(password)){
-    errorMessage.classList.add('hidden');
-    mostrarPantalla('main');
-  }else{
-    errorMessage.classList.remove('hidden');
-    document.getElementById('password').value='';
-  }
-});
-
-// ====== Función para abrir Tiendita ======
 function irATiendita(){
-  window.location.href = "tiendita.html";
+    window.location.href = "tiendita.html";
 }
 </script>
 
