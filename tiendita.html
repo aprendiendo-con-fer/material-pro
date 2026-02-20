@@ -6,23 +6,22 @@
 <title>La Tiendita</title>
 
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0}
-body{font-family:'Nunito',sans-serif}
-.title-font{font-family:'Fredoka One',cursive}
+* { box-sizing: border-box; }
+html, body { height:100%; margin:0; padding:0; font-family: 'Nunito', sans-serif; }
+
+.title-font { font-family: 'Fredoka One', cursive; }
 
 /* ====== BILLETES ====== */
 .bill{
-width:90px;height:45px;border-radius:6px;
-display:flex;align-items:center;justify-content:center;
-font-weight:800;font-size:14px;cursor:pointer;
-transition:.2s;border:2px solid rgba(0,0,0,.2);
-box-shadow:2px 2px 5px rgba(0,0,0,.2);
-position:relative;overflow:hidden
+  width:90px; height:45px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:14px; cursor:pointer;
+  transition:.2s; border:2px solid rgba(0,0,0,.2);
+  box-shadow:2px 2px 5px rgba(0,0,0,.2);
+  position:relative; overflow:hidden
 }
 .bill:hover{transform:scale(1.05)}
 .bill:active{transform:scale(.95)}
@@ -35,10 +34,10 @@ position:relative;overflow:hidden
 
 /* ====== MONEDAS ====== */
 .coin{
-border-radius:50%;display:flex;align-items:center;justify-content:center;
-font-weight:800;cursor:pointer;transition:.2s;
-border:3px solid rgba(0,0,0,.2);
-box-shadow:2px 2px 5px rgba(0,0,0,.3)
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-weight:800; cursor:pointer; transition:.2s;
+  border:3px solid rgba(0,0,0,.2);
+  box-shadow:2px 2px 5px rgba(0,0,0,.3)
 }
 .coin:hover{transform:scale(1.1)}
 .coin:active{transform:scale(.9)}
@@ -49,82 +48,97 @@ box-shadow:2px 2px 5px rgba(0,0,0,.3)
 .coin-10{width:48px;height:48px;background:linear-gradient(135deg,#c0c0c0,#8a8a8a)}
 
 .product-card{
-background:white;border-radius:12px;padding:8px;
-box-shadow:0 4px 6px rgba(0,0,0,.1);
-text-align:center;min-width:80px
+  background:white; border-radius:12px; padding:8px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  text-align:center; min-width:80px
 }
 
 .payment-area{
-min-height:80px;background:rgba(255,255,255,.9);
-border-radius:10px;border:3px dashed #ccc;
-display:flex;flex-wrap:wrap;gap:5px;padding:10px;
-align-items:center;justify-content:center
+  min-height:80px; background:rgba(255,255,255,.9);
+  border-radius:10px; border:3px dashed #ccc;
+  display:flex; flex-wrap:wrap; gap:5px; padding:10px;
+  align-items:center; justify-content:center
 }
+
+/* ====== BOTÓN VOLVER ====== */
+.btn-back{
+  background: linear-gradient(135deg,#FF6B6B,#FF8E53);
+  color:white; font-weight:700;
+  padding:10px 20px; border-radius:12px;
+  box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+  transition: all 0.3s;
+}
+.btn-back:hover { box-shadow:0 12px 35px rgba(255,107,107,0.6); transform:scale(1.05);}
 </style>
 </head>
 
 <body class="h-full overflow-auto bg-gradient-to-b from-amber-100 via-orange-50 to-yellow-100">
 
-<div id="app">
+<div class="min-h-full flex flex-col items-center p-6">
 
-<!-- ========= MENÚ ========= -->
-<div id="menu-screen" class="min-h-full flex flex-col items-center justify-center p-4">
-<h1 class="title-font text-5xl text-orange-600 mb-6 text-center">
-🏪 LA TIENDITA 🏪
-</h1>
+  <!-- TÍTULO -->
+  <h1 class="title-font text-5xl text-orange-600 mb-6 text-center">
+    🏪 LA TIENDITA 🏪
+  </h1>
 
-<div class="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full">
+  <!-- BOTÓN VOLVER -->
+  <button onclick="volverAlMenu()" class="btn-back mb-6">⬅️ Volver al Menú Principal</button>
 
-<button onclick="selectMode('comprador')" class="w-full bg-green-500 text-white font-bold py-4 rounded-xl mb-4">
-🛒 SOY COMPRADOR
-</button>
+  <!-- ÁREA DEL JUEGO -->
+  <div class="bg-white rounded-3xl p-8 shadow-2xl max-w-3xl w-full">
 
-<button onclick="selectMode('cajero')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl">
-💰 SOY CAJERO
-</button>
+    <div id="menu-screen" class="flex flex-col items-center gap-6">
 
-<div id="difficulty-section" class="hidden mt-6">
-<div class="grid grid-cols-3 gap-3">
-<button onclick="startGame('facil')" class="bg-green-400 text-white py-2 rounded-lg">Fácil</button>
-<button onclick="startGame('medio')" class="bg-yellow-400 text-white py-2 rounded-lg">Medio</button>
-<button onclick="startGame('dificil')" class="bg-red-500 text-white py-2 rounded-lg">Difícil</button>
-</div>
-</div>
+      <button onclick="selectMode('comprador')" class="w-full bg-green-500 text-white font-bold py-4 rounded-xl mb-4">
+        🛒 SOY COMPRADOR
+      </button>
 
-</div>
+      <button onclick="selectMode('cajero')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl">
+        💰 SOY CAJERO
+      </button>
 
-<p class="mt-6 text-sm text-orange-700 text-center">
-MATERIAL ELABORADO POR MTRA. MARIA FERNANDA FLORES VALENZUELA
-</p>
-</div>
+      <div id="difficulty-section" class="hidden mt-6">
+        <div class="grid grid-cols-3 gap-3">
+          <button onclick="startGame('facil')" class="bg-green-400 text-white py-2 rounded-lg">Fácil</button>
+          <button onclick="startGame('medio')" class="bg-yellow-400 text-white py-2 rounded-lg">Medio</button>
+          <button onclick="startGame('dificil')" class="bg-red-500 text-white py-2 rounded-lg">Difícil</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="mt-6 text-sm text-orange-700 text-center">
+    MATERIAL ELABORADO POR MTRA. MARIA FERNANDA FLORES VALENZUELA
+  </p>
 
 </div>
 
 <script>
 let gameState={
-mode:null,
-difficulty:null,
-lives:10,
-score:0,
-currentTotal:0,
-expectedChange:0,
-selectedMoney:[]
+  mode:null,
+  difficulty:null,
+  lives:10,
+  score:0,
+  currentTotal:0,
+  expectedChange:0,
+  selectedMoney:[]
 };
 
 function selectMode(mode){
-gameState.mode=mode;
-document.getElementById('difficulty-section').classList.remove('hidden');
+  gameState.mode=mode;
+  document.getElementById('difficulty-section').classList.remove('hidden');
 }
 
 function startGame(difficulty){
-gameState.difficulty=difficulty;
-alert("Juego iniciado en modo "+gameState.mode+" dificultad "+difficulty);
+  gameState.difficulty=difficulty;
+  alert("Juego iniciado en modo "+gameState.mode+" dificultad "+difficulty);
 }
 
-/* Puedes pegar aquí TODA tu lógica original del juego
-desde const products = [...] hacia abajo
-SIN incluir el bloque initSDK ni scripts de Canva */
-
+// BOTÓN VOLVER
+function volverAlMenu(){
+  window.location.href = "index.html";
+}
 </script>
 
 </body>
