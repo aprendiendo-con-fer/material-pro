@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Tiendita</title>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif}
+.title-font{font-family:'Fredoka One',cursive}
+
+/* ====== BILLETES ====== */
+.bill{
+width:90px;height:45px;border-radius:6px;
+display:flex;align-items:center;justify-content:center;
+font-weight:800;font-size:14px;cursor:pointer;
+transition:.2s;border:2px solid rgba(0,0,0,.2);
+box-shadow:2px 2px 5px rgba(0,0,0,.2);
+position:relative;overflow:hidden
+}
+.bill:hover{transform:scale(1.05)}
+.bill:active{transform:scale(.95)}
+.bill-20{background:linear-gradient(135deg,#1a5fb4,#3584e4);color:white}
+.bill-50{background:linear-gradient(135deg,#c01c28,#e01b24);color:white}
+.bill-100{background:linear-gradient(135deg,#c64600,#ff7800);color:white}
+.bill-200{background:linear-gradient(135deg,#26a269,#33d17a);color:white}
+.bill-500{background:linear-gradient(135deg,#613583,#9141ac);color:white}
+.bill-1000{background:linear-gradient(135deg,#865e3c,#b5835a);color:white}
+
+/* ====== MONEDAS ====== */
+.coin{
+border-radius:50%;display:flex;align-items:center;justify-content:center;
+font-weight:800;cursor:pointer;transition:.2s;
+border:3px solid rgba(0,0,0,.2);
+box-shadow:2px 2px 5px rgba(0,0,0,.3)
+}
+.coin:hover{transform:scale(1.1)}
+.coin:active{transform:scale(.9)}
+.coin-50c{width:32px;height:32px;background:linear-gradient(135deg,#f6d32d,#e5a50a);font-size:9px}
+.coin-1{width:36px;height:36px;background:linear-gradient(135deg,#c0c0c0,#9a9a9a)}
+.coin-2{width:40px;height:40px;background:linear-gradient(135deg,#c0c0c0,#9a9a9a)}
+.coin-5{width:44px;height:44px;background:linear-gradient(135deg,#cd7f32,#a0522d);color:white}
+.coin-10{width:48px;height:48px;background:linear-gradient(135deg,#c0c0c0,#8a8a8a)}
+
+.product-card{
+background:white;border-radius:12px;padding:8px;
+box-shadow:0 4px 6px rgba(0,0,0,.1);
+text-align:center;min-width:80px
+}
+
+.payment-area{
+min-height:80px;background:rgba(255,255,255,.9);
+border-radius:10px;border:3px dashed #ccc;
+display:flex;flex-wrap:wrap;gap:5px;padding:10px;
+align-items:center;justify-content:center
+}
+</style>
+</head>
+
+<body class="h-full overflow-auto bg-gradient-to-b from-amber-100 via-orange-50 to-yellow-100">
+
+<div id="app">
+
+<!-- ========= MENÚ ========= -->
+<div id="menu-screen" class="min-h-full flex flex-col items-center justify-center p-4">
+<h1 class="title-font text-5xl text-orange-600 mb-6 text-center">
+🏪 LA TIENDITA 🏪
+</h1>
+
+<div class="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full">
+
+<button onclick="selectMode('comprador')" class="w-full bg-green-500 text-white font-bold py-4 rounded-xl mb-4">
+🛒 SOY COMPRADOR
+</button>
+
+<button onclick="selectMode('cajero')" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl">
+💰 SOY CAJERO
+</button>
+
+<div id="difficulty-section" class="hidden mt-6">
+<div class="grid grid-cols-3 gap-3">
+<button onclick="startGame('facil')" class="bg-green-400 text-white py-2 rounded-lg">Fácil</button>
+<button onclick="startGame('medio')" class="bg-yellow-400 text-white py-2 rounded-lg">Medio</button>
+<button onclick="startGame('dificil')" class="bg-red-500 text-white py-2 rounded-lg">Difícil</button>
+</div>
+</div>
+
+</div>
+
+<p class="mt-6 text-sm text-orange-700 text-center">
+MATERIAL ELABORADO POR MTRA. MARIA FERNANDA FLORES VALENZUELA
+</p>
+</div>
+
+</div>
+
+<script>
+let gameState={
+mode:null,
+difficulty:null,
+lives:10,
+score:0,
+currentTotal:0,
+expectedChange:0,
+selectedMoney:[]
+};
+
+function selectMode(mode){
+gameState.mode=mode;
+document.getElementById('difficulty-section').classList.remove('hidden');
+}
+
+function startGame(difficulty){
+gameState.difficulty=difficulty;
+alert("Juego iniciado en modo "+gameState.mode+" dificultad "+difficulty);
+}
+
+/* Puedes pegar aquí TODA tu lógica original del juego
+desde const products = [...] hacia abajo
+SIN incluir el bloque initSDK ni scripts de Canva */
+
+</script>
+
+</body>
+</html>
