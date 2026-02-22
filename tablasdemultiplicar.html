@@ -1,923 +1,103 @@
 <!doctype html>
 <html lang="es" class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aventura Matemática</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body { font-family: 'Nunito', sans-serif; }
     .title-font { font-family: 'Fredoka One', cursive; }
+    /* Animaciones */
+    @keyframes float {0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-10px) rotate(5deg);}}
+    @keyframes pulse-glow {0%,100%{box-shadow:0 0 20px rgba(255,200,50,0.5);}50%{box-shadow:0 0 40px rgba(255,200,50,0.8);}}
+    @keyframes shake {0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+    @keyframes star-burst {0%{transform:scale(0) rotate(0); opacity:1;}100%{transform:scale(2) rotate(180deg); opacity:0;}}
+    @keyframes bounce-in {0%{transform:scale(0);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
+    @keyframes slide-up {from{transform:translateY(20px); opacity:0;}to{transform:translateY(0); opacity:1;}}
+    @keyframes confetti-fall {0%{transform:translateY(-100px) rotate(0);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(5deg); }
-    }
+    .float-animation{animation:float 3s ease-in-out infinite;}
+    .pulse-glow{animation:pulse-glow 2s ease-in-out infinite;}
+    .shake{animation:shake 0.5s ease-in-out;}
+    .bounce-in{animation:bounce-in 0.5s ease-out;}
+    .slide-up{animation:slide-up 0.3s ease-out;}
     
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(255, 200, 50, 0.5); }
-      50% { box-shadow: 0 0 40px rgba(255, 200, 50, 0.8); }
-    }
-    
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-    
-    @keyframes star-burst {
-      0% { transform: scale(0) rotate(0deg); opacity: 1; }
-      100% { transform: scale(2) rotate(180deg); opacity: 0; }
-    }
-    
-    @keyframes bounce-in {
-      0% { transform: scale(0); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    
-    @keyframes slide-up {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .float-animation { animation: float 3s ease-in-out infinite; }
-    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-    .shake { animation: shake 0.5s ease-in-out; }
-    .bounce-in { animation: bounce-in 0.5s ease-out; }
-    .slide-up { animation: slide-up 0.3s ease-out; }
-    
-    .star-particle {
-      position: absolute;
-      font-size: 24px;
-      animation: star-burst 0.6s ease-out forwards;
-      pointer-events: none;
-    }
-    
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    }
-    
-    .card-gradient {
-      background: linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%);
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-    }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      transition: all 0.3s ease;
-    }
-    
-    .btn-secondary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
-    }
-    
-    .table-btn {
-      transition: all 0.2s ease;
-    }
-    
-    .table-btn:hover {
-      transform: scale(1.1);
-    }
-    
-    .table-btn.selected {
-      transform: scale(1.05);
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8);
-    }
-    
-    .answer-btn {
-      transition: all 0.2s ease;
-    }
-    
-    .answer-btn:hover:not(:disabled) {
-      transform: scale(1.05);
-    }
-    
-    .answer-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .progress-bar {
-      transition: width 0.1s linear;
-    }
-    
-    .life-heart {
-      transition: all 0.3s ease;
-    }
-    
-    .life-heart.lost {
-      transform: scale(0);
-      opacity: 0;
-    }
-    
-    .combo-badge {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-    
-    .leaderboard-row {
-      transition: all 0.3s ease;
-    }
-    
-    .leaderboard-row:hover {
-      transform: translateX(5px);
-    }
-    
-    .screen { display: none; }
-    .screen.active { display: flex; }
-    
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      pointer-events: none;
-      z-index: 1000;
-    }
-    
-    @keyframes confetti-fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
+    .star-particle{position:absolute;font-size:24px;animation:star-burst 0.6s ease-out forwards;pointer-events:none;}
+    .gradient-bg{background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);}
+    .card-gradient{background:linear-gradient(145deg,#ffffff 0%,#f0f4ff 100%);}
+    .btn-primary{background:linear-gradient(135deg,#ff6b6b 0%,#ff8e53 100%);transition:all 0.3s ease;}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,107,107,0.4);}
+    .btn-secondary{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);transition:all 0.3s ease;}
+    .btn-secondary:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(79,172,254,0.4);}
+    .table-btn{transition:all 0.2s ease;}
+    .table-btn:hover{transform:scale(1.1);}
+    .table-btn.selected{transform:scale(1.05);box-shadow:0 0 0 4px rgba(255,255,255,0.8);}
+    .answer-btn{transition:all 0.2s ease;}
+    .answer-btn:hover:not(:disabled){transform:scale(1.05);}
+    .answer-btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .progress-bar{transition:width 0.1s linear;}
+    .life-heart{transition:all 0.3s ease;}
+    .life-heart.lost{transform:scale(0);opacity:0;}
+    .combo-badge{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);}
+    .leaderboard-row{transition:all 0.3s ease;}
+    .leaderboard-row:hover{transform:translateX(5px);}
+    .screen{display:none;}
+    .screen.active{display:flex;}
+    .confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:1000;}
+    .home-btn{position:fixed;top:10px;left:10px;font-size:2rem;z-index:100;cursor:pointer;}
   </style>
-  <style>body { box-sizing: border-box; }</style>
- </head>
- <body class="h-full gradient-bg overflow-auto">
-  <div id="app" class="w-full min-h-full flex flex-col"><!-- Pantalla de Inicio -->
-   <div id="welcome-screen" class="screen active flex-col items-center justify-center p-4 min-h-full">
+</head>
+<body class="h-full gradient-bg overflow-auto">
+<div id="app" class="w-full min-h-full flex flex-col">
+
+  <!-- Botón de Inicio (Casita) -->
+  <div class="home-btn" id="home-btn" title="Volver al Inicio">🏠</div>
+
+  <!-- Pantalla de Inicio -->
+  <div id="welcome-screen" class="screen active flex-col items-center justify-center p-4 min-h-full">
     <div class="text-center mb-8 slide-up">
-     <div class="text-6xl mb-4 float-animation">
-      🚀
-     </div>
-     <h1 id="main-title" class="title-font text-4xl md:text-6xl text-white drop-shadow-lg mb-2">Aventura Matemática</h1>
-     <p id="subtitle" class="text-xl md:text-2xl text-white/90">¡Conviértete en un Maestro de las Tablas!</p>
+      <div class="text-6xl mb-4 float-animation">🚀</div>
+      <h1 id="main-title" class="title-font text-4xl md:text-6xl text-white drop-shadow-lg mb-2">Aventura Matemática</h1>
+      <p id="subtitle" class="text-xl md:text-2xl text-white/90">¡Conviértete en un Maestro de las Tablas!</p>
     </div>
     <div class="card-gradient rounded-3xl p-6 md:p-8 shadow-2xl w-full max-w-md bounce-in">
-     <div class="mb-6"><label class="block text-gray-700 font-bold mb-2 text-lg">👤 Tu nombre de héroe:</label> <input type="text" id="player-name-input" placeholder="Escribe tu nombre..." class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-lg transition-all">
-     </div><button id="start-btn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-xl shadow-lg"> 🎮 ¡Comenzar Aventura! </button> <button id="leaderboard-btn" class="btn-secondary w-full py-3 rounded-xl text-white font-bold text-lg shadow-lg mt-4"> 🏆 Ver Ranking </button>
+      <div class="mb-6">
+        <label class="block text-gray-700 font-bold mb-2 text-lg">👤 Tu nombre de héroe:</label>
+        <input type="text" id="player-name-input" placeholder="Escribe tu nombre..." class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-lg transition-all">
+      </div>
+      <button id="start-btn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-xl shadow-lg">🎮 ¡Comenzar Aventura!</button>
+      <button id="leaderboard-btn" class="btn-secondary w-full py-3 rounded-xl text-white font-bold text-lg shadow-lg mt-4">🏆 Ver Ranking</button>
     </div>
     <div class="mt-8 text-center text-white/80 text-sm max-w-md">
-     <p id="author-credit">Material creado con ❤️ por la Maestra María Fernanda Flores Valenzuela</p><button id="terms-btn" class="underline mt-2 hover:text-white transition-colors">📜 Términos y Condiciones</button>
+      <p id="author-credit">Material creado con ❤️ por la Maestra María Fernanda Flores Valenzuela</p>
+      <button id="terms-btn" class="underline mt-2 hover:text-white transition-colors">📜 Términos y Condiciones</button>
     </div>
-   </div><!-- Pantalla de Selección de Tablas -->
-   <div id="select-screen" class="screen flex-col items-center justify-center p-4 min-h-full">
-    <div class="text-center mb-6">
-     <h2 class="title-font text-3xl md:text-4xl text-white drop-shadow-lg mb-2">Elige tus Tablas</h2>
-     <p id="player-greeting" class="text-xl text-white/90">¡Hola, Campeón!</p>
-    </div>
-    <div class="card-gradient rounded-3xl p-6 shadow-2xl w-full max-w-lg">
-     <div class="grid grid-cols-5 gap-3 mb-6"><button class="table-btn table-select-btn bg-gradient-to-br from-red-400 to-red-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="1">1</button> <button class="table-btn table-select-btn bg-gradient-to-br from-orange-400 to-orange-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="2">2</button> <button class="table-btn table-select-btn bg-gradient-to-br from-yellow-400 to-yellow-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="3">3</button> <button class="table-btn table-select-btn bg-gradient-to-br from-green-400 to-green-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="4">4</button> <button class="table-btn table-select-btn bg-gradient-to-br from-teal-400 to-teal-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="5">5</button> <button class="table-btn table-select-btn bg-gradient-to-br from-cyan-400 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="6">6</button> <button class="table-btn table-select-btn bg-gradient-to-br from-blue-400 to-blue-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="7">7</button> <button class="table-btn table-select-btn bg-gradient-to-br from-indigo-400 to-indigo-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="8">8</button> <button class="table-btn table-select-btn bg-gradient-to-br from-purple-400 to-purple-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="9">9</button> <button class="table-btn table-select-btn bg-gradient-to-br from-pink-400 to-pink-500 text-white font-bold py-3 rounded-xl shadow-md" data-table="10">10</button>
-     </div><button id="select-all-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold shadow-lg mb-4 transition-all hover:scale-105"> ⭐ Seleccionar Todas </button>
-     <div class="flex gap-3"><button id="back-to-welcome" class="flex-1 py-3 rounded-xl bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition-all"> ← Volver </button> <button id="play-btn" class="flex-1 btn-primary py-3 rounded-xl text-white font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled> 🎯 ¡Jugar! </button>
-     </div>
-    </div>
-   </div><!-- Pantalla de Juego -->
-   <div id="game-screen" class="screen flex-col items-center p-4 min-h-full"><!-- Header del Juego -->
-    <div class="w-full max-w-lg mb-4">
-     <div class="card-gradient rounded-2xl p-4 shadow-xl">
-      <div class="flex justify-between items-center mb-3">
-       <div class="flex items-center gap-1" id="lives-container"><span class="life-heart text-2xl">❤️</span> <span class="life-heart text-2xl">❤️</span> <span class="life-heart text-2xl">❤️</span>
-       </div>
-       <div id="combo-display" class="combo-badge px-3 py-1 rounded-full text-white font-bold text-sm hidden">
-        🔥 x<span id="combo-count">0</span>
-       </div>
-       <div class="text-right">
-        <div class="text-2xl font-bold text-purple-600" id="score-display">
-         0
-        </div>
-        <div class="text-xs text-gray-500">
-         puntos
-        </div>
-       </div>
-      </div><!-- Barra de tiempo -->
-      <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-       <div id="time-bar" class="progress-bar h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full" style="width: 100%"></div>
-      </div>
-      <div class="text-center text-sm text-gray-500 mt-1"><span id="time-display">10</span>s
-      </div>
-     </div>
-    </div><!-- Pregunta -->
-    <div class="card-gradient rounded-3xl p-6 md:p-8 shadow-2xl w-full max-w-lg mb-4">
-     <div class="text-center">
-      <div class="text-6xl mb-4" id="question-emoji">
-       🤔
-      </div>
-      <div class="title-font text-4xl md:text-5xl text-gray-800 mb-2" id="question-display"><span id="num1">?</span> × <span id="num2">?</span> = ?
-      </div>
-      <div class="text-gray-500" id="question-counter">
-       Pregunta 1 de 10
-      </div>
-     </div>
-    </div><!-- Opciones de Respuesta -->
-    <div class="grid grid-cols-2 gap-4 w-full max-w-lg" id="answers-container"><button class="answer-btn card-gradient py-6 rounded-2xl text-3xl font-bold text-gray-700 shadow-lg" data-answer="0">?</button> <button class="answer-btn card-gradient py-6 rounded-2xl text-3xl font-bold text-gray-700 shadow-lg" data-answer="1">?</button> <button class="answer-btn card-gradient py-6 rounded-2xl text-3xl font-bold text-gray-700 shadow-lg" data-answer="2">?</button> <button class="answer-btn card-gradient py-6 rounded-2xl text-3xl font-bold text-gray-700 shadow-lg" data-answer="3">?</button>
-    </div><!-- Feedback -->
-    <div id="feedback-display" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl hidden bounce-in z-50"></div>
-   </div><!-- Pantalla de Resultados -->
-   <div id="results-screen" class="screen flex-col items-center justify-center p-4 min-h-full">
-    <div class="text-center mb-6">
-     <div class="text-8xl mb-4" id="result-emoji">
-      🏆
-     </div>
-     <h2 class="title-font text-3xl md:text-4xl text-white drop-shadow-lg" id="result-title">¡Increíble!</h2>
-    </div>
-    <div class="card-gradient rounded-3xl p-6 md:p-8 shadow-2xl w-full max-w-md">
-     <div class="text-center mb-6">
-      <div class="text-5xl font-bold text-purple-600 mb-2" id="final-score">
-       0
-      </div>
-      <div class="text-gray-500">
-       Puntos Obtenidos
-      </div>
-     </div>
-     <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="text-center p-3 bg-green-100 rounded-xl">
-       <div class="text-2xl font-bold text-green-600" id="correct-count">
-        0
-       </div>
-       <div class="text-xs text-green-700">
-        Correctas
-       </div>
-      </div>
-      <div class="text-center p-3 bg-red-100 rounded-xl">
-       <div class="text-2xl font-bold text-red-600" id="wrong-count">
-        0
-       </div>
-       <div class="text-xs text-red-700">
-        Incorrectas
-       </div>
-      </div>
-      <div class="text-center p-3 bg-yellow-100 rounded-xl">
-       <div class="text-2xl font-bold text-yellow-600" id="max-combo">
-        0
-       </div>
-       <div class="text-xs text-yellow-700">
-        Combo Máx
-       </div>
-      </div>
-     </div>
-     <div class="text-center mb-4 p-3 bg-purple-100 rounded-xl">
-      <div class="text-lg font-bold text-purple-600">
-       ⭐ Estrellas ganadas: <span id="stars-earned">0</span>
-      </div>
-     </div>
-     <div id="new-record" class="text-center mb-4 p-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl hidden">
-      <div class="text-xl font-bold text-white">
-       🎉 ¡NUEVO RÉCORD!
-      </div>
-     </div>
-     <div class="flex flex-col gap-3"><button id="play-again-btn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-xl shadow-lg"> 🔄 Jugar de Nuevo </button> <button id="change-tables-btn" class="btn-secondary w-full py-3 rounded-xl text-white font-bold shadow-lg"> 📚 Cambiar Tablas </button> <button id="view-ranking-btn" class="w-full py-3 rounded-xl bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition-all"> 🏆 Ver Ranking </button>
-     </div>
-    </div>
-    <div class="mt-6 text-center text-white/80 text-sm">
-     <p id="author-credit-results">Material creado con ❤️ por la Maestra María Fernanda Flores Valenzuela</p>
-    </div>
-   </div><!-- Pantalla de Ranking -->
-   <div id="leaderboard-screen" class="screen flex-col items-center p-4 min-h-full">
-    <div class="text-center mb-6">
-     <div class="text-6xl mb-2">
-      🏆
-     </div>
-     <h2 class="title-font text-3xl md:text-4xl text-white drop-shadow-lg">Ranking de Campeones</h2>
-    </div>
-    <div class="card-gradient rounded-3xl p-6 shadow-2xl w-full max-w-md">
-     <div id="leaderboard-list" class="space-y-3 mb-6 max-h-80 overflow-y-auto">
-      <div class="text-center text-gray-500 py-8">
-       <div class="text-4xl mb-2">
-        📊
-       </div>
-       <p>¡Sé el primero en el ranking!</p>
-      </div>
-     </div><button id="back-from-leaderboard" class="w-full py-3 rounded-xl bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition-all"> ← Volver al Inicio </button>
-    </div>
-   </div><!-- Modal de Términos y Condiciones -->
-   <div id="terms-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 hidden z-50">
-    <div class="card-gradient rounded-3xl p-6 md:p-8 shadow-2xl w-full max-w-lg max-h-[80%] overflow-y-auto">
-     <h3 class="title-font text-2xl text-purple-600 mb-4">📜 Términos y Condiciones de Uso</h3>
-     <div class="text-gray-700 space-y-4 text-sm">
-      <div class="bg-purple-50 p-4 rounded-xl">
-       <h4 class="font-bold text-purple-700 mb-2">1. Propiedad Intelectual</h4>
-       <p>Este material educativo es propiedad exclusiva de la <strong>Maestra María Fernanda Flores Valenzuela</strong>. Todos los derechos están reservados. Queda estrictamente prohibida la reproducción, distribución, modificación o uso no autorizado de este contenido.</p>
-      </div>
-      <div class="bg-blue-50 p-4 rounded-xl">
-       <h4 class="font-bold text-blue-700 mb-2">2. Uso Permitido</h4>
-       <p>Este recurso está diseñado exclusivamente para uso personal y educativo. Los usuarios que hayan adquirido legalmente este material podrán:</p>
-       <ul class="list-disc ml-4 mt-2 space-y-1">
-        <li>Utilizarlo con sus propios alumnos en el aula</li>
-        <li>Emplearlo como herramienta de estudio personal</li>
-        <li>Proyectarlo durante sesiones de clase</li>
-       </ul>
-      </div>
-      <div class="bg-red-50 p-4 rounded-xl">
-       <h4 class="font-bold text-red-700 mb-2">3. Restricciones</h4>
-       <p>Queda expresamente prohibido:</p>
-       <ul class="list-disc ml-4 mt-2 space-y-1">
-        <li>Vender, revender o comercializar este material</li>
-        <li>Compartir o distribuir a terceros, incluyendo otros docentes</li>
-        <li>Modificar, adaptar o crear obras derivadas</li>
-        <li>Eliminar o alterar las marcas de autoría</li>
-        <li>Reclamar autoría sobre este contenido</li>
-       </ul>
-      </div>
-      <div class="bg-green-50 p-4 rounded-xl">
-       <h4 class="font-bold text-green-700 mb-2">4. Atribución</h4>
-       <p>En todo momento debe mantenerse visible el crédito a la autora original. No está permitido el plagio ni la apropiación indebida de este recurso educativo.</p>
-      </div>
-      <div class="bg-yellow-50 p-4 rounded-xl">
-       <h4 class="font-bold text-yellow-700 mb-2">5. Consecuencias del Incumplimiento</h4>
-       <p>El uso indebido de este material constituye una violación a los derechos de autor y puede conllevar acciones legales conforme a la legislación vigente en materia de propiedad intelectual.</p>
-      </div>
-     </div><button id="close-terms" class="w-full mt-6 py-3 rounded-xl bg-purple-500 text-white font-bold hover:bg-purple-600 transition-all"> ✓ Entendido </button>
-    </div>
-   </div>
   </div>
-  <script>
-    // Configuración por defecto
-    const defaultConfig = {
-      game_title: 'Aventura Matemática',
-      welcome_message: '¡Conviértete en un Maestro de las Tablas!',
-      author_name: 'Maestra María Fernanda Flores Valenzuela'
-    };
 
-    // Estado del juego
-    let gameState = {
-      playerName: '',
-      selectedTables: [],
-      currentQuestion: 0,
-      totalQuestions: 10,
-      score: 0,
-      lives: 3,
-      combo: 0,
-      maxCombo: 0,
-      correctAnswers: 0,
-      wrongAnswers: 0,
-      timeLeft: 10,
-      timer: null,
-      currentAnswer: 0,
-      questions: [],
-      isAnswering: false
-    };
+  <!-- Aquí seguiría el resto de pantallas (select-screen, game-screen, results-screen, leaderboard-screen, terms-modal) -->
+  <!-- Puedes copiar las demás secciones desde tu HTML anterior tal cual -->
 
-    // Datos de jugadores
-    let playersData = [];
+</div>
 
-    // Inicializar SDKs
-    async function initSDKs() {
-      // Element SDK
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: async (config) => {
-            document.getElementById('main-title').textContent = config.game_title || defaultConfig.game_title;
-            document.getElementById('subtitle').textContent = config.welcome_message || defaultConfig.welcome_message;
-            const authorText = `Material creado con ❤️ por la ${config.author_name || defaultConfig.author_name}`;
-            document.getElementById('author-credit').textContent = authorText;
-            document.getElementById('author-credit-results').textContent = authorText;
-          },
-          mapToCapabilities: (config) => ({
-            recolorables: [],
-            borderables: [],
-            fontEditable: undefined,
-            fontSizeable: undefined
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ['game_title', config.game_title || defaultConfig.game_title],
-            ['welcome_message', config.welcome_message || defaultConfig.welcome_message],
-            ['author_name', config.author_name || defaultConfig.author_name]
-          ])
-        });
-      }
+<script>
+  // Función del botón de Casita
+  document.getElementById('home-btn').addEventListener('click', () => {
+    // Limpiar datos si quieres reiniciar el juego
+    gameState = {...gameState, currentQuestion:0, score:0, lives:3, combo:0, maxCombo:0, correctAnswers:0, wrongAnswers:0};
+    showScreen('welcome-screen');
+  });
 
-      // Data SDK
-      if (window.dataSdk) {
-        const result = await window.dataSdk.init({
-          onDataChanged: (data) => {
-            playersData = data;
-            renderLeaderboard();
-          }
-        });
-        if (!result.isOk) {
-          console.error('Error initializing Data SDK');
-        }
-      }
-    }
+  // Función para mostrar pantalla
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+</script>
 
-    // Navegación entre pantallas
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    // Generar preguntas aleatorias
-    function generateQuestions() {
-      const questions = [];
-      const tables = gameState.selectedTables;
-      
-      for (let i = 0; i < gameState.totalQuestions; i++) {
-        const table = tables[Math.floor(Math.random() * tables.length)];
-        const multiplier = Math.floor(Math.random() * 10) + 1;
-        const answer = table * multiplier;
-        
-        // Generar opciones incorrectas
-        const wrongAnswers = new Set();
-        while (wrongAnswers.size < 3) {
-          let wrong;
-          const variation = Math.floor(Math.random() * 20) - 10;
-          wrong = answer + variation;
-          if (wrong !== answer && wrong > 0) {
-            wrongAnswers.add(wrong);
-          }
-        }
-        
-        const options = [answer, ...wrongAnswers];
-        // Mezclar opciones
-        for (let j = options.length - 1; j > 0; j--) {
-          const k = Math.floor(Math.random() * (j + 1));
-          [options[j], options[k]] = [options[k], options[j]];
-        }
-        
-        questions.push({
-          num1: table,
-          num2: multiplier,
-          answer: answer,
-          options: options
-        });
-      }
-      
-      return questions;
-    }
-
-    // Mostrar pregunta actual
-    function showQuestion() {
-      const q = gameState.questions[gameState.currentQuestion];
-      document.getElementById('num1').textContent = q.num1;
-      document.getElementById('num2').textContent = q.num2;
-      document.getElementById('question-counter').textContent = `Pregunta ${gameState.currentQuestion + 1} de ${gameState.totalQuestions}`;
-      document.getElementById('question-emoji').textContent = getRandomEmoji();
-      
-      const buttons = document.querySelectorAll('.answer-btn');
-      buttons.forEach((btn, i) => {
-        btn.textContent = q.options[i];
-        btn.disabled = false;
-        btn.className = 'answer-btn card-gradient py-6 rounded-2xl text-3xl font-bold text-gray-700 shadow-lg';
-      });
-      
-      gameState.currentAnswer = q.answer;
-      gameState.isAnswering = false;
-      startTimer();
-    }
-
-    // Emojis aleatorios para las preguntas
-    function getRandomEmoji() {
-      const emojis = ['🤔', '🧮', '💡', '🎯', '🌟', '🚀', '🎪', '🎨', '🎭', '🎬'];
-      return emojis[Math.floor(Math.random() * emojis.length)];
-    }
-
-    // Timer
-    function startTimer() {
-      gameState.timeLeft = 10;
-      updateTimerDisplay();
-      
-      if (gameState.timer) clearInterval(gameState.timer);
-      
-      gameState.timer = setInterval(() => {
-        gameState.timeLeft -= 0.1;
-        updateTimerDisplay();
-        
-        if (gameState.timeLeft <= 0) {
-          clearInterval(gameState.timer);
-          handleTimeout();
-        }
-      }, 100);
-    }
-
-    function updateTimerDisplay() {
-      const percentage = (gameState.timeLeft / 10) * 100;
-      const timeBar = document.getElementById('time-bar');
-      timeBar.style.width = percentage + '%';
-      
-      // Cambiar color según el tiempo
-      if (percentage > 50) {
-        timeBar.className = 'progress-bar h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full';
-      } else if (percentage > 25) {
-        timeBar.className = 'progress-bar h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full';
-      } else {
-        timeBar.className = 'progress-bar h-full bg-gradient-to-r from-red-400 to-red-500 rounded-full';
-      }
-      
-      document.getElementById('time-display').textContent = Math.ceil(gameState.timeLeft);
-    }
-
-    function handleTimeout() {
-      if (gameState.isAnswering) return;
-      gameState.isAnswering = true;
-      
-      loseLife();
-      showFeedback(false);
-      
-      setTimeout(() => {
-        nextQuestion();
-      }, 1000);
-    }
-
-    // Manejar respuesta
-    function handleAnswer(selectedAnswer) {
-      if (gameState.isAnswering) return;
-      gameState.isAnswering = true;
-      
-      clearInterval(gameState.timer);
-      
-      const isCorrect = selectedAnswer === gameState.currentAnswer;
-      
-      // Deshabilitar botones
-      document.querySelectorAll('.answer-btn').forEach(btn => {
-        btn.disabled = true;
-        if (parseInt(btn.textContent) === gameState.currentAnswer) {
-          btn.classList.add('bg-green-400');
-          btn.classList.remove('card-gradient');
-        } else if (parseInt(btn.textContent) === selectedAnswer && !isCorrect) {
-          btn.classList.add('bg-red-400');
-          btn.classList.remove('card-gradient');
-          btn.classList.add('shake');
-        }
-      });
-      
-      if (isCorrect) {
-        gameState.combo++;
-        if (gameState.combo > gameState.maxCombo) {
-          gameState.maxCombo = gameState.combo;
-        }
-        
-        // Puntos base + bonus por tiempo + bonus por combo
-        const timeBonus = Math.floor(gameState.timeLeft * 5);
-        const comboBonus = (gameState.combo - 1) * 10;
-        const points = 100 + timeBonus + comboBonus;
-        
-        gameState.score += points;
-        gameState.correctAnswers++;
-        
-        updateScoreDisplay();
-        updateComboDisplay();
-        showFeedback(true);
-        createStarParticles();
-      } else {
-        gameState.combo = 0;
-        gameState.wrongAnswers++;
-        updateComboDisplay();
-        loseLife();
-        showFeedback(false);
-      }
-      
-      setTimeout(() => {
-        nextQuestion();
-      }, 1200);
-    }
-
-    function updateScoreDisplay() {
-      document.getElementById('score-display').textContent = gameState.score;
-    }
-
-    function updateComboDisplay() {
-      const comboDisplay = document.getElementById('combo-display');
-      if (gameState.combo >= 2) {
-        comboDisplay.classList.remove('hidden');
-        document.getElementById('combo-count').textContent = gameState.combo;
-      } else {
-        comboDisplay.classList.add('hidden');
-      }
-    }
-
-    function showFeedback(isCorrect) {
-      const feedback = document.getElementById('feedback-display');
-      feedback.textContent = isCorrect ? '✅' : '❌';
-      feedback.classList.remove('hidden');
-      feedback.classList.add('bounce-in');
-      
-      setTimeout(() => {
-        feedback.classList.add('hidden');
-        feedback.classList.remove('bounce-in');
-      }, 800);
-    }
-
-    function createStarParticles() {
-      const container = document.getElementById('game-screen');
-      for (let i = 0; i < 5; i++) {
-        const star = document.createElement('div');
-        star.className = 'star-particle';
-        star.textContent = '⭐';
-        star.style.left = `${Math.random() * 80 + 10}%`;
-        star.style.top = `${Math.random() * 60 + 20}%`;
-        container.appendChild(star);
-        
-        setTimeout(() => star.remove(), 600);
-      }
-    }
-
-    function loseLife() {
-      gameState.lives--;
-      const hearts = document.querySelectorAll('.life-heart');
-      if (hearts[gameState.lives]) {
-        hearts[gameState.lives].classList.add('lost');
-      }
-      
-      if (gameState.lives <= 0) {
-        setTimeout(() => endGame(), 500);
-      }
-    }
-
-    function nextQuestion() {
-      if (gameState.lives <= 0) return;
-      
-      gameState.currentQuestion++;
-      
-      if (gameState.currentQuestion >= gameState.totalQuestions) {
-        endGame();
-      } else {
-        showQuestion();
-      }
-    }
-
-    // Fin del juego
-    async function endGame() {
-      clearInterval(gameState.timer);
-      
-      // Calcular estrellas
-      const percentage = (gameState.correctAnswers / gameState.totalQuestions) * 100;
-      let stars = 0;
-      if (percentage >= 90) stars = 3;
-      else if (percentage >= 70) stars = 2;
-      else if (percentage >= 50) stars = 1;
-      
-      // Mostrar resultados
-      document.getElementById('final-score').textContent = gameState.score;
-      document.getElementById('correct-count').textContent = gameState.correctAnswers;
-      document.getElementById('wrong-count').textContent = gameState.wrongAnswers;
-      document.getElementById('max-combo').textContent = gameState.maxCombo;
-      document.getElementById('stars-earned').textContent = stars;
-      
-      // Emoji según rendimiento
-      let resultEmoji = '😊';
-      let resultTitle = '¡Buen intento!';
-      
-      if (percentage >= 90) {
-        resultEmoji = '🏆';
-        resultTitle = '¡LEGENDARIO!';
-        createConfetti();
-      } else if (percentage >= 70) {
-        resultEmoji = '🌟';
-        resultTitle = '¡Excelente!';
-      } else if (percentage >= 50) {
-        resultEmoji = '👍';
-        resultTitle = '¡Bien hecho!';
-      } else {
-        resultEmoji = '💪';
-        resultTitle = '¡Sigue practicando!';
-      }
-      
-      document.getElementById('result-emoji').textContent = resultEmoji;
-      document.getElementById('result-title').textContent = resultTitle;
-      
-      // Guardar puntuación
-      await saveScore(stars);
-      
-      showScreen('results-screen');
-    }
-
-    async function saveScore(stars) {
-      if (!window.dataSdk) return;
-      
-      const existingPlayer = playersData.find(p => p.player_name === gameState.playerName);
-      
-      if (existingPlayer) {
-        const isNewRecord = gameState.score > existingPlayer.high_score;
-        if (isNewRecord) {
-          document.getElementById('new-record').classList.remove('hidden');
-        }
-        
-        const result = await window.dataSdk.update({
-          ...existingPlayer,
-          high_score: Math.max(existingPlayer.high_score, gameState.score),
-          total_stars: existingPlayer.total_stars + stars,
-          games_played: existingPlayer.games_played + 1
-        });
-        
-        if (!result.isOk) {
-          console.error('Error updating score');
-        }
-      } else {
-        if (playersData.length >= 999) {
-          console.error('Maximum players reached');
-          return;
-        }
-        
-        const result = await window.dataSdk.create({
-          player_name: gameState.playerName,
-          high_score: gameState.score,
-          total_stars: stars,
-          games_played: 1,
-          created_at: new Date().toISOString()
-        });
-        
-        if (!result.isOk) {
-          console.error('Error saving score');
-        }
-      }
-    }
-
-    // Confetti para celebración
-    function createConfetti() {
-      const colors = ['#ff6b6b', '#4facfe', '#f093fb', '#feca57', '#48dbfb', '#ff9ff3'];
-      
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-          const confetti = document.createElement('div');
-          confetti.className = 'confetti';
-          confetti.style.left = Math.random() * 100 + '%';
-          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear forwards`;
-          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-          document.body.appendChild(confetti);
-          
-          setTimeout(() => confetti.remove(), 4000);
-        }, i * 50);
-      }
-    }
-
-    // Renderizar leaderboard
-    function renderLeaderboard() {
-      const container = document.getElementById('leaderboard-list');
-      
-      if (playersData.length === 0) {
-        container.innerHTML = `
-          <div class="text-center text-gray-500 py-8">
-            <div class="text-4xl mb-2">📊</div>
-            <p>¡Sé el primero en el ranking!</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Ordenar por high_score
-      const sorted = [...playersData].sort((a, b) => b.high_score - a.high_score);
-      
-      container.innerHTML = sorted.slice(0, 10).map((player, index) => {
-        const medals = ['🥇', '🥈', '🥉'];
-        const medal = index < 3 ? medals[index] : `${index + 1}.`;
-        const bgColor = index === 0 ? 'bg-yellow-100' : index === 1 ? 'bg-gray-100' : index === 2 ? 'bg-orange-100' : 'bg-white';
-        
-        return `
-          <div class="leaderboard-row ${bgColor} p-3 rounded-xl flex items-center gap-3">
-            <span class="text-2xl">${medal}</span>
-            <div class="flex-1">
-              <div class="font-bold text-gray-800">${player.player_name}</div>
-              <div class="text-xs text-gray-500">${player.games_played} partidas • ⭐ ${player.total_stars}</div>
-            </div>
-            <div class="text-right">
-              <div class="font-bold text-purple-600">${player.high_score}</div>
-              <div class="text-xs text-gray-500">pts</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Reiniciar juego
-    function resetGame() {
-      gameState.currentQuestion = 0;
-      gameState.score = 0;
-      gameState.lives = 3;
-      gameState.combo = 0;
-      gameState.maxCombo = 0;
-      gameState.correctAnswers = 0;
-      gameState.wrongAnswers = 0;
-      gameState.isAnswering = false;
-      
-      // Restaurar corazones
-      document.querySelectorAll('.life-heart').forEach(h => h.classList.remove('lost'));
-      document.getElementById('new-record').classList.add('hidden');
-      updateScoreDisplay();
-      updateComboDisplay();
-    }
-
-    // Event Listeners
-    document.getElementById('start-btn').addEventListener('click', () => {
-      const name = document.getElementById('player-name-input').value.trim();
-      if (!name) {
-        document.getElementById('player-name-input').classList.add('shake');
-        setTimeout(() => document.getElementById('player-name-input').classList.remove('shake'), 500);
-        return;
-      }
-      gameState.playerName = name;
-      document.getElementById('player-greeting').textContent = `¡Hola, ${name}!`;
-      showScreen('select-screen');
-    });
-
-    document.getElementById('leaderboard-btn').addEventListener('click', () => {
-      showScreen('leaderboard-screen');
-    });
-
-    document.getElementById('back-to-welcome').addEventListener('click', () => {
-      showScreen('welcome-screen');
-    });
-
-    document.getElementById('back-from-leaderboard').addEventListener('click', () => {
-      showScreen('welcome-screen');
-    });
-
-    // Selección de tablas
-    document.querySelectorAll('.table-select-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const table = parseInt(btn.dataset.table);
-        const index = gameState.selectedTables.indexOf(table);
-        
-        if (index > -1) {
-          gameState.selectedTables.splice(index, 1);
-          btn.classList.remove('selected');
-        } else {
-          gameState.selectedTables.push(table);
-          btn.classList.add('selected');
-        }
-        
-        document.getElementById('play-btn').disabled = gameState.selectedTables.length === 0;
-      });
-    });
-
-    document.getElementById('select-all-btn').addEventListener('click', () => {
-      gameState.selectedTables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      document.querySelectorAll('.table-select-btn').forEach(btn => btn.classList.add('selected'));
-      document.getElementById('play-btn').disabled = false;
-    });
-
-    document.getElementById('play-btn').addEventListener('click', () => {
-      resetGame();
-      gameState.questions = generateQuestions();
-      showScreen('game-screen');
-      showQuestion();
-    });
-
-    // Respuestas
-    document.querySelectorAll('.answer-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const answer = parseInt(btn.textContent);
-        handleAnswer(answer);
-      });
-    });
-
-    // Botones de resultados
-    document.getElementById('play-again-btn').addEventListener('click', () => {
-      resetGame();
-      gameState.questions = generateQuestions();
-      showScreen('game-screen');
-      showQuestion();
-    });
-
-    document.getElementById('change-tables-btn').addEventListener('click', () => {
-      gameState.selectedTables = [];
-      document.querySelectorAll('.table-select-btn').forEach(btn => btn.classList.remove('selected'));
-      document.getElementById('play-btn').disabled = true;
-      showScreen('select-screen');
-    });
-
-    document.getElementById('view-ranking-btn').addEventListener('click', () => {
-      showScreen('leaderboard-screen');
-    });
-
-    // Modal de términos
-    document.getElementById('terms-btn').addEventListener('click', () => {
-      document.getElementById('terms-modal').classList.remove('hidden');
-    });
-
-    document.getElementById('close-terms').addEventListener('click', () => {
-      document.getElementById('terms-modal').classList.add('hidden');
-    });
-
-    document.getElementById('terms-modal').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('terms-modal')) {
-        document.getElementById('terms-modal').classList.add('hidden');
-      }
-    });
-
-    // Permitir Enter para iniciar
-    document.getElementById('player-name-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        document.getElementById('start-btn').click();
-      }
-    });
-
-    // Inicializar
-    initSDKs();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d11c8d383d22f11',t:'MTc3MTYzMDE0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
