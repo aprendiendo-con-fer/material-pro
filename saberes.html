@@ -14,6 +14,8 @@
   background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 25%, #3B82F6 50%, #EC4899 75%, #F472B6 100%);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+  padding-bottom: 40px; /* espacio abajo */
 }
 
 @keyframes gradientShift {
@@ -47,6 +49,11 @@
   font-weight: bold;
   text-decoration: none;
 }
+
+.back-btn.right {
+  left: auto;
+  right: 20px;
+}
 </style>
 
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -55,42 +62,44 @@
 <body class="h-full">
 <div class="h-full w-full animated-bg overflow-auto">
 
-<a href="index.html" class="back-btn">⬅ Volver</a>
+  <!-- Botones de navegación -->
+  <a href="index.html" class="back-btn">⬅ Volver</a>
+  <a href="index.html" class="back-btn right">🏠 Inicio</a>
 
-<div class="min-h-full w-full flex flex-col items-center justify-center px-4 py-12">
+  <div class="min-h-full w-full flex flex-col items-center justify-center px-4 py-12">
 
-<h1 class="text-5xl font-bold text-white mb-10 text-center">
-🔬 Saberes y Pensamiento Científico
-</h1>
+    <h1 class="text-5xl font-bold text-white mb-10 text-center">
+      🔬 Saberes y Pensamiento Científico
+    </h1>
 
-<div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl">
 
-<a href="fraccionespizzas.html"
-class="game-btn rounded-2xl p-8 text-white font-bold text-center"
-style="--btn-from:#60A5FA; --btn-to:#3B82F6;">
-🍕 Fracciones
-</a>
+      <a href="fraccionespizzas.html"
+         class="game-btn rounded-2xl p-8 text-white font-bold text-center w-full sm:w-auto"
+         style="--btn-from:#60A5FA; --btn-to:#3B82F6;">
+         🍕 Fracciones
+      </a>
 
-<a href="tablasdemultiplicar.html"
-class="game-btn rounded-2xl p-8 text-white font-bold text-center"
-style="--btn-from:#34D399; --btn-to:#10B981;">
-✖️ Tablas
-</a>
+      <a href="tablasdemultiplicar.html"
+         class="game-btn rounded-2xl p-8 text-white font-bold text-center w-full sm:w-auto"
+         style="--btn-from:#34D399; --btn-to:#10B981;">
+         ✖️ Tablas
+      </a>
 
-<a href="tiendita.html"
-class="game-btn rounded-2xl p-8 text-white font-bold text-center"
-style="--btn-from:#FBBF24; --btn-to:#F59E0B;">
-🛒 Tiendita
-</a>
+      <a href="tiendita.html"
+         class="game-btn rounded-2xl p-8 text-white font-bold text-center w-full sm:w-auto"
+         style="--btn-from:#FBBF24; --btn-to:#F59E0B;">
+         🛒 Tiendita
+      </a>
 
-<a href="matemontesori.html"
-class="game-btn rounded-2xl p-8 text-white font-bold text-center"
-style="--btn-from:#A78BFA; --btn-to:#8B5CF6;">
-🔢 Matemontesori
-</a>
+      <a href="matemontesori.html"
+         class="game-btn rounded-2xl p-8 text-white font-bold text-center w-full sm:w-auto"
+         style="--btn-from:#A78BFA; --btn-to:#8B5CF6;">
+         🔢 Matemontesori
+      </a>
 
-</div>
-</div>
+    </div>
+  </div>
 </div>
 </body>
 </html>
