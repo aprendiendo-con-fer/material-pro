@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aventura por México</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Comic+Neue:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Fredoka', 'Comic Neue', cursive; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(255, 193, 7, 0.8); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .bounce-in { animation: bounce-in 0.5s ease-out forwards; }
+    .shake { animation: shake 0.5s ease-in-out; }
+    
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      animation: confetti 3s ease-in-out forwards;
+    }
+    
+    .aztec-pattern {
+      background-image: 
+        linear-gradient(45deg, rgba(212, 175, 55, 0.1) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(212, 175, 55, 0.1) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(212, 175, 55, 0.1) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(212, 175, 55, 0.1) 75%);
+      background-size: 20px 20px;
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #006847 0%, #004d35 100%);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #007a54 0%, #005c3f 100%);
+      transform: scale(1.05);
+    }
+    
+    .option-btn {
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .option-btn:disabled {
+      cursor: not-allowed;
+    }
+    .option-correct {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+      color: white !important;
+    }
+    .option-incorrect {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      color: white !important;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full bg-gradient-to-br from-emerald-800 via-emerald-700 to-green-900 aztec-pattern"><!-- Pantalla de Inicio -->
+   <div id="start-screen" class="min-h-full flex flex-col items-center justify-center p-6">
+    <div class="text-center max-w-2xl"><!-- Bandera decorativa -->
+     <div class="flex justify-center gap-1 mb-6">
+      <div class="w-8 h-24 bg-green-600 rounded-t-lg shadow-lg"></div>
+      <div class="w-8 h-24 bg-white rounded-t-lg shadow-lg flex items-center justify-center"><span class="text-2xl">🦅</span>
+      </div>
+      <div class="w-8 h-24 bg-red-600 rounded-t-lg shadow-lg"></div>
+     </div>
+     <h1 id="main-title" class="text-5xl md:text-6xl font-bold text-yellow-400 drop-shadow-lg mb-4 float-animation">🇲🇽 Aventura por México 🇲🇽</h1>
+     <p id="welcome-text" class="text-2xl text-white mb-2">¡Aprende jugando!</p>
+     <p class="text-lg text-emerald-200 mb-8">Descubre la increíble historia de nuestro país</p><!-- Personajes -->
+     <div class="flex justify-center gap-4 mb-8">
+      <div class="text-6xl float-animation" style="animation-delay: 0.2s;">
+       🌮
+      </div>
+      <div class="text-6xl float-animation" style="animation-delay: 0.4s;">
+       🎭
+      </div>
+      <div class="text-6xl float-animation" style="animation-delay: 0.6s;">
+       🌵
+      </div>
+      <div class="text-6xl float-animation" style="animation-delay: 0.8s;">
+       🦜
+      </div>
+     </div><!-- Formulario de nombre -->
+     <div class="bg-white/95 rounded-3xl p-8 shadow-2xl max-w-md mx-auto"><label for="player-name" class="block text-emerald-800 text-xl font-semibold mb-3"> ¿Cómo te llamas, pequeño explorador? 🌟 </label> <input type="text" id="player-name" placeholder="Escribe tu nombre aquí..." class="w-full px-6 py-4 text-xl border-3 border-emerald-300 rounded-2xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-200 text-center"> <button id="start-btn" class="btn-primary w-full mt-6 py-4 text-2xl font-bold text-white rounded-2xl shadow-lg pulse-glow"> 🚀 ¡Comenzar Aventura! 🚀 </button>
+     </div><!-- Créditos -->
+     <div class="mt-8 bg-amber-100 rounded-2xl p-4 inline-block shadow-lg">
+      <p class="text-amber-800 font-semibold">💝 Material elaborado con amor por:</p>
+      <p id="teacher-credit" class="text-amber-900 font-bold text-lg">Mtra. María Fernanda Flores Valenzuela</p>
+     </div>
+    </div>
+   </div><!-- Pantalla de Juego -->
+   <div id="game-screen" class="hidden min-h-full p-4 md:p-6"><!-- Header del juego -->
+    <div class="bg-white/95 rounded-2xl p-4 mb-4 shadow-xl flex flex-wrap justify-between items-center gap-4">
+     <div class="flex items-center gap-3"><span class="text-3xl">🎮</span>
+      <div>
+       <p class="text-emerald-800 font-bold text-lg" id="player-display">Jugador</p>
+       <p class="text-emerald-600 text-sm" id="level-display">Nivel 1</p>
+      </div>
+     </div>
+     <div class="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-xl"><span class="text-2xl">⭐</span> <span id="score-display" class="text-2xl font-bold text-yellow-600">0</span> <span class="text-yellow-600 font-semibold">puntos</span>
+     </div>
+     <div class="flex items-center gap-2 bg-red-100 px-4 py-2 rounded-xl"><span class="text-2xl">❤️</span> <span id="lives-display" class="text-2xl font-bold text-red-600">3</span>
+     </div>
+    </div><!-- Área de pregunta -->
+    <div class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-2xl max-w-4xl mx-auto"><!-- Indicador de época -->
+     <div id="era-badge" class="inline-flex items-center gap-2 bg-emerald-100 px-4 py-2 rounded-full mb-4"><span id="era-icon" class="text-2xl">🏛️</span> <span id="era-name" class="text-emerald-800 font-bold">Época Prehispánica</span>
+     </div><!-- Pregunta -->
+     <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-6 mb-6">
+      <p class="text-sm text-emerald-600 font-semibold mb-2">Pregunta <span id="question-number">1</span> de <span id="total-questions">10</span></p>
+      <h2 id="question-text" class="text-xl md:text-2xl font-bold text-emerald-900 leading-relaxed">¿Pregunta aquí?</h2>
+     </div><!-- Imagen de la pregunta -->
+     <div id="question-image" class="text-center mb-6"><span class="text-8xl">🏛️</span>
+     </div><!-- Opciones -->
+     <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><!-- Las opciones se generan dinámicamente -->
+     </div><!-- Retroalimentación -->
+     <div id="feedback" class="hidden rounded-2xl p-6 text-center">
+      <p id="feedback-text" class="text-xl font-bold mb-2"></p>
+      <p id="feedback-detail" class="text-lg"></p>
+     </div><!-- Botón siguiente --> <button id="next-btn" class="hidden btn-primary w-full py-4 text-xl font-bold text-white rounded-2xl shadow-lg"> Siguiente Pregunta ➡️ </button>
+    </div><!-- Barra de progreso -->
+    <div class="max-w-4xl mx-auto mt-4">
+     <div class="bg-white/30 rounded-full h-4 overflow-hidden">
+      <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+     </div>
+    </div>
+   </div><!-- Pantalla de Resultados -->
+   <div id="results-screen" class="hidden min-h-full flex flex-col items-center justify-center p-6">
+    <div class="bg-white/95 rounded-3xl p-8 md:p-12 shadow-2xl max-w-2xl text-center">
+     <div id="result-icon" class="text-9xl mb-6">
+      🏆
+     </div>
+     <h2 id="result-title" class="text-4xl font-bold text-emerald-800 mb-4">¡Felicidades!</h2>
+     <p id="result-message" class="text-xl text-emerald-600 mb-6"></p>
+     <div class="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl p-6 mb-6">
+      <p class="text-lg text-amber-800 mb-2">Tu puntuación final:</p>
+      <p id="final-score" class="text-5xl font-bold text-yellow-600">0</p>
+      <p class="text-amber-600">puntos</p>
+     </div>
+     <div class="flex flex-col gap-4"><button id="play-again-btn" class="btn-primary py-4 text-xl font-bold text-white rounded-2xl shadow-lg"> 🔄 Jugar de Nuevo </button> <button id="home-btn" class="bg-gray-200 hover:bg-gray-300 py-4 text-xl font-bold text-gray-700 rounded-2xl transition-all"> 🏠 Volver al Inicio </button>
+     </div><!-- Mejores puntuaciones -->
+     <div id="high-scores" class="mt-8 bg-emerald-50 rounded-2xl p-6">
+      <h3 class="text-xl font-bold text-emerald-800 mb-4">🌟 Mejores Exploradores 🌟</h3>
+      <div id="scores-list" class="space-y-2"><!-- Se llena dinámicamente -->
+      </div>
+     </div><!-- Créditos finales -->
+     <div class="mt-6 bg-amber-100 rounded-2xl p-4">
+      <p class="text-amber-800 font-semibold">💝 Material elaborado con amor por:</p>
+      <p id="teacher-credit-final" class="text-amber-900 font-bold">Mtra. María Fernanda Flores Valenzuela</p>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Configuración por defecto
+    const defaultConfig = {
+      game_title: "Aventura por México",
+      teacher_name: "Mtra. María Fernanda Flores Valenzuela",
+      welcome_message: "¡Aprende jugando!",
+      background_color: "#047857",
+      surface_color: "#ffffff",
+      text_color: "#064e3b",
+      primary_action_color: "#006847",
+      secondary_action_color: "#fbbf24",
+      font_family: "Fredoka",
+      font_size: 16
+    };
+
+    // Preguntas del juego sobre historia de México
+    const questions = [
+      {
+        era: "Época Prehispánica",
+        eraIcon: "🏛️",
+        question: "¿Cómo se llamaba la capital del Imperio Azteca?",
+        options: ["Tenochtitlan", "Palenque", "Chichen Itzá", "Tulum"],
+        correct: 0,
+        image: "🏛️",
+        explanation: "¡Correcto! Tenochtitlan fue la gran capital azteca, fundada en 1325 sobre un lago."
+      },
+      {
+        era: "Época Prehispánica",
+        eraIcon: "🌽",
+        question: "¿Qué civilización construyó las famosas pirámides de Chichen Itzá?",
+        options: ["Los Aztecas", "Los Mayas", "Los Olmecas", "Los Toltecas"],
+        correct: 1,
+        image: "🔺",
+        explanation: "¡Muy bien! Los Mayas construyeron Chichen Itzá, una de las 7 maravillas del mundo moderno."
+      },
+      {
+        era: "Época Prehispánica",
+        eraIcon: "🦅",
+        question: "¿Qué ave aparece en el escudo de México devorando una serpiente?",
+        options: ["Un cóndor", "Un águila", "Un halcón", "Un quetzal"],
+        correct: 1,
+        image: "🦅",
+        explanation: "¡Exacto! El águila sobre un nopal devorando una serpiente es nuestro símbolo nacional."
+      },
+      {
+        era: "La Conquista",
+        eraIcon: "⚔️",
+        question: "¿Quién fue el conquistador español que llegó a México en 1519?",
+        options: ["Cristóbal Colón", "Hernán Cortés", "Francisco Pizarro", "Pedro de Alvarado"],
+        correct: 1,
+        image: "🚢",
+        explanation: "¡Correcto! Hernán Cortés llegó a México en 1519 y conquistó el imperio azteca."
+      },
+      {
+        era: "La Conquista",
+        eraIcon: "👸",
+        question: "¿Cómo se llamaba la mujer indígena que ayudó como traductora a los españoles?",
+        options: ["Sor Juana", "La Malinche", "Josefa Ortiz", "Leona Vicario"],
+        correct: 1,
+        image: "👩",
+        explanation: "¡Muy bien! La Malinche, también llamada Doña Marina, fue la intérprete de Cortés."
+      },
+      {
+        era: "Independencia",
+        eraIcon: "🔔",
+        question: "¿Quién dio el famoso 'Grito de Dolores' en 1810?",
+        options: ["José María Morelos", "Miguel Hidalgo", "Vicente Guerrero", "Agustín de Iturbide"],
+        correct: 1,
+        image: "🔔",
+        explanation: "¡Excelente! El cura Miguel Hidalgo inició la lucha por la independencia el 16 de septiembre de 1810."
+      },
+      {
+        era: "Independencia",
+        eraIcon: "📜",
+        question: "¿En qué año se consumó la Independencia de México?",
+        options: ["1810", "1815", "1821", "1824"],
+        correct: 2,
+        image: "🎉",
+        explanation: "¡Correcto! México se independizó el 27 de septiembre de 1821."
+      },
+      {
+        era: "Independencia",
+        eraIcon: "🏛️",
+        question: "¿Quién escribió 'Los Sentimientos de la Nación'?",
+        options: ["Miguel Hidalgo", "José María Morelos", "Benito Juárez", "Porfirio Díaz"],
+        correct: 1,
+        image: "📜",
+        explanation: "¡Muy bien! Morelos escribió este importante documento en 1813."
+      },
+      {
+        era: "Reforma",
+        eraIcon: "⚖️",
+        question: "¿Quién fue el presidente zapoteca conocido como 'El Benemérito de las Américas'?",
+        options: ["Porfirio Díaz", "Benito Juárez", "Francisco I. Madero", "Lázaro Cárdenas"],
+        correct: 1,
+        image: "👤",
+        explanation: "¡Excelente! Benito Juárez defendió la República y las leyes de Reforma."
+      },
+      {
+        era: "Revolución",
+        eraIcon: "🎺",
+        question: "¿En qué año inició la Revolución Mexicana?",
+        options: ["1900", "1910", "1920", "1930"],
+        correct: 1,
+        image: "🎺",
+        explanation: "¡Correcto! La Revolución Mexicana comenzó el 20 de noviembre de 1910."
+      },
+      {
+        era: "Revolución",
+        eraIcon: "🌾",
+        question: "¿Qué héroe revolucionario luchó con el lema 'Tierra y Libertad'?",
+        options: ["Pancho Villa", "Emiliano Zapata", "Venustiano Carranza", "Álvaro Obregón"],
+        correct: 1,
+        image: "🌾",
+        explanation: "¡Muy bien! Emiliano Zapata luchó por los derechos de los campesinos."
+      },
+      {
+        era: "Revolución",
+        eraIcon: "🐎",
+        question: "¿Cómo se llamaba el famoso 'Centauro del Norte'?",
+        options: ["Emiliano Zapata", "Francisco Villa", "Pascual Orozco", "Felipe Ángeles"],
+        correct: 1,
+        image: "🐎",
+        explanation: "¡Excelente! Pancho Villa fue conocido como el Centauro del Norte por su habilidad como jinete."
+      },
+      {
+        era: "México Moderno",
+        eraIcon: "🏛️",
+        question: "¿En qué año se creó la UNAM?",
+        options: ["1900", "1910", "1921", "1945"],
+        correct: 2,
+        image: "🎓",
+        explanation: "¡Correcto! La Universidad Nacional Autónoma de México se fundó en 1921."
+      },
+      {
+        era: "México Moderno",
+        eraIcon: "⛽",
+        question: "¿Qué presidente nacionalizó el petróleo en 1938?",
+        options: ["Plutarco Elías Calles", "Lázaro Cárdenas", "Manuel Ávila Camacho", "Miguel Alemán"],
+        correct: 1,
+        image: "⛽",
+        explanation: "¡Muy bien! Lázaro Cárdenas expropió el petróleo el 18 de marzo de 1938."
+      },
+      {
+        era: "Cultura",
+        eraIcon: "🎨",
+        question: "¿Quién fue la famosa pintora mexicana esposa de Diego Rivera?",
+        options: ["Remedios Varo", "Frida Kahlo", "María Izquierdo", "Leonora Carrington"],
+        correct: 1,
+        image: "🎨",
+        explanation: "¡Excelente! Frida Kahlo es una de las artistas más reconocidas del mundo."
+      }
+    ];
+
+    // Estado del juego
+    let gameState = {
+      playerName: "",
+      score: 0,
+      lives: 3,
+      currentQuestion: 0,
+      questionsOrder: [],
+      answered: false
+    };
+
+    let currentScores = [];
+
+    // Inicializar SDK de elementos
+    async function initElementSdk() {
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const title = config.game_title || defaultConfig.game_title;
+            const teacher = config.teacher_name || defaultConfig.teacher_name;
+            const welcome = config.welcome_message || defaultConfig.welcome_message;
+            const bgColor = config.background_color || defaultConfig.background_color;
+            const surfaceColor = config.surface_color || defaultConfig.surface_color;
+            const textColor = config.text_color || defaultConfig.text_color;
+            const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+            const fontFamily = config.font_family || defaultConfig.font_family;
+            const fontSize = config.font_size || defaultConfig.font_size;
+
+            document.getElementById('main-title').textContent = `🇲🇽 ${title} 🇲🇽`;
+            document.getElementById('welcome-text').textContent = welcome;
+            document.getElementById('teacher-credit').textContent = teacher;
+            document.getElementById('teacher-credit-final').textContent = teacher;
+
+            document.getElementById('app').style.background = `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -20)} 100%)`;
+            
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+              btn.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${adjustColor(primaryColor, -15)} 100%)`;
+            });
+
+            document.body.style.fontFamily = `${fontFamily}, Fredoka, Comic Neue, cursive`;
+            document.querySelectorAll('h1, h2, p, button, label, span').forEach(el => {
+              el.style.fontFamily = `${fontFamily}, Fredoka, Comic Neue, cursive`;
+            });
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => window.elementSdk.setConfig({ background_color: value })
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => window.elementSdk.setConfig({ surface_color: value })
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => window.elementSdk.setConfig({ text_color: value })
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => window.elementSdk.setConfig({ font_family: value })
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => window.elementSdk.setConfig({ font_size: value })
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["game_title", config.game_title || defaultConfig.game_title],
+            ["teacher_name", config.teacher_name || defaultConfig.teacher_name],
+            ["welcome_message", config.welcome_message || defaultConfig.welcome_message]
+          ])
+        });
+      }
+    }
+
+    function adjustColor(color, amount) {
+      const hex = color.replace('#', '');
+      const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
+      const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
+      const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    // Inicializar SDK de datos
+    async function initDataSdk() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init({
+          onDataChanged: (data) => {
+            currentScores = data.sort((a, b) => b.score - a.score).slice(0, 5);
+            updateScoresList();
+          }
+        });
+        if (!result.isOk) {
+          console.error("Error al inicializar Data SDK");
+        }
+      }
+    }
+
+    function updateScoresList() {
+      const scoresList = document.getElementById('scores-list');
+      if (currentScores.length === 0) {
+        scoresList.innerHTML = '<p class="text-emerald-600 italic">¡Sé el primero en aparecer aquí!</p>';
+        return;
+      }
+      
+      scoresList.innerHTML = currentScores.map((score, index) => {
+        const medals = ['🥇', '🥈', '🥉', '⭐', '⭐'];
+        return `
+          <div class="flex justify-between items-center bg-white rounded-lg px-4 py-2">
+            <span class="font-bold">${medals[index]} ${score.player_name}</span>
+            <span class="text-yellow-600 font-bold">${score.score} pts</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Funciones del juego
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function startGame() {
+      const playerName = document.getElementById('player-name').value.trim();
+      if (!playerName) {
+        const input = document.getElementById('player-name');
+        input.classList.add('shake');
+        input.placeholder = "¡Por favor escribe tu nombre! 📝";
+        setTimeout(() => input.classList.remove('shake'), 500);
+        return;
+      }
+
+      gameState = {
+        playerName: playerName,
+        score: 0,
+        lives: 3,
+        currentQuestion: 0,
+        questionsOrder: shuffleArray([...Array(questions.length).keys()]).slice(0, 10),
+        answered: false
+      };
+
+      document.getElementById('player-display').textContent = playerName;
+      document.getElementById('score-display').textContent = '0';
+      document.getElementById('lives-display').textContent = '3';
+      document.getElementById('total-questions').textContent = gameState.questionsOrder.length;
+
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('results-screen').classList.add('hidden');
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (gameState.currentQuestion >= gameState.questionsOrder.length || gameState.lives <= 0) {
+        endGame();
+        return;
+      }
+
+      gameState.answered = false;
+      const questionIndex = gameState.questionsOrder[gameState.currentQuestion];
+      const q = questions[questionIndex];
+
+      document.getElementById('era-icon').textContent = q.eraIcon;
+      document.getElementById('era-name').textContent = q.era;
+      document.getElementById('question-number').textContent = gameState.currentQuestion + 1;
+      document.getElementById('question-text').textContent = q.question;
+      document.getElementById('question-image').innerHTML = `<span class="text-8xl">${q.image}</span>`;
+      document.getElementById('level-display').textContent = `Pregunta ${gameState.currentQuestion + 1}`;
+
+      // Generar opciones
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option-btn bg-gradient-to-r from-emerald-100 to-green-100 hover:from-emerald-200 hover:to-green-200 text-emerald-800 font-bold py-4 px-6 rounded-xl text-lg border-2 border-emerald-200';
+        button.textContent = option;
+        button.onclick = () => selectAnswer(index, q.correct, q.explanation);
+        optionsContainer.appendChild(button);
+      });
+
+      // Ocultar feedback y botón siguiente
+      document.getElementById('feedback').classList.add('hidden');
+      document.getElementById('next-btn').classList.add('hidden');
+
+      // Actualizar barra de progreso
+      const progress = (gameState.currentQuestion / gameState.questionsOrder.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function selectAnswer(selected, correct, explanation) {
+      if (gameState.answered) return;
+      gameState.answered = true;
+
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === correct) {
+          btn.classList.add('option-correct');
+        } else if (index === selected && selected !== correct) {
+          btn.classList.add('option-incorrect');
+        }
+      });
+
+      const feedback = document.getElementById('feedback');
+      const feedbackText = document.getElementById('feedback-text');
+      const feedbackDetail = document.getElementById('feedback-detail');
+
+      if (selected === correct) {
+        gameState.score += 100;
+        document.getElementById('score-display').textContent = gameState.score;
+        feedback.className = 'bg-green-100 rounded-2xl p-6 text-center bounce-in';
+        feedbackText.className = 'text-xl font-bold mb-2 text-green-800';
+        feedbackText.textContent = '🎉 ¡Muy bien! 🎉';
+        feedbackDetail.className = 'text-lg text-green-700';
+        createConfetti();
+      } else {
+        gameState.lives--;
+        document.getElementById('lives-display').textContent = gameState.lives;
+        feedback.className = 'bg-red-100 rounded-2xl p-6 text-center bounce-in';
+        feedbackText.className = 'text-xl font-bold mb-2 text-red-800';
+        feedbackText.textContent = '😢 ¡Casi! Sigue intentando';
+        feedbackDetail.className = 'text-lg text-red-700';
+      }
+
+      feedbackDetail.textContent = explanation;
+      feedback.classList.remove('hidden');
+      document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      gameState.currentQuestion++;
+      showQuestion();
+    }
+
+    async function endGame() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.remove('hidden');
+
+      const resultIcon = document.getElementById('result-icon');
+      const resultTitle = document.getElementById('result-title');
+      const resultMessage = document.getElementById('result-message');
+      document.getElementById('final-score').textContent = gameState.score;
+
+      if (gameState.score >= 800) {
+        resultIcon.textContent = '🏆';
+        resultTitle.textContent = '¡Eres un EXPERTO en Historia!';
+        resultMessage.textContent = '¡Increíble! Conoces muy bien la historia de México. ¡Felicidades!';
+        createConfetti();
+      } else if (gameState.score >= 500) {
+        resultIcon.textContent = '🥈';
+        resultTitle.textContent = '¡Muy bien, pequeño historiador!';
+        resultMessage.textContent = '¡Excelente trabajo! Sigue aprendiendo sobre nuestra historia.';
+      } else if (gameState.score >= 300) {
+        resultIcon.textContent = '🥉';
+        resultTitle.textContent = '¡Buen intento!';
+        resultMessage.textContent = '¡Vas por buen camino! Practica más y serás un experto.';
+      } else {
+        resultIcon.textContent = '📚';
+        resultTitle.textContent = '¡Sigue aprendiendo!';
+        resultMessage.textContent = '¡No te rindas! La historia de México es fascinante.';
+      }
+
+      // Guardar puntuación
+      if (window.dataSdk && currentScores.length < 999) {
+        const result = await window.dataSdk.create({
+          player_name: gameState.playerName,
+          score: gameState.score,
+          level_completed: gameState.currentQuestion,
+          created_at: new Date().toISOString()
+        });
+        if (!result.isOk) {
+          console.error("Error al guardar puntuación");
+        }
+      }
+    }
+
+    function createConfetti() {
+      const colors = ['#22c55e', '#ef4444', '#ffffff', '#fbbf24', '#3b82f6'];
+      for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function resetGame() {
+      document.getElementById('player-name').value = gameState.playerName;
+      startGame();
+    }
+
+    function goHome() {
+      document.getElementById('results-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('player-name').value = '';
+    }
+
+    // Event Listeners
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('next-btn').addEventListener('click', nextQuestion);
+    document.getElementById('play-again-btn').addEventListener('click', resetGame);
+    document.getElementById('home-btn').addEventListener('click', goHome);
+    document.getElementById('player-name').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') startGame();
+    });
+
+    // Inicializar
+    initElementSdk();
+    initDataSdk();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d1c438d6761e66c',t:'MTc3MTc0MDAzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
