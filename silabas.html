@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprende Sílabas - Juego Educativo</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    .title-font { font-family: 'Fredoka', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes bounce-soft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,200,50,0.5); }
+      50% { box-shadow: 0 0 40px rgba(255,200,50,0.8); }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    
+    .float { animation: float 3s ease-in-out infinite; }
+    .bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+    .sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+    .slide-up { animation: slide-up 0.5s ease-out forwards; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .wiggle { animation: wiggle 0.5s ease-in-out infinite; }
+    
+    .btn-3d {
+      transform: translateY(0);
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-8px) scale(1.02);
+    }
+    
+    .syllable-box {
+      transition: all 0.2s ease;
+    }
+    .syllable-box:hover {
+      transform: scale(1.1);
+    }
+    .syllable-box.selected {
+      transform: scale(1.15);
+      box-shadow: 0 0 20px rgba(255,200,50,0.8);
+    }
+    .syllable-box.correct {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      animation: bounce-soft 0.5s ease;
+    }
+    .syllable-box.incorrect {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      animation: wiggle 0.3s ease;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      transition: width 0.5s ease;
+    }
+    
+    .star {
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(251,191,36,0.5);
+    }
+    
+    .cloud {
+      background: rgba(255,255,255,0.9);
+      border-radius: 50px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .toast {
+      animation: slide-up 0.3s ease-out;
+    }
+    
+    .modal-overlay {
+      backdrop-filter: blur(8px);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full" style="background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);"><!-- Decorative Elements -->
+   <div class="fixed top-10 left-10 text-6xl float opacity-70 pointer-events-none">
+    ☁️
+   </div>
+   <div class="fixed top-20 right-20 text-5xl float opacity-70 pointer-events-none" style="animation-delay: 1s;">
+    ☁️
+   </div>
+   <div class="fixed bottom-20 left-20 text-4xl float opacity-70 pointer-events-none" style="animation-delay: 0.5s;">
+    🌸
+   </div>
+   <div class="fixed bottom-32 right-16 text-4xl float opacity-70 pointer-events-none" style="animation-delay: 1.5s;">
+    🦋
+   </div>
+   <div class="fixed top-40 left-1/4 text-3xl sparkle opacity-60 pointer-events-none">
+    ✨
+   </div>
+   <div class="fixed top-32 right-1/3 text-3xl sparkle opacity-60 pointer-events-none" style="animation-delay: 0.7s;">
+    ⭐
+   </div><!-- Main Container -->
+   <div class="relative z-10 p-4 md:p-8"><!-- Header -->
+    <header class="text-center mb-8">
+     <div class="inline-block bg-white/90 rounded-3xl px-8 py-4 shadow-xl">
+      <h1 id="main-title" class="title-font text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">🎓 Aprende Sílabas 🎓</h1>
+      <p class="text-gray-600 mt-2 text-lg">¡Descubre el mágico mundo de las palabras!</p>
+     </div>
+    </header><!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div><!-- Points Display -->
+    <div id="points-display" class="fixed top-4 left-4 z-40 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl px-4 py-2 shadow-lg hidden">
+     <div class="flex items-center gap-2"><span class="text-2xl">🌟</span> <span id="total-points" class="text-white font-bold text-xl">0</span> <span class="text-white/80 text-sm">puntos</span>
+     </div>
+    </div><!-- Screen: Main Menu -->
+    <div id="screen-menu" class="max-w-4xl mx-auto"><!-- Welcome Card -->
+     <div class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-2xl mb-8 card-hover">
+      <div class="flex flex-col md:flex-row items-center gap-6">
+       <div class="text-8xl bounce-soft">
+        📚
+       </div>
+       <div class="text-center md:text-left">
+        <h2 class="title-font text-2xl md:text-3xl font-bold text-gray-800 mb-2">¡Bienvenido pequeño explorador!</h2>
+        <p class="text-gray-600 text-lg">Aprende a separar las sílabas y descubre los secretos de las palabras. ¡Es muy divertido!</p>
+       </div>
+      </div>
+     </div><!-- Level Selection -->
+     <h3 class="title-font text-2xl font-bold text-center text-white mb-6 drop-shadow-lg">🎮 Elige tu nivel 🎮</h3>
+     <div class="grid md:grid-cols-3 gap-6 mb-8"><!-- Level 1 --> <button onclick="selectLevel('nivel1')" class="bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl p-6 shadow-xl btn-3d text-white text-left">
+       <div class="text-5xl mb-4">
+        🐣
+       </div><h4 class="title-font text-xl font-bold mb-2">Nivel 1</h4><p class="text-white/90 text-sm mb-3">1° y 2° Grado</p>
+       <div class="bg-white/20 rounded-xl p-3 text-sm">
+        <p>• Palabras de 2-3 sílabas</p>
+        <p>• Separación básica</p>
+        <p>• ¡Muy fácil y divertido!</p>
+       </div>
+       <div class="mt-4 flex gap-1"><span class="star text-xl">⭐</span>
+       </div></button> <!-- Level 2 --> <button onclick="selectLevel('nivel2')" class="bg-gradient-to-br from-blue-400 to-indigo-500 rounded-3xl p-6 shadow-xl btn-3d text-white text-left">
+       <div class="text-5xl mb-4">
+        🦊
+       </div><h4 class="title-font text-xl font-bold mb-2">Nivel 2</h4><p class="text-white/90 text-sm mb-3">3° y 4° Grado</p>
+       <div class="bg-white/20 rounded-xl p-3 text-sm">
+        <p>• Palabras de 3-4 sílabas</p>
+        <p>• Identifica sílaba tónica</p>
+        <p>• ¡Aprende clasificación!</p>
+       </div>
+       <div class="mt-4 flex gap-1"><span class="star text-xl">⭐</span> <span class="star text-xl">⭐</span>
+       </div></button> <!-- Level 3 --> <button onclick="selectLevel('nivel3')" class="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-6 shadow-xl btn-3d text-white text-left">
+       <div class="text-5xl mb-4">
+        🦉
+       </div><h4 class="title-font text-xl font-bold mb-2">Nivel 3</h4><p class="text-white/90 text-sm mb-3">5° y 6° Grado</p>
+       <div class="bg-white/20 rounded-xl p-3 text-sm">
+        <p>• Palabras complejas</p>
+        <p>• Agudas, graves, esdrújulas</p>
+        <p>• ¡Desafío máximo!</p>
+       </div>
+       <div class="mt-4 flex gap-1"><span class="star text-xl">⭐</span> <span class="star text-xl">⭐</span> <span class="star text-xl">⭐</span>
+       </div></button>
+     </div><!-- Info Cards -->
+     <div class="grid md:grid-cols-2 gap-6 mb-8"><!-- Tips Card -->
+      <div class="bg-white/95 rounded-3xl p-6 shadow-xl card-hover">
+       <h4 class="title-font text-xl font-bold text-purple-600 mb-4 flex items-center gap-2"><span class="text-2xl">💡</span> Sabías que...</h4>
+       <div class="space-y-3 text-gray-700">
+        <p class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Una <strong>sílaba</strong> es cada golpe de voz al pronunciar una palabra.</span></p>
+        <p class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>La <strong>sílaba tónica</strong> es la que suena más fuerte.</span></p>
+        <p class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>¡Puedes aplaudir para contar las sílabas! 👏</span></p>
+       </div>
+      </div><!-- Classification Card -->
+      <div class="bg-white/95 rounded-3xl p-6 shadow-xl card-hover">
+       <h4 class="title-font text-xl font-bold text-pink-600 mb-4 flex items-center gap-2"><span class="text-2xl">🎯</span> Clasificación</h4>
+       <div class="space-y-2 text-gray-700 text-sm">
+        <div class="bg-gradient-to-r from-red-100 to-red-50 rounded-xl p-3"><strong class="text-red-600">Agudas:</strong> La fuerza está en la <u>última</u> sílaba (ca-fé, co-ra-zón)
+        </div>
+        <div class="bg-gradient-to-r from-yellow-100 to-yellow-50 rounded-xl p-3"><strong class="text-yellow-600">Graves:</strong> La fuerza está en la <u>penúltima</u> sílaba (ár-bol, lá-piz)
+        </div>
+        <div class="bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-3"><strong class="text-blue-600">Esdrújulas:</strong> La fuerza está en la <u>antepenúltima</u> sílaba (mú-si-ca)
+        </div>
+       </div>
+      </div>
+     </div><!-- Navigation Buttons -->
+     <div class="flex flex-wrap justify-center gap-4 mb-8"><button onclick="showScreen('leaderboard')" class="bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-6 py-3 rounded-2xl font-bold btn-3d flex items-center gap-2"> <span class="text-xl">🏆</span> Mis Logros </button> <button onclick="showScreen('terms')" class="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-6 py-3 rounded-2xl font-bold btn-3d flex items-center gap-2"> <span class="text-xl">📋</span> Términos de Uso </button>
+     </div><!-- Author Credit -->
+     <div class="text-center">
+      <div class="inline-block bg-white/90 rounded-2xl px-6 py-4 shadow-lg">
+       <p class="text-gray-600 text-sm mb-1">Material elaborado con mucho</p>
+       <p class="text-2xl mb-1">💖</p>
+       <p id="author-credit" class="title-font text-lg font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">Mtra. María Fernanda Flores Valenzuela</p>
+       <p class="text-gray-500 text-xs mt-2">© 2024 - Todos los derechos reservados</p>
+      </div>
+     </div>
+    </div><!-- Screen: Game -->
+    <div id="screen-game" class="max-w-3xl mx-auto hidden"><!-- Game Header -->
+     <div class="bg-white/95 rounded-3xl p-4 md:p-6 shadow-xl mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-4"><button onclick="showScreen('menu')" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-xl font-bold transition flex items-center gap-2"> <span>←</span> Menú </button>
+       <div class="flex items-center gap-4">
+        <div id="game-level-badge" class="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-4 py-2 rounded-xl font-bold">
+         Nivel 1
+        </div>
+        <div class="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-xl"><span class="text-xl">⭐</span> <span id="game-points" class="font-bold text-yellow-700">0</span>
+        </div>
+       </div>
+      </div><!-- Progress Bar -->
+      <div class="mt-4">
+       <div class="flex justify-between text-sm text-gray-600 mb-1"><span>Progreso</span> <span id="progress-text">0/10</span>
+       </div>
+       <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+        <div id="progress-bar" class="progress-bar h-full rounded-full" style="width: 0%"></div>
+       </div>
+      </div>
+     </div><!-- Tip Box -->
+     <div id="tip-box" class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 mb-6 flex items-start gap-3"><span class="text-3xl">💡</span>
+      <div>
+       <p class="font-bold text-purple-700">Tip del momento:</p>
+       <p id="tip-text" class="text-purple-600 text-sm">Di la palabra en voz alta y aplaude cada sílaba.</p>
+      </div>
+     </div><!-- Game Area -->
+     <div id="game-area" class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-xl"><!-- Game content will be dynamically inserted here -->
+     </div><!-- Next Button -->
+     <div id="next-container" class="text-center mt-6 hidden"><button onclick="nextQuestion()" class="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-4 rounded-2xl font-bold text-xl btn-3d"> ¡Siguiente! → </button>
+     </div>
+    </div><!-- Screen: Results -->
+    <div id="screen-results" class="max-w-2xl mx-auto hidden">
+     <div class="bg-white/95 rounded-3xl p-8 shadow-xl text-center">
+      <div class="text-8xl mb-4" id="result-emoji">
+       🎉
+      </div>
+      <h2 class="title-font text-3xl font-bold text-gray-800 mb-2" id="result-title">¡Excelente trabajo!</h2>
+      <p class="text-gray-600 text-lg mb-6" id="result-message">Has completado el nivel</p>
+      <div class="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl p-6 mb-6">
+       <div class="text-5xl mb-2">
+        ⭐
+       </div>
+       <p class="text-gray-600">Puntos obtenidos</p>
+       <p id="final-points" class="title-font text-4xl font-bold text-yellow-600">0</p>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4"><button onclick="playAgain()" class="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-6 py-3 rounded-2xl font-bold btn-3d"> 🔄 Jugar de nuevo </button> <button onclick="showScreen('menu')" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-6 py-3 rounded-2xl font-bold btn-3d"> 🏠 Menú principal </button>
+      </div>
+     </div>
+    </div><!-- Screen: Leaderboard -->
+    <div id="screen-leaderboard" class="max-w-2xl mx-auto hidden">
+     <div class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-xl">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="title-font text-2xl font-bold text-gray-800 flex items-center gap-2"><span class="text-3xl">🏆</span> Mis Logros</h2><button onclick="showScreen('menu')" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-xl font-bold transition"> ← Volver </button>
+      </div>
+      <div id="leaderboard-content">
+       <div class="text-center py-8 text-gray-500">
+        <div class="text-5xl mb-4">
+         📊
+        </div>
+        <p>¡Aún no hay logros!</p>
+        <p class="text-sm">Juega para ganar puntos y ver tu progreso aquí.</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Screen: Terms -->
+    <div id="screen-terms" class="max-w-3xl mx-auto hidden">
+     <div class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-xl">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="title-font text-2xl font-bold text-gray-800 flex items-center gap-2"><span class="text-3xl">📋</span> Términos y Condiciones de Uso</h2><button onclick="showScreen('menu')" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-xl font-bold transition"> ← Volver </button>
+      </div>
+      <div class="space-y-6 text-gray-700">
+       <div class="bg-blue-50 rounded-2xl p-5">
+        <h3 class="font-bold text-blue-700 mb-2 flex items-center gap-2"><span>📝</span> 1. Licencia de Uso</h3>
+        <p class="text-sm">Al adquirir este material educativo, usted obtiene una <strong>licencia de uso personal e intransferible</strong>. Esta licencia le permite utilizar el contenido para fines educativos personales o en su práctica docente.</p>
+       </div>
+       <div class="bg-green-50 rounded-2xl p-5">
+        <h3 class="font-bold text-green-700 mb-2 flex items-center gap-2"><span>✅</span> 2. Usos Permitidos</h3>
+        <ul class="text-sm space-y-2">
+         <li class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Uso personal para aprendizaje en casa</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Uso en el aula con sus propios estudiantes</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Asignación como tarea escolar para sus alumnos</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Proyección en clase para actividades grupales</span></li>
+         <li class="flex items-start gap-2"><span class="text-green-500">✓</span> <span>Uso en tutorías individuales o grupales</span></li>
+        </ul>
+       </div>
+       <div class="bg-red-50 rounded-2xl p-5">
+        <h3 class="font-bold text-red-700 mb-2 flex items-center gap-2"><span>🚫</span> 3. Usos No Permitidos</h3>
+        <ul class="text-sm space-y-2">
+         <li class="flex items-start gap-2"><span class="text-red-500">✗</span> <span><strong>Reventa o redistribución</strong> del material de ninguna forma</span></li>
+         <li class="flex items-start gap-2"><span class="text-red-500">✗</span> <span>Compartir el acceso con otros docentes o instituciones</span></li>
+         <li class="flex items-start gap-2"><span class="text-red-500">✗</span> <span>Modificar, adaptar o crear obras derivadas para venta</span></li>
+         <li class="flex items-start gap-2"><span class="text-red-500">✗</span> <span>Publicar en plataformas de descarga gratuita o de pago</span></li>
+         <li class="flex items-start gap-2"><span class="text-red-500">✗</span> <span>Eliminar o modificar los créditos de autoría</span></li>
+        </ul>
+       </div>
+       <div class="bg-purple-50 rounded-2xl p-5">
+        <h3 class="font-bold text-purple-700 mb-2 flex items-center gap-2"><span>©️</span> 4. Propiedad Intelectual</h3>
+        <p class="text-sm">Todo el contenido, diseño, código, ilustraciones y metodología de este material educativo son propiedad exclusiva de la <strong>Mtra. María Fernanda Flores Valenzuela</strong>. Están protegidos por las leyes de derechos de autor aplicables.</p>
+       </div>
+       <div class="bg-yellow-50 rounded-2xl p-5">
+        <h3 class="font-bold text-yellow-700 mb-2 flex items-center gap-2"><span>⚖️</span> 5. Responsabilidades</h3>
+        <p class="text-sm">El usuario es responsable del uso adecuado del material. El incumplimiento de estos términos puede resultar en la revocación de la licencia y posibles acciones legales. La autora no se hace responsable del uso inadecuado del material.</p>
+       </div>
+       <div class="bg-gray-100 rounded-2xl p-5">
+        <h3 class="font-bold text-gray-700 mb-2 flex items-center gap-2"><span>📧</span> 6. Contacto</h3>
+        <p class="text-sm">Para consultas sobre licencias institucionales, permisos especiales o reportar uso indebido, por favor contacte directamente a la autora.</p>
+       </div>
+       <div class="text-center pt-4 border-t border-gray-200">
+        <p class="text-sm text-gray-500">Al usar este material, usted acepta estos términos y condiciones.</p>
+        <p class="text-xs text-gray-400 mt-2">Última actualización: 2024</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default Config
+    const defaultConfig = {
+      main_title: 'Aprende Sílabas',
+      author_name: 'Mtra. María Fernanda Flores Valenzuela',
+      background_color: '#e0f2fe',
+      surface_color: '#ffffff',
+      text_color: '#1f2937',
+      primary_color: '#8b5cf6',
+      accent_color: '#f59e0b'
+    };
+    
+    // Game State
+    let gameState = {
+      currentLevel: 'nivel1',
+      currentQuestion: 0,
+      totalQuestions: 10,
+      points: 0,
+      totalPoints: 0,
+      playerData: []
+    };
+    
+    // Word Banks by Level
+    const wordBanks = {
+      nivel1: {
+        words: [
+          { word: 'casa', syllables: ['ca', 'sa'], tonic: 0, type: 'grave' },
+          { word: 'mesa', syllables: ['me', 'sa'], tonic: 0, type: 'grave' },
+          { word: 'sol', syllables: ['sol'], tonic: 0, type: 'aguda' },
+          { word: 'luna', syllables: ['lu', 'na'], tonic: 0, type: 'grave' },
+          { word: 'gato', syllables: ['ga', 'to'], tonic: 0, type: 'grave' },
+          { word: 'perro', syllables: ['pe', 'rro'], tonic: 0, type: 'grave' },
+          { word: 'árbol', syllables: ['ár', 'bol'], tonic: 0, type: 'grave' },
+          { word: 'agua', syllables: ['a', 'gua'], tonic: 0, type: 'grave' },
+          { word: 'libro', syllables: ['li', 'bro'], tonic: 0, type: 'grave' },
+          { word: 'niño', syllables: ['ni', 'ño'], tonic: 0, type: 'grave' },
+          { word: 'mamá', syllables: ['ma', 'má'], tonic: 1, type: 'aguda' },
+          { word: 'papá', syllables: ['pa', 'pá'], tonic: 1, type: 'aguda' },
+          { word: 'flor', syllables: ['flor'], tonic: 0, type: 'aguda' },
+          { word: 'pan', syllables: ['pan'], tonic: 0, type: 'aguda' },
+          { word: 'mano', syllables: ['ma', 'no'], tonic: 0, type: 'grave' }
+        ],
+        tips: [
+          '👏 Di la palabra en voz alta y aplaude cada sílaba.',
+          '🎵 Canta la palabra, ¡cada nota es una sílaba!',
+          '🤚 Cuenta con tus dedos cada golpe de voz.',
+          '🗣️ Pronuncia la palabra lentamente.',
+          '👂 Escucha cuántas veces abres la boca.'
+        ],
+        gameType: 'count'
+      },
+      nivel2: {
+        words: [
+          { word: 'mariposa', syllables: ['ma', 'ri', 'po', 'sa'], tonic: 2, type: 'grave' },
+          { word: 'elefante', syllables: ['e', 'le', 'fan', 'te'], tonic: 2, type: 'grave' },
+          { word: 'corazón', syllables: ['co', 'ra', 'zón'], tonic: 2, type: 'aguda' },
+          { word: 'chocolate', syllables: ['cho', 'co', 'la', 'te'], tonic: 2, type: 'grave' },
+          { word: 'computadora', syllables: ['com', 'pu', 'ta', 'do', 'ra'], tonic: 3, type: 'grave' },
+          { word: 'teléfono', syllables: ['te', 'lé', 'fo', 'no'], tonic: 1, type: 'esdrújula' },
+          { word: 'música', syllables: ['mú', 'si', 'ca'], tonic: 0, type: 'esdrújula' },
+          { word: 'plátano', syllables: ['plá', 'ta', 'no'], tonic: 0, type: 'esdrújula' },
+          { word: 'rápido', syllables: ['rá', 'pi', 'do'], tonic: 0, type: 'esdrújula' },
+          { word: 'canción', syllables: ['can', 'ción'], tonic: 1, type: 'aguda' },
+          { word: 'ventana', syllables: ['ven', 'ta', 'na'], tonic: 1, type: 'grave' },
+          { word: 'escuela', syllables: ['es', 'cue', 'la'], tonic: 1, type: 'grave' },
+          { word: 'pelota', syllables: ['pe', 'lo', 'ta'], tonic: 1, type: 'grave' },
+          { word: 'camino', syllables: ['ca', 'mi', 'no'], tonic: 1, type: 'grave' },
+          { word: 'estrella', syllables: ['es', 'tre', 'lla'], tonic: 1, type: 'grave' }
+        ],
+        tips: [
+          '🔊 La sílaba tónica es la que suena más fuerte.',
+          '💪 Imagina que una sílaba tiene más fuerza que las demás.',
+          '📢 Grita la palabra, ¿cuál sílaba suena más alto?',
+          '🎯 La tilde nos indica cuál es la sílaba tónica.',
+          '👆 Señala la sílaba que pronuncias con más energía.'
+        ],
+        gameType: 'tonic'
+      },
+      nivel3: {
+        words: [
+          { word: 'murciélago', syllables: ['mur', 'cié', 'la', 'go'], tonic: 1, type: 'esdrújula' },
+          { word: 'hipopótamo', syllables: ['hi', 'po', 'pó', 'ta', 'mo'], tonic: 2, type: 'esdrújula' },
+          { word: 'matemáticas', syllables: ['ma', 'te', 'má', 'ti', 'cas'], tonic: 2, type: 'esdrújula' },
+          { word: 'comunicación', syllables: ['co', 'mu', 'ni', 'ca', 'ción'], tonic: 4, type: 'aguda' },
+          { word: 'económico', syllables: ['e', 'co', 'nó', 'mi', 'co'], tonic: 2, type: 'esdrújula' },
+          { word: 'fantástico', syllables: ['fan', 'tás', 'ti', 'co'], tonic: 1, type: 'esdrújula' },
+          { word: 'república', syllables: ['re', 'pú', 'bli', 'ca'], tonic: 1, type: 'esdrújula' },
+          { word: 'kilómetro', syllables: ['ki', 'ló', 'me', 'tro'], tonic: 1, type: 'esdrújula' },
+          { word: 'educación', syllables: ['e', 'du', 'ca', 'ción'], tonic: 3, type: 'aguda' },
+          { word: 'cafetería', syllables: ['ca', 'fe', 'te', 'rí', 'a'], tonic: 3, type: 'aguda' },
+          { word: 'información', syllables: ['in', 'for', 'ma', 'ción'], tonic: 3, type: 'aguda' },
+          { word: 'periódico', syllables: ['pe', 'rió', 'di', 'co'], tonic: 1, type: 'esdrújula' },
+          { word: 'gramática', syllables: ['gra', 'má', 'ti', 'ca'], tonic: 1, type: 'esdrújula' },
+          { word: 'histórico', syllables: ['his', 'tó', 'ri', 'co'], tonic: 1, type: 'esdrújula' },
+          { word: 'biológico', syllables: ['bio', 'ló', 'gi', 'co'], tonic: 1, type: 'esdrújula' }
+        ],
+        tips: [
+          '📚 Agudas: última sílaba fuerte (ca-fé, co-ra-zón)',
+          '📖 Graves: penúltima sílaba fuerte (ár-bol, lá-piz)',
+          '📕 Esdrújulas: antepenúltima fuerte (mú-si-ca, plá-ta-no)',
+          '✍️ Las esdrújulas SIEMPRE llevan tilde.',
+          '🎓 Cuenta desde el final: última, penúltima, antepenúltima.'
+        ],
+        gameType: 'classify'
+      }
+    };
+    
+    // Initialize SDKs
+    async function initApp() {
+      // Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const title = document.getElementById('main-title');
+            if (title) title.innerHTML = `🎓 ${config.main_title || defaultConfig.main_title} 🎓`;
+            
+            const author = document.getElementById('author-credit');
+            if (author) author.textContent = config.author_name || defaultConfig.author_name;
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (v) => window.elementSdk.setConfig({ background_color: v })
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (v) => window.elementSdk.setConfig({ surface_color: v })
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (v) => window.elementSdk.setConfig({ text_color: v })
+              },
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (v) => window.elementSdk.setConfig({ primary_color: v })
+              },
+              {
+                get: () => config.accent_color || defaultConfig.accent_color,
+                set: (v) => window.elementSdk.setConfig({ accent_color: v })
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['main_title', config.main_title || defaultConfig.main_title],
+            ['author_name', config.author_name || defaultConfig.author_name]
+          ])
+        });
+      }
+      
+      // Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init({
+          onDataChanged: (data) => {
+            gameState.playerData = data;
+            updateLeaderboard();
+            updateTotalPoints();
+          }
+        });
+        if (!result.isOk) {
+          console.error('Data SDK init failed');
+        }
+      }
+    }
+    
+    initApp();
+    
+    // UI Functions
+    function showScreen(screenName) {
+      const screens = ['menu', 'game', 'results', 'leaderboard', 'terms'];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(`screen-${screenName}`);
+      if (target) target.classList.remove('hidden');
+      
+      const pointsDisplay = document.getElementById('points-display');
+      if (screenName === 'game') {
+        pointsDisplay.classList.remove('hidden');
+      } else {
+        pointsDisplay.classList.add('hidden');
+      }
+    }
+    
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'from-green-400 to-emerald-500',
+        error: 'from-red-400 to-rose-500',
+        info: 'from-blue-400 to-indigo-500'
+      };
+      toast.className = `toast bg-gradient-to-r ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2`;
+      toast.innerHTML = `<span class="text-xl">${type === 'success' ? '✅' : type === 'error' ? '❌' : '💡'}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function updateTotalPoints() {
+      const total = gameState.playerData.reduce((sum, p) => sum + (p.total_points || 0), 0);
+      gameState.totalPoints = total;
+      document.getElementById('total-points').textContent = total;
+    }
+    
+    function updateLeaderboard() {
+      const content = document.getElementById('leaderboard-content');
+      if (gameState.playerData.length === 0) {
+        content.innerHTML = `
+          <div class="text-center py-8 text-gray-500">
+            <div class="text-5xl mb-4">📊</div>
+            <p>¡Aún no hay logros!</p>
+            <p class="text-sm">Juega para ganar puntos y ver tu progreso aquí.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const sorted = [...gameState.playerData].sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
+      content.innerHTML = sorted.map((player, idx) => {
+        const medals = ['🥇', '🥈', '🥉'];
+        const medal = idx < 3 ? medals[idx] : `#${idx + 1}`;
+        const levelColors = {
+          nivel1: 'from-green-400 to-emerald-500',
+          nivel2: 'from-blue-400 to-indigo-500',
+          nivel3: 'from-purple-400 to-pink-500'
+        };
+        return `
+          <div class="flex items-center gap-4 bg-gray-50 rounded-xl p-4 mb-3">
+            <div class="text-3xl">${medal}</div>
+            <div class="flex-1">
+              <p class="font-bold">${player.player_name || 'Jugador'}</p>
+              <p class="text-sm text-gray-500">${player.games_played || 0} partidas jugadas</p>
+            </div>
+            <div class="text-right">
+              <div class="bg-gradient-to-r ${levelColors[player.level] || levelColors.nivel1} text-white px-3 py-1 rounded-lg text-sm mb-1">
+                ${player.level === 'nivel1' ? 'Nivel 1' : player.level === 'nivel2' ? 'Nivel 2' : 'Nivel 3'}
+              </div>
+              <p class="font-bold text-yellow-600">⭐ ${player.total_points || 0}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Game Functions
+    function selectLevel(level) {
+      gameState.currentLevel = level;
+      gameState.currentQuestion = 0;
+      gameState.points = 0;
+      showScreen('game');
+      
+      const levelNames = { nivel1: 'Nivel 1 🐣', nivel2: 'Nivel 2 🦊', nivel3: 'Nivel 3 🦉' };
+      const levelColors = {
+        nivel1: 'from-green-400 to-emerald-500',
+        nivel2: 'from-blue-400 to-indigo-500',
+        nivel3: 'from-purple-400 to-pink-500'
+      };
+      
+      const badge = document.getElementById('game-level-badge');
+      badge.textContent = levelNames[level];
+      badge.className = `bg-gradient-to-r ${levelColors[level]} text-white px-4 py-2 rounded-xl font-bold`;
+      
+      document.getElementById('game-points').textContent = '0';
+      updateProgress();
+      showQuestion();
+    }
+    
+    function updateProgress() {
+      const progress = (gameState.currentQuestion / gameState.totalQuestions) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+      document.getElementById('progress-text').textContent = `${gameState.currentQuestion}/${gameState.totalQuestions}`;
+    }
+    
+    function getRandomTip() {
+      const tips = wordBanks[gameState.currentLevel].tips;
+      return tips[Math.floor(Math.random() * tips.length)];
+    }
+    
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    
+    function showQuestion() {
+      document.getElementById('next-container').classList.add('hidden');
+      document.getElementById('tip-text').textContent = getRandomTip();
+      
+      const levelData = wordBanks[gameState.currentLevel];
+      const words = shuffleArray(levelData.words);
+      const wordData = words[gameState.currentQuestion % words.length];
+      
+      const gameArea = document.getElementById('game-area');
+      
+      if (levelData.gameType === 'count') {
+        renderCountGame(wordData);
+      } else if (levelData.gameType === 'tonic') {
+        renderTonicGame(wordData);
+      } else {
+        renderClassifyGame(wordData);
+      }
+    }
+    
+    function renderCountGame(wordData) {
+      const gameArea = document.getElementById('game-area');
+      gameArea.innerHTML = `
+        <div class="text-center">
+          <p class="text-gray-600 mb-2">¿Cuántas sílabas tiene esta palabra?</p>
+          <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6 inline-block">
+            <h3 class="title-font text-4xl md:text-5xl font-bold text-purple-700">${wordData.word.toUpperCase()}</h3>
+          </div>
+          <div class="flex flex-wrap justify-center gap-4">
+            ${[1, 2, 3, 4, 5].map(n => `
+              <button onclick="checkCountAnswer(${n}, ${wordData.syllables.length}, this)" 
+                class="syllable-box bg-gradient-to-br from-indigo-400 to-purple-500 text-white w-16 h-16 rounded-2xl text-2xl font-bold shadow-lg">
+                ${n}
+              </button>
+            `).join('')}
+          </div>
+          <p class="text-gray-500 text-sm mt-4">💡 Aplaude cada sílaba: ${wordData.syllables.join(' - ')}</p>
+        </div>
+      `;
+    }
+    
+    function renderTonicGame(wordData) {
+      const gameArea = document.getElementById('game-area');
+      gameArea.innerHTML = `
+        <div class="text-center">
+          <p class="text-gray-600 mb-2">¿Cuál es la sílaba tónica (la más fuerte)?</p>
+          <div class="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl p-6 mb-6">
+            <h3 class="title-font text-3xl md:text-4xl font-bold text-blue-700 mb-4">${wordData.word.toUpperCase()}</h3>
+            <div class="flex flex-wrap justify-center gap-3">
+              ${wordData.syllables.map((syl, idx) => `
+                <button onclick="checkTonicAnswer(${idx}, ${wordData.tonic}, this, '${wordData.syllables.join('-')}')" 
+                  class="syllable-box bg-gradient-to-br from-blue-400 to-indigo-500 text-white px-6 py-4 rounded-xl text-xl font-bold shadow-lg uppercase">
+                  ${syl}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          <p class="text-gray-500 text-sm">💡 La sílaba tónica suena más fuerte: <strong>${wordData.syllables[wordData.tonic].toUpperCase()}</strong></p>
+        </div>
+      `;
+    }
+    
+    function renderClassifyGame(wordData) {
+      const gameArea = document.getElementById('game-area');
+      const typeColors = {
+        aguda: 'from-red-400 to-rose-500',
+        grave: 'from-yellow-400 to-amber-500',
+        esdrújula: 'from-blue-400 to-indigo-500'
+      };
+      gameArea.innerHTML = `
+        <div class="text-center">
+          <p class="text-gray-600 mb-2">¿Qué tipo de palabra es?</p>
+          <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
+            <h3 class="title-font text-3xl md:text-4xl font-bold text-purple-700 mb-2">${wordData.word.toUpperCase()}</h3>
+            <p class="text-purple-600">${wordData.syllables.map((s, i) => i === wordData.tonic ? `<strong class="text-pink-600 underline">${s.toUpperCase()}</strong>` : s).join(' - ')}</p>
+          </div>
+          <div class="flex flex-wrap justify-center gap-4">
+            <button onclick="checkClassifyAnswer('aguda', '${wordData.type}', this)" 
+              class="syllable-box bg-gradient-to-br ${typeColors.aguda} text-white px-6 py-4 rounded-xl font-bold shadow-lg">
+              <div class="text-2xl mb-1">🔴</div>
+              <div>AGUDA</div>
+              <div class="text-xs opacity-80">última sílaba</div>
+            </button>
+            <button onclick="checkClassifyAnswer('grave', '${wordData.type}', this)" 
+              class="syllable-box bg-gradient-to-br ${typeColors.grave} text-white px-6 py-4 rounded-xl font-bold shadow-lg">
+              <div class="text-2xl mb-1">🟡</div>
+              <div>GRAVE</div>
+              <div class="text-xs opacity-80">penúltima sílaba</div>
+            </button>
+            <button onclick="checkClassifyAnswer('esdrújula', '${wordData.type}', this)" 
+              class="syllable-box bg-gradient-to-br ${typeColors.esdrújula} text-white px-6 py-4 rounded-xl font-bold shadow-lg">
+              <div class="text-2xl mb-1">🔵</div>
+              <div>ESDRÚJULA</div>
+              <div class="text-xs opacity-80">antepenúltima</div>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    
+    function checkCountAnswer(selected, correct, btn) {
+      const isCorrect = selected === correct;
+      processAnswer(isCorrect, btn);
+    }
+    
+    function checkTonicAnswer(selected, correct, btn, syllables) {
+      const isCorrect = selected === correct;
+      processAnswer(isCorrect, btn);
+    }
+    
+    function checkClassifyAnswer(selected, correct, btn) {
+      const isCorrect = selected === correct;
+      processAnswer(isCorrect, btn);
+    }
+    
+    function processAnswer(isCorrect, btn) {
+      const buttons = btn.parentElement.querySelectorAll('button');
+      buttons.forEach(b => b.disabled = true);
+      
+      if (isCorrect) {
+        btn.classList.add('correct');
+        const points = gameState.currentLevel === 'nivel1' ? 10 : gameState.currentLevel === 'nivel2' ? 15 : 20;
+        gameState.points += points;
+        document.getElementById('game-points').textContent = gameState.points;
+        showToast(`¡Correcto! +${points} puntos ⭐`, 'success');
+      } else {
+        btn.classList.add('incorrect');
+        showToast('¡Inténtalo de nuevo! 💪', 'error');
+      }
+      
+      gameState.currentQuestion++;
+      updateProgress();
+      
+      if (gameState.currentQuestion >= gameState.totalQuestions) {
+        setTimeout(endGame, 1500);
+      } else {
+        document.getElementById('next-container').classList.remove('hidden');
+      }
+    }
+    
+    function nextQuestion() {
+      showQuestion();
+    }
+    
+    async function endGame() {
+      showScreen('results');
+      
+      const percentage = gameState.points / (gameState.totalQuestions * (gameState.currentLevel === 'nivel1' ? 10 : gameState.currentLevel === 'nivel2' ? 15 : 20));
+      
+      let emoji, title, message;
+      if (percentage >= 0.9) {
+        emoji = '🏆'; title = '¡INCREÍBLE!'; message = '¡Eres un campeón de las sílabas!';
+      } else if (percentage >= 0.7) {
+        emoji = '🎉'; title = '¡Muy bien!'; message = '¡Excelente trabajo, sigue así!';
+      } else if (percentage >= 0.5) {
+        emoji = '😊'; title = '¡Buen intento!'; message = '¡Practica un poco más y lo lograrás!';
+      } else {
+        emoji = '💪'; title = '¡Sigue intentando!'; message = '¡La práctica hace al maestro!';
+      }
+      
+      document.getElementById('result-emoji').textContent = emoji;
+      document.getElementById('result-title').textContent = title;
+      document.getElementById('result-message').textContent = message;
+      document.getElementById('final-points').textContent = gameState.points;
+      
+      // Save progress
+      if (window.dataSdk && gameState.playerData.length < 999) {
+        const existing = gameState.playerData.find(p => p.level === gameState.currentLevel);
+        if (existing) {
+          const updated = {
+            ...existing,
+            total_points: (existing.total_points || 0) + gameState.points,
+            games_played: (existing.games_played || 0) + 1,
+            last_played: new Date().toISOString()
+          };
+          await window.dataSdk.update(updated);
+        } else {
+          await window.dataSdk.create({
+            player_name: 'Jugador',
+            level: gameState.currentLevel,
+            total_points: gameState.points,
+            games_played: 1,
+            last_played: new Date().toISOString()
+          });
+        }
+      }
+    }
+    
+    function playAgain() {
+      selectLevel(gameState.currentLevel);
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d1c041de1422ae0',t:'MTc3MTczNzQzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
