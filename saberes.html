@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saberes y Pensamiento Científico</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { font-family: 'Fredoka', sans-serif; }
+
+.animated-bg {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 25%, #3B82F6 50%, #EC4899 75%, #F472B6 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.game-btn {
+  background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+  box-shadow:
+    0 10px 30px -5px rgba(0, 0, 0, 0.3),
+    0 6px 12px -3px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-btn:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+</style>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+</head>
+
+<body class="h-full">
+<div class="h-full w-full animated-bg overflow-auto">
+
+<a href="index.html" class="back-btn">⬅ Volver</a>
+
+<div class="min-h-full w-full flex flex-col items-center justify-center px-4 py-12">
+
+<h1 class="text-5xl font-bold text-white mb-10 text-center">
+🔬 Saberes y Pensamiento Científico
+</h1>
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl">
+
+<a href="fraccionespizzas.html"
+class="game-btn rounded-2xl p-8 text-white font-bold text-center"
+style="--btn-from:#60A5FA; --btn-to:#3B82F6;">
+🍕 Fracciones
+</a>
+
+<a href="tablasdemultiplicar.html"
+class="game-btn rounded-2xl p-8 text-white font-bold text-center"
+style="--btn-from:#34D399; --btn-to:#10B981;">
+✖️ Tablas
+</a>
+
+<a href="tiendita.html"
+class="game-btn rounded-2xl p-8 text-white font-bold text-center"
+style="--btn-from:#FBBF24; --btn-to:#F59E0B;">
+🛒 Tiendita
+</a>
+
+<a href="matemontesori.html"
+class="game-btn rounded-2xl p-8 text-white font-bold text-center"
+style="--btn-from:#A78BFA; --btn-to:#8B5CF6;">
+🔢 Matemontesori
+</a>
+
+</div>
+</div>
+</div>
+</body>
+</html>
