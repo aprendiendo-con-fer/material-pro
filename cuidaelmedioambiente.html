@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardianes del Planeta</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    .title-font { font-family: 'Fredoka', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(74, 222, 128, 0.8); }
+    }
+    @keyframes grow {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes bounce-in {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes slide-up {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes rain-drop {
+      0% { transform: translateY(-20px); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(100px); opacity: 0; }
+    }
+    
+    .float { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .grow-in { animation: grow 0.5s ease-out forwards; }
+    .wiggle { animation: wiggle 0.5s ease-in-out; }
+    .bounce-in { animation: bounce-in 0.5s ease-out; }
+    .slide-up { animation: slide-up 0.4s ease-out forwards; }
+    
+    .game-btn {
+      transition: all 0.2s ease;
+      transform-style: preserve-3d;
+    }
+    .game-btn:hover {
+      transform: scale(1.05) translateY(-2px);
+    }
+    .game-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .trash-item {
+      cursor: grab;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .trash-item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    .trash-item.dragging {
+      cursor: grabbing;
+      transform: scale(1.15);
+      z-index: 100;
+    }
+    
+    .bin {
+      transition: all 0.3s ease;
+    }
+    .bin.highlight {
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(255,255,255,0.5);
+    }
+    
+    .plant-stage {
+      transition: all 0.5s ease;
+    }
+    
+    .star {
+      animation: sparkle 1s ease-in-out infinite;
+    }
+    .star:nth-child(2) { animation-delay: 0.2s; }
+    .star:nth-child(3) { animation-delay: 0.4s; }
+    
+    .progress-fill {
+      transition: width 0.5s ease-out;
+    }
+    
+    .modal-overlay {
+      backdrop-filter: blur(8px);
+    }
+    
+    .checkbox-custom {
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #22c55e;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .checkbox-custom:checked {
+      background: #22c55e;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+      background-size: 18px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full relative overflow-hidden" style="background: linear-gradient(180deg, #7dd3fc 0%, #a5f3fc 50%, #86efac 100%);"><!-- Decorative Elements -->
+   <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-10 left-10 text-6xl float" style="animation-delay: 0s;">
+     ☁️
+    </div>
+    <div class="absolute top-20 right-20 text-5xl float" style="animation-delay: 0.5s;">
+     ☁️
+    </div>
+    <div class="absolute top-5 left-1/3 text-4xl float" style="animation-delay: 1s;">
+     🌤️
+    </div>
+    <div class="absolute bottom-10 left-5 text-4xl">
+     🌻
+    </div>
+    <div class="absolute bottom-10 right-10 text-4xl">
+     🌷
+    </div>
+    <div class="absolute bottom-20 left-20 text-3xl">
+     🦋
+    </div>
+    <div class="absolute bottom-16 right-1/4 text-3xl float">
+     🐝
+    </div>
+   </div><!-- Main Content Container -->
+   <div id="main-content" class="relative z-10 flex flex-col items-center justify-center min-h-full p-4 md:p-8"><!-- Welcome Screen -->
+    <div id="welcome-screen" class="w-full max-w-2xl">
+     <div class="bg-white/90 rounded-3xl p-6 md:p-10 shadow-2xl border-4 border-green-400 grow-in">
+      <div class="text-center mb-6">
+       <h1 id="main-title" class="title-font text-3xl md:text-5xl font-bold text-green-600 mb-2">🌍 Guardianes del Planeta 🌱</h1>
+       <p class="text-lg md:text-xl text-green-700 font-semibold">¡Aprende a cuidar nuestro hermoso mundo!</p>
+      </div>
+      <div class="flex justify-center gap-4 text-5xl mb-6"><span class="float" style="animation-delay: 0s;">🌳</span> <span class="float" style="animation-delay: 0.3s;">🌺</span> <span class="float" style="animation-delay: 0.6s;">🦜</span> <span class="float" style="animation-delay: 0.9s;">🌊</span>
+      </div>
+      <div class="space-y-4 mb-6"><button onclick="showTerms()" class="game-btn w-full py-4 px-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-xl font-bold rounded-2xl shadow-lg flex items-center justify-center gap-3"> <span class="text-2xl">📋</span> Ver Reglas de Uso </button> <button onclick="startGame()" class="game-btn w-full py-4 px-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-xl font-bold rounded-2xl shadow-lg flex items-center justify-center gap-3 pulse-glow"> <span class="text-2xl">🎮</span> ¡Comenzar a Jugar! </button>
+      </div>
+      <div class="text-center pt-4 border-t-2 border-green-200">
+       <p id="author-text" class="text-green-600 font-semibold text-sm md:text-base">💚 Material elaborado con amor por la<br><span class="text-lg font-bold">Mtra. María Fernanda Flores Valenzuela</span> 💚</p>
+      </div>
+     </div>
+    </div><!-- Terms and Conditions Screen -->
+    <div id="terms-screen" class="hidden w-full max-w-3xl">
+     <div class="bg-white/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-amber-400 grow-in max-h-[90vh] overflow-y-auto">
+      <div class="text-center mb-6">
+       <h2 class="title-font text-2xl md:text-4xl font-bold text-amber-600 mb-2">📜 Términos y Condiciones</h2>
+       <p class="text-amber-700">Reglas importantes para usar este material</p>
+      </div>
+      <div class="space-y-4"><!-- SÍ se puede -->
+       <div class="bg-green-50 rounded-2xl p-5 border-2 border-green-300">
+        <h3 class="title-font text-xl font-bold text-green-600 mb-4 flex items-center gap-2"><span class="text-3xl">✅</span> SÍ PUEDES:</h3>
+        <ul class="space-y-3">
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">👨‍🏫</span> <span class="font-medium">Usar este material con tus alumnos en clase</span></li>
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">🖨️</span> <span class="font-medium">Imprimirlo para actividades escolares</span></li>
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">💻</span> <span class="font-medium">Proyectarlo en el salón de clases</span></li>
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">📱</span> <span class="font-medium">Compartir el enlace oficial con padres de familia</span></li>
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">🏠</span> <span class="font-medium">Enviar como tarea para reforzar en casa</span></li>
+         <li class="flex items-start gap-3 text-green-700"><span class="text-2xl">✨</span> <span class="font-medium">Dar crédito a la autora al compartir</span></li>
+        </ul>
+       </div><!-- NO se puede -->
+       <div class="bg-red-50 rounded-2xl p-5 border-2 border-red-300">
+        <h3 class="title-font text-xl font-bold text-red-600 mb-4 flex items-center gap-2"><span class="text-3xl">❌</span> NO PUEDES:</h3>
+        <ul class="space-y-3">
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">💰</span> <span class="font-medium">Vender o comercializar este material</span></li>
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">🔄</span> <span class="font-medium">Modificarlo y redistribuirlo como propio</span></li>
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">🚫</span> <span class="font-medium">Quitar el nombre de la autora</span></li>
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">📤</span> <span class="font-medium">Subirlo a otras plataformas sin permiso</span></li>
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">📋</span> <span class="font-medium">Copiarlo para crear material "nuevo"</span></li>
+         <li class="flex items-start gap-3 text-red-700"><span class="text-2xl">🎁</span> <span class="font-medium">Regalarlo o compartir archivos originales</span></li>
+        </ul>
+       </div>
+       <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-300 text-center">
+        <p class="text-amber-700 font-semibold">🙏 Al usar este material, aceptas respetar el trabajo y esfuerzo de la autora.<br><span class="text-sm">¡Gracias por apoyar a los creadores de contenido educativo!</span></p>
+       </div>
+      </div>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3"><button onclick="hideTerms()" class="game-btn flex-1 py-3 px-6 bg-gradient-to-r from-gray-400 to-gray-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"> <span>⬅️</span> Volver </button> <button onclick="acceptTerms()" class="game-btn flex-1 py-3 px-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"> <span>✅</span> Acepto y Entiendo </button>
+      </div>
+     </div>
+    </div><!-- Name Entry Screen -->
+    <div id="name-screen" class="hidden w-full max-w-md">
+     <div class="bg-white/90 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-cyan-400 grow-in">
+      <div class="text-center mb-6">
+       <h2 class="title-font text-2xl md:text-3xl font-bold text-cyan-600 mb-2">¡Hola, Guardián! 🌟</h2>
+       <p class="text-cyan-700">¿Cómo te llamas?</p>
+      </div>
+      <div class="space-y-4"><input type="text" id="player-name" placeholder="Escribe tu nombre..." maxlength="20" class="w-full py-4 px-6 text-xl text-center border-4 border-cyan-300 rounded-2xl focus:border-cyan-500 focus:outline-none transition-colors font-semibold text-cyan-700"> <button onclick="confirmName()" class="game-btn w-full py-4 px-6 bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-xl font-bold rounded-2xl shadow-lg flex items-center justify-center gap-3"> <span class="text-2xl">🚀</span> ¡Comenzar Aventura! </button>
+      </div>
+     </div>
+    </div><!-- Game Menu Screen -->
+    <div id="game-menu" class="hidden w-full max-w-2xl">
+     <div class="bg-white/90 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-purple-400 grow-in">
+      <div class="text-center mb-6">
+       <h2 class="title-font text-2xl md:text-3xl font-bold text-purple-600 mb-1">¡Hola, <span id="player-display">Guardián</span>! 🌟</h2>
+       <p class="text-purple-700">Elige tu misión ecológica</p>
+       <div class="mt-3 bg-purple-100 rounded-full py-2 px-4 inline-block"><span class="text-purple-700 font-bold">⭐ Puntos: <span id="total-score">0</span></span>
+       </div>
+      </div>
+      <div class="grid gap-4"><button onclick="startLevel('plant')" class="game-btn w-full py-5 px-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center gap-4 text-left"> <span class="text-4xl">🌱</span>
+        <div>
+         <div class="text-xl">
+          Cuida tu Plantita
+         </div>
+         <div class="text-sm opacity-90">
+          Riega y dale sol para que crezca
+         </div>
+        </div><span id="plant-check" class="ml-auto text-2xl hidden">✅</span> </button> <button onclick="startLevel('trash')" class="game-btn w-full py-5 px-6 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center gap-4 text-left"> <span class="text-4xl">🧹</span>
+        <div>
+         <div class="text-xl">
+          Recoge la Basura
+         </div>
+         <div class="text-sm opacity-90">
+          Limpia el parque de residuos
+         </div>
+        </div><span id="trash-check" class="ml-auto text-2xl hidden">✅</span> </button> <button onclick="startLevel('sort')" class="game-btn w-full py-5 px-6 bg-gradient-to-r from-blue-400 to-indigo-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center gap-4 text-left"> <span class="text-4xl">♻️</span>
+        <div>
+         <div class="text-xl">
+          Clasifica los Residuos
+         </div>
+         <div class="text-sm opacity-90">
+          Separa orgánico e inorgánico
+         </div>
+        </div><span id="sort-check" class="ml-auto text-2xl hidden">✅</span> </button> <button onclick="startLevel('quiz')" class="game-btn w-full py-5 px-6 bg-gradient-to-r from-pink-400 to-rose-500 text-white text-lg font-bold rounded-2xl shadow-lg flex items-center gap-4 text-left"> <span class="text-4xl">🧠</span>
+        <div>
+         <div class="text-xl">
+          Quiz Ecológico
+         </div>
+         <div class="text-sm opacity-90">
+          Demuestra lo que sabes
+         </div>
+        </div><span id="quiz-check" class="ml-auto text-2xl hidden">✅</span> </button>
+      </div>
+      <div class="mt-6 flex gap-3"><button onclick="showLeaderboard()" class="game-btn flex-1 py-3 px-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2"> <span>🏆</span> Récords </button> <button onclick="backToWelcome()" class="game-btn flex-1 py-3 px-4 bg-gradient-to-r from-gray-400 to-gray-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2"> <span>🏠</span> Inicio </button>
+      </div>
+     </div>
+    </div><!-- Plant Game -->
+    <div id="plant-game" class="hidden w-full max-w-lg">
+     <div class="bg-white/90 rounded-3xl p-6 shadow-2xl border-4 border-green-400 grow-in">
+      <div class="flex justify-between items-center mb-4">
+       <h2 class="title-font text-2xl font-bold text-green-600">🌱 Cuida tu Plantita</h2><button onclick="backToMenu()" class="text-2xl hover:scale-110 transition-transform">❌</button>
+      </div>
+      <div class="bg-gradient-to-b from-sky-200 to-green-200 rounded-2xl p-6 mb-4 relative min-h-[250px] flex items-end justify-center"><!-- Sun -->
+       <div id="sun" class="absolute top-4 right-4 text-5xl transition-all duration-500 opacity-30">
+        ☀️
+       </div><!-- Rain -->
+       <div id="rain-container" class="absolute inset-0 overflow-hidden pointer-events-none rounded-2xl"></div><!-- Plant -->
+       <div class="relative">
+        <div id="plant-display" class="text-6xl transition-all duration-500 plant-stage">
+         🌱
+        </div>
+        <div class="w-20 h-8 bg-amber-700 rounded-t-lg mx-auto -mt-2"></div>
+        <div class="w-24 h-4 bg-amber-800 rounded-b-lg mx-auto"></div>
+       </div>
+      </div>
+      <div class="mb-4">
+       <div class="flex justify-between text-sm font-semibold text-green-700 mb-1"><span>Crecimiento</span> <span id="plant-progress-text">0%</span>
+       </div>
+       <div class="h-4 bg-green-200 rounded-full overflow-hidden">
+        <div id="plant-progress" class="progress-fill h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full" style="width: 0%"></div>
+       </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3"><button onclick="waterPlant()" class="game-btn py-4 bg-gradient-to-r from-blue-400 to-cyan-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 text-lg"> <span class="text-2xl">💧</span> Regar </button> <button onclick="giveSun()" class="game-btn py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 text-lg"> <span class="text-2xl">☀️</span> Sol </button>
+      </div>
+      <p class="text-center text-green-600 mt-4 font-medium text-sm">💡 Alterna entre agua y sol para que crezca sana</p>
+     </div>
+    </div><!-- Trash Collection Game -->
+    <div id="trash-game" class="hidden w-full max-w-lg">
+     <div class="bg-white/90 rounded-3xl p-6 shadow-2xl border-4 border-amber-400 grow-in">
+      <div class="flex justify-between items-center mb-4">
+       <h2 class="title-font text-2xl font-bold text-amber-600">🧹 Recoge la Basura</h2><button onclick="backToMenu()" class="text-2xl hover:scale-110 transition-transform">❌</button>
+      </div>
+      <div class="mb-4">
+       <div class="flex justify-between text-sm font-semibold text-amber-700 mb-1"><span>Progreso</span> <span id="trash-progress-text">0/10</span>
+       </div>
+       <div class="h-4 bg-amber-200 rounded-full overflow-hidden">
+        <div id="trash-progress" class="progress-fill h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full" style="width: 0%"></div>
+       </div>
+      </div>
+      <div id="trash-area" class="bg-gradient-to-b from-green-300 to-green-400 rounded-2xl p-4 min-h-[300px] relative grid grid-cols-5 gap-2 content-start"><!-- Trash items will be generated here -->
+      </div>
+      <p class="text-center text-amber-600 mt-4 font-medium text-sm">👆 Toca cada basura para recogerla</p>
+     </div>
+    </div><!-- Sorting Game -->
+    <div id="sort-game" class="hidden w-full max-w-2xl">
+     <div class="bg-white/90 rounded-3xl p-6 shadow-2xl border-4 border-blue-400 grow-in">
+      <div class="flex justify-between items-center mb-4">
+       <h2 class="title-font text-xl md:text-2xl font-bold text-blue-600">♻️ Clasifica los Residuos</h2><button onclick="backToMenu()" class="text-2xl hover:scale-110 transition-transform">❌</button>
+      </div>
+      <div class="mb-4">
+       <div class="flex justify-between text-sm font-semibold text-blue-700 mb-1"><span>Clasificados</span> <span id="sort-progress-text">0/12</span>
+       </div>
+       <div class="h-4 bg-blue-200 rounded-full overflow-hidden">
+        <div id="sort-progress" class="progress-fill h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" style="width: 0%"></div>
+       </div>
+      </div><!-- Current item to sort -->
+      <div class="bg-gray-100 rounded-2xl p-4 mb-4 text-center">
+       <p class="text-gray-600 mb-2 font-medium">¿Dónde va esto?</p>
+       <div id="current-trash" class="text-6xl mb-2">
+        🍌
+       </div>
+       <p id="current-trash-name" class="text-gray-700 font-semibold">Cáscara de plátano</p>
+      </div><!-- Bins -->
+      <div class="grid grid-cols-2 gap-4"><button onclick="sortTrash('organic')" id="organic-bin" class="bin game-btn py-6 bg-gradient-to-b from-green-400 to-green-600 text-white font-bold rounded-2xl shadow-lg flex flex-col items-center gap-2"> <span class="text-5xl">🟢</span> <span class="text-lg">ORGÁNICO</span> <span class="text-xs opacity-80">Restos de comida, plantas</span> </button> <button onclick="sortTrash('inorganic')" id="inorganic-bin" class="bin game-btn py-6 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold rounded-2xl shadow-lg flex flex-col items-center gap-2"> <span class="text-5xl">🔵</span> <span class="text-lg">INORGÁNICO</span> <span class="text-xs opacity-80">Plástico, metal, vidrio</span> </button>
+      </div>
+      <div id="sort-feedback" class="mt-4 text-center font-bold text-lg hidden"></div>
+     </div>
+    </div><!-- Quiz Game -->
+    <div id="quiz-game" class="hidden w-full max-w-lg">
+     <div class="bg-white/90 rounded-3xl p-6 shadow-2xl border-4 border-pink-400 grow-in">
+      <div class="flex justify-between items-center mb-4">
+       <h2 class="title-font text-2xl font-bold text-pink-600">🧠 Quiz Ecológico</h2><button onclick="backToMenu()" class="text-2xl hover:scale-110 transition-transform">❌</button>
+      </div>
+      <div class="mb-4">
+       <div class="flex justify-between text-sm font-semibold text-pink-700 mb-1"><span>Pregunta <span id="quiz-current">1</span>/5</span> <span>✅ <span id="quiz-correct">0</span></span>
+       </div>
+       <div class="h-4 bg-pink-200 rounded-full overflow-hidden">
+        <div id="quiz-progress" class="progress-fill h-full bg-gradient-to-r from-pink-400 to-rose-500 rounded-full" style="width: 0%"></div>
+       </div>
+      </div>
+      <div class="bg-pink-50 rounded-2xl p-5 mb-4">
+       <p id="quiz-question" class="text-lg font-semibold text-pink-800 text-center"></p>
+      </div>
+      <div id="quiz-options" class="space-y-3"><!-- Options will be generated here -->
+      </div>
+      <div id="quiz-feedback" class="mt-4 text-center font-bold text-lg hidden"></div>
+     </div>
+    </div><!-- Level Complete Modal -->
+    <div id="level-complete" class="hidden fixed inset-0 bg-black/50 modal-overlay flex items-center justify-center z-50 p-4">
+     <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl grow-in">
+      <div class="text-6xl mb-4">
+       🎉
+      </div>
+      <h2 class="title-font text-3xl font-bold text-green-600 mb-2">¡Excelente!</h2>
+      <p class="text-gray-600 mb-2">Completaste la misión</p>
+      <div class="text-4xl font-bold text-amber-500 mb-4">
+       +<span id="level-points">100</span> ⭐
+      </div>
+      <div class="flex gap-2 star justify-center text-3xl mb-4"><span>⭐</span><span>⭐</span><span>⭐</span>
+      </div><button onclick="closeLevelComplete()" class="game-btn w-full py-3 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-lg font-bold rounded-xl shadow-lg"> ¡Continuar! 🚀 </button>
+     </div>
+    </div><!-- Leaderboard Modal -->
+    <div id="leaderboard" class="hidden fixed inset-0 bg-black/50 modal-overlay flex items-center justify-center z-50 p-4">
+     <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl grow-in max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+       <h2 class="title-font text-2xl font-bold text-amber-600">🏆 Mejores Guardianes</h2><button onclick="closeLeaderboard()" class="text-2xl hover:scale-110 transition-transform">❌</button>
+      </div>
+      <div id="leaderboard-list" class="space-y-2"><!-- Leaderboard entries will be generated here -->
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // ========== Configuration ==========
+    const defaultConfig = {
+      game_title: '🌍 Guardianes del Planeta 🌱',
+      author_text: 'Material elaborado con amor por la Mtra. María Fernanda Flores Valenzuela',
+      background_color: '#7dd3fc',
+      surface_color: '#ffffff',
+      text_color: '#166534',
+      primary_action: '#22c55e',
+      secondary_action: '#06b6d4',
+      font_family: 'Nunito',
+      font_size: 16
+    };
+
+    let config = { ...defaultConfig };
+    let currentData = [];
+    let currentPlayer = null;
+
+    // ========== Game State ==========
+    let gameState = {
+      playerName: '',
+      totalScore: 0,
+      completedLevels: [],
+      plantGrowth: 0,
+      lastPlantAction: null,
+      trashCollected: 0,
+      sortedCorrect: 0,
+      currentSortIndex: 0,
+      quizIndex: 0,
+      quizCorrect: 0
+    };
+
+    // ========== Game Data ==========
+    const trashItems = ['🍬', '📦', '🥤', '🍂', '📰', '🧃', '🥫', '🍌', '🧴', '👟', '🎁', '🧻', '🍎', '🥚', '📱'];
+    
+    const sortableItems = [
+      { emoji: '🍌', name: 'Cáscara de plátano', type: 'organic' },
+      { emoji: '🍎', name: 'Corazón de manzana', type: 'organic' },
+      { emoji: '🥚', name: 'Cáscara de huevo', type: 'organic' },
+      { emoji: '🍂', name: 'Hojas secas', type: 'organic' },
+      { emoji: '☕', name: 'Residuos de café', type: 'organic' },
+      { emoji: '🥬', name: 'Restos de verdura', type: 'organic' },
+      { emoji: '🥤', name: 'Botella de plástico', type: 'inorganic' },
+      { emoji: '🥫', name: 'Lata de aluminio', type: 'inorganic' },
+      { emoji: '📦', name: 'Caja de cartón', type: 'inorganic' },
+      { emoji: '🧴', name: 'Envase de shampoo', type: 'inorganic' },
+      { emoji: '📱', name: 'Celular viejo', type: 'inorganic' },
+      { emoji: '🔋', name: 'Pilas usadas', type: 'inorganic' }
+    ];
+
+    const quizQuestions = [
+      {
+        question: '¿Cuál es el color del contenedor para basura orgánica?',
+        options: ['Azul', 'Verde', 'Rojo', 'Amarillo'],
+        correct: 1
+      },
+      {
+        question: '¿Qué podemos hacer para ahorrar agua?',
+        options: ['Dejar la llave abierta', 'Bañarnos más tiempo', 'Cerrar la llave mientras nos lavamos los dientes', 'Regar las plantas al mediodía'],
+        correct: 2
+      },
+      {
+        question: '¿Qué significan las 3R del medio ambiente?',
+        options: ['Rápido, Ruidoso, Raro', 'Reducir, Reutilizar, Reciclar', 'Rojo, Rosa, Rubí', 'Reír, Rugir, Roncar'],
+        correct: 1
+      },
+      {
+        question: '¿Cuánto tarda en degradarse una bolsa de plástico?',
+        options: ['1 semana', '1 mes', '1 año', 'Más de 100 años'],
+        correct: 3
+      },
+      {
+        question: '¿Qué animal está en peligro por la contaminación de los océanos?',
+        options: ['Perros', 'Tortugas marinas', 'Gallinas', 'Vacas'],
+        correct: 1
+      }
+    ];
+
+    const plantStages = ['🌱', '🌿', '🪴', '🌳', '🌲'];
+
+    // ========== Screen Navigation ==========
+    function showScreen(screenId) {
+      const screens = ['welcome-screen', 'terms-screen', 'name-screen', 'game-menu', 'plant-game', 'trash-game', 'sort-game', 'quiz-game'];
+      screens.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('grow-in');
+        }
+      });
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.remove('hidden');
+        setTimeout(() => target.classList.add('grow-in'), 10);
+      }
+    }
+
+    function showTerms() {
+      showScreen('terms-screen');
+    }
+
+    function hideTerms() {
+      showScreen('welcome-screen');
+    }
+
+    function acceptTerms() {
+      showScreen('welcome-screen');
+    }
+
+    function startGame() {
+      showScreen('name-screen');
+      document.getElementById('player-name').focus();
+    }
+
+    function confirmName() {
+      const nameInput = document.getElementById('player-name');
+      const name = nameInput.value.trim() || 'Guardián';
+      gameState.playerName = name;
+      
+      // Check if player exists in data
+      const existingPlayer = currentData.find(p => p.player_name.toLowerCase() === name.toLowerCase());
+      if (existingPlayer) {
+        currentPlayer = existingPlayer;
+        gameState.totalScore = existingPlayer.total_score || 0;
+        gameState.completedLevels = existingPlayer.completed_levels ? existingPlayer.completed_levels.split(',').filter(l => l) : [];
+      } else {
+        currentPlayer = null;
+        gameState.totalScore = 0;
+        gameState.completedLevels = [];
+      }
+      
+      showGameMenu();
+    }
+
+    function showGameMenu() {
+      document.getElementById('player-display').textContent = gameState.playerName;
+      updateScore();
+      updateLevelChecks();
+      showScreen('game-menu');
+    }
+
+    function backToMenu() {
+      showGameMenu();
+    }
+
+    function backToWelcome() {
+      showScreen('welcome-screen');
+    }
+
+    // ========== Score & Progress ==========
+    function updateScore() {
+      document.getElementById('total-score').textContent = gameState.totalScore;
+    }
+
+    function updateLevelChecks() {
+      ['plant', 'trash', 'sort', 'quiz'].forEach(level => {
+        const check = document.getElementById(`${level}-check`);
+        if (check) {
+          if (gameState.completedLevels.includes(level)) {
+            check.classList.remove('hidden');
+          } else {
+            check.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    async function addPoints(points, levelName) {
+      gameState.totalScore += points;
+      if (!gameState.completedLevels.includes(levelName)) {
+        gameState.completedLevels.push(levelName);
+      }
+      
+      // Save to database
+      await saveProgress();
+      
+      document.getElementById('level-points').textContent = points;
+      document.getElementById('level-complete').classList.remove('hidden');
+    }
+
+    async function saveProgress() {
+      if (currentData.length >= 999 && !currentPlayer) {
+        console.log('Maximum records reached');
+        return;
+      }
+
+      const playerData = {
+        player_name: gameState.playerName,
+        total_score: gameState.totalScore,
+        completed_levels: gameState.completedLevels.join(','),
+        created_at: new Date().toISOString()
+      };
+
+      if (currentPlayer) {
+        const result = await window.dataSdk.update({
+          ...currentPlayer,
+          ...playerData
+        });
+        if (!result.isOk) {
+          console.error('Error updating progress');
+        }
+      } else {
+        const result = await window.dataSdk.create(playerData);
+        if (!result.isOk) {
+          console.error('Error saving progress');
+        }
+      }
+    }
+
+    function closeLevelComplete() {
+      document.getElementById('level-complete').classList.add('hidden');
+      showGameMenu();
+    }
+
+    // ========== Leaderboard ==========
+    function showLeaderboard() {
+      const list = document.getElementById('leaderboard-list');
+      const sorted = [...currentData].sort((a, b) => (b.total_score || 0) - (a.total_score || 0)).slice(0, 10);
+      
+      if (sorted.length === 0) {
+        list.innerHTML = '<p class="text-center text-gray-500 py-8">¡Sé el primero en jugar!</p>';
+      } else {
+        list.innerHTML = sorted.map((player, i) => {
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+          return `
+            <div class="flex items-center gap-3 bg-amber-50 rounded-xl p-3 ${i < 3 ? 'border-2 border-amber-300' : ''}">
+              <span class="text-2xl font-bold">${medal}</span>
+              <span class="flex-1 font-semibold text-amber-800">${player.player_name}</span>
+              <span class="text-amber-600 font-bold">${player.total_score || 0} ⭐</span>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      document.getElementById('leaderboard').classList.remove('hidden');
+    }
+
+    function closeLeaderboard() {
+      document.getElementById('leaderboard').classList.add('hidden');
+    }
+
+    // ========== Level: Plant ==========
+    function startLevel(level) {
+      switch(level) {
+        case 'plant': startPlantGame(); break;
+        case 'trash': startTrashGame(); break;
+        case 'sort': startSortGame(); break;
+        case 'quiz': startQuizGame(); break;
+      }
+    }
+
+    function startPlantGame() {
+      gameState.plantGrowth = 0;
+      gameState.lastPlantAction = null;
+      updatePlantDisplay();
+      showScreen('plant-game');
+    }
+
+    function updatePlantDisplay() {
+      const progress = gameState.plantGrowth;
+      document.getElementById('plant-progress').style.width = `${progress}%`;
+      document.getElementById('plant-progress-text').textContent = `${progress}%`;
+      
+      const stageIndex = Math.min(Math.floor(progress / 25), 4);
+      const plant = document.getElementById('plant-display');
+      plant.textContent = plantStages[stageIndex];
+      plant.classList.add('bounce-in');
+      setTimeout(() => plant.classList.remove('bounce-in'), 500);
+    }
+
+    function waterPlant() {
+      if (gameState.plantGrowth >= 100) return;
+      
+      const sun = document.getElementById('sun');
+      sun.classList.remove('opacity-100');
+      sun.classList.add('opacity-30');
+      
+      // Show rain effect
+      const rainContainer = document.getElementById('rain-container');
+      for (let i = 0; i < 15; i++) {
+        const drop = document.createElement('div');
+        drop.textContent = '💧';
+        drop.className = 'absolute text-xl';
+        drop.style.left = `${Math.random() * 100}%`;
+        drop.style.top = '-20px';
+        drop.style.animation = `rain-drop 1s ease-in forwards`;
+        drop.style.animationDelay = `${Math.random() * 0.5}s`;
+        rainContainer.appendChild(drop);
+        setTimeout(() => drop.remove(), 1500);
+      }
+      
+      if (gameState.lastPlantAction !== 'water') {
+        gameState.plantGrowth = Math.min(100, gameState.plantGrowth + 20);
+        gameState.lastPlantAction = 'water';
+      } else {
+        gameState.plantGrowth = Math.min(100, gameState.plantGrowth + 5);
+      }
+      
+      updatePlantDisplay();
+      checkPlantComplete();
+    }
+
+    function giveSun() {
+      if (gameState.plantGrowth >= 100) return;
+      
+      const sun = document.getElementById('sun');
+      sun.classList.remove('opacity-30');
+      sun.classList.add('opacity-100');
+      sun.classList.add('wiggle');
+      setTimeout(() => sun.classList.remove('wiggle'), 500);
+      
+      if (gameState.lastPlantAction !== 'sun') {
+        gameState.plantGrowth = Math.min(100, gameState.plantGrowth + 20);
+        gameState.lastPlantAction = 'sun';
+      } else {
+        gameState.plantGrowth = Math.min(100, gameState.plantGrowth + 5);
+      }
+      
+      updatePlantDisplay();
+      checkPlantComplete();
+    }
+
+    function checkPlantComplete() {
+      if (gameState.plantGrowth >= 100) {
+        setTimeout(() => addPoints(100, 'plant'), 500);
+      }
+    }
+
+    // ========== Level: Trash Collection ==========
+    function startTrashGame() {
+      gameState.trashCollected = 0;
+      const area = document.getElementById('trash-area');
+      area.innerHTML = '';
+      
+      const shuffled = [...trashItems].sort(() => Math.random() - 0.5).slice(0, 10);
+      shuffled.forEach((item, i) => {
+        const trash = document.createElement('button');
+        trash.className = 'trash-item text-4xl bg-white/50 rounded-xl p-2 aspect-square flex items-center justify-center slide-up';
+        trash.style.animationDelay = `${i * 0.1}s`;
+        trash.textContent = item;
+        trash.onclick = () => collectTrash(trash);
+        area.appendChild(trash);
+      });
+      
+      updateTrashProgress();
+      showScreen('trash-game');
+    }
+
+    function collectTrash(element) {
+      element.classList.add('bounce-in');
+      element.style.transform = 'scale(0)';
+      element.style.opacity = '0';
+      setTimeout(() => element.remove(), 300);
+      
+      gameState.trashCollected++;
+      updateTrashProgress();
+      
+      if (gameState.trashCollected >= 10) {
+        setTimeout(() => addPoints(100, 'trash'), 500);
+      }
+    }
+
+    function updateTrashProgress() {
+      const progress = (gameState.trashCollected / 10) * 100;
+      document.getElementById('trash-progress').style.width = `${progress}%`;
+      document.getElementById('trash-progress-text').textContent = `${gameState.trashCollected}/10`;
+    }
+
+    // ========== Level: Sort ==========
+    function startSortGame() {
+      gameState.sortedCorrect = 0;
+      gameState.currentSortIndex = 0;
+      showSortItem();
+      showScreen('sort-game');
+    }
+
+    function showSortItem() {
+      if (gameState.currentSortIndex >= 12) {
+        setTimeout(() => addPoints(120, 'sort'), 500);
+        return;
+      }
+      
+      const item = sortableItems[gameState.currentSortIndex];
+      document.getElementById('current-trash').textContent = item.emoji;
+      document.getElementById('current-trash-name').textContent = item.name;
+      document.getElementById('sort-feedback').classList.add('hidden');
+      
+      updateSortProgress();
+    }
+
+    function sortTrash(type) {
+      const item = sortableItems[gameState.currentSortIndex];
+      const feedback = document.getElementById('sort-feedback');
+      const bins = ['organic-bin', 'inorganic-bin'];
+      
+      bins.forEach(id => document.getElementById(id).classList.remove('highlight'));
+      
+      if (item.type === type) {
+        gameState.sortedCorrect++;
+        feedback.textContent = '¡Correcto! ✅';
+        feedback.className = 'mt-4 text-center font-bold text-lg text-green-600';
+        document.getElementById(`${type}-bin`).classList.add('highlight');
+      } else {
+        feedback.textContent = '¡Ups! Intenta de nuevo ❌';
+        feedback.className = 'mt-4 text-center font-bold text-lg text-red-600';
+        feedback.classList.remove('hidden');
+        return;
+      }
+      
+      feedback.classList.remove('hidden');
+      gameState.currentSortIndex++;
+      
+      setTimeout(() => showSortItem(), 800);
+    }
+
+    function updateSortProgress() {
+      const progress = (gameState.currentSortIndex / 12) * 100;
+      document.getElementById('sort-progress').style.width = `${progress}%`;
+      document.getElementById('sort-progress-text').textContent = `${gameState.currentSortIndex}/12`;
+    }
+
+    // ========== Level: Quiz ==========
+    function startQuizGame() {
+      gameState.quizIndex = 0;
+      gameState.quizCorrect = 0;
+      showQuizQuestion();
+      showScreen('quiz-game');
+    }
+
+    function showQuizQuestion() {
+      if (gameState.quizIndex >= 5) {
+        const points = gameState.quizCorrect * 20;
+        setTimeout(() => addPoints(points, 'quiz'), 500);
+        return;
+      }
+      
+      const q = quizQuestions[gameState.quizIndex];
+      document.getElementById('quiz-question').textContent = q.question;
+      document.getElementById('quiz-current').textContent = gameState.quizIndex + 1;
+      document.getElementById('quiz-correct').textContent = gameState.quizCorrect;
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = q.options.map((opt, i) => `
+        <button onclick="answerQuiz(${i})" class="game-btn w-full py-3 px-4 bg-gradient-to-r from-pink-100 to-rose-100 hover:from-pink-200 hover:to-rose-200 text-pink-800 font-semibold rounded-xl text-left flex items-center gap-3 slide-up" style="animation-delay: ${i * 0.1}s">
+          <span class="w-8 h-8 bg-pink-300 rounded-full flex items-center justify-center text-white font-bold">${String.fromCharCode(65 + i)}</span>
+          ${opt}
+        </button>
+      `).join('');
+      
+      updateQuizProgress();
+    }
+
+    function answerQuiz(index) {
+      const q = quizQuestions[gameState.quizIndex];
+      const feedback = document.getElementById('quiz-feedback');
+      const buttons = document.querySelectorAll('#quiz-options button');
+      
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correct) {
+          btn.classList.remove('from-pink-100', 'to-rose-100');
+          btn.classList.add('from-green-300', 'to-green-400', 'text-white');
+        } else if (i === index && index !== q.correct) {
+          btn.classList.remove('from-pink-100', 'to-rose-100');
+          btn.classList.add('from-red-300', 'to-red-400', 'text-white');
+        }
+      });
+      
+      if (index === q.correct) {
+        gameState.quizCorrect++;
+        feedback.textContent = '¡Excelente! 🎉';
+        feedback.className = 'mt-4 text-center font-bold text-lg text-green-600';
+      } else {
+        feedback.textContent = `La respuesta correcta era: ${q.options[q.correct]}`;
+        feedback.className = 'mt-4 text-center font-bold text-lg text-red-600';
+      }
+      
+      feedback.classList.remove('hidden');
+      gameState.quizIndex++;
+      
+      setTimeout(() => showQuizQuestion(), 1500);
+    }
+
+    function updateQuizProgress() {
+      const progress = (gameState.quizIndex / 5) * 100;
+      document.getElementById('quiz-progress').style.width = `${progress}%`;
+    }
+
+    // ========== SDK Initialization ==========
+    const dataHandler = {
+      onDataChanged(data) {
+        currentData = data;
+        
+        // Update current player if exists
+        if (gameState.playerName) {
+          const player = data.find(p => p.player_name.toLowerCase() === gameState.playerName.toLowerCase());
+          if (player) {
+            currentPlayer = player;
+          }
+        }
+      }
+    };
+
+    async function onConfigChange(cfg) {
+      const title = cfg.game_title || defaultConfig.game_title;
+      const author = cfg.author_text || defaultConfig.author_text;
+      const bgColor = cfg.background_color || defaultConfig.background_color;
+      const surfaceColor = cfg.surface_color || defaultConfig.surface_color;
+      const textColor = cfg.text_color || defaultConfig.text_color;
+      const primaryAction = cfg.primary_action || defaultConfig.primary_action;
+      const fontFamily = cfg.font_family || defaultConfig.font_family;
+      const fontSize = cfg.font_size || defaultConfig.font_size;
+
+      document.getElementById('main-title').textContent = title;
+      document.getElementById('author-text').innerHTML = `💚 ${author.split('Mtra.')[0] || ''}<br><span class="text-lg font-bold">Mtra. ${author.split('Mtra.')[1] || 'María Fernanda Flores Valenzuela'}</span> 💚`;
+      
+      document.getElementById('app').style.background = `linear-gradient(180deg, ${bgColor} 0%, #a5f3fc 50%, #86efac 100%)`;
+      document.body.style.fontFamily = `${fontFamily}, Nunito, sans-serif`;
+      document.body.style.fontSize = `${fontSize}px`;
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+          },
+          {
+            get: () => cfg.surface_color || defaultConfig.surface_color,
+            set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+          },
+          {
+            get: () => cfg.primary_action || defaultConfig.primary_action,
+            set: (v) => { cfg.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); }
+          },
+          {
+            get: () => cfg.secondary_action || defaultConfig.secondary_action,
+            set: (v) => { cfg.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.font_family || defaultConfig.font_family,
+          set: (v) => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => cfg.font_size || defaultConfig.font_size,
+          set: (v) => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['game_title', cfg.game_title || defaultConfig.game_title],
+        ['author_text', cfg.author_text || defaultConfig.author_text]
+      ]);
+    }
+
+    // Initialize SDKs
+    (async function init() {
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+        config = window.elementSdk.config || defaultConfig;
+      }
+
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Error initializing data SDK');
+        }
+      }
+
+      await onConfigChange(config);
+    })();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d1b443e95512f11',t:'MTc3MTcyOTU3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
