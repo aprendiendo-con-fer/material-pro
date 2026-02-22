@@ -171,18 +171,21 @@
 <script>
 const CONTRASEÑA_MAESTRA = "Pro20-26*";
 
+// REVISAR SESIÓN AL CARGAR
+if (localStorage.getItem("sesionActiva") === "true") {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('main-screen').classList.remove('hidden');
+}
+
+// FORMULARIO LOGIN
 document.getElementById('login-form').addEventListener('submit', function(e) {
   e.preventDefault();
   const password = document.getElementById('password').value;
 
-if (password === CONTRASEÑA_MAESTRA) {
-
-  localStorage.setItem("sesionActiva", "true");
-
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('main-screen').classList.remove('hidden');
-
-}
+  if (password === CONTRASEÑA_MAESTRA) {
+    localStorage.setItem("sesionActiva", "true");
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('main-screen').classList.remove('hidden');
   } else {
     document.getElementById('error-message').classList.remove('hidden');
     document.getElementById('password').value = '';
@@ -190,7 +193,6 @@ if (password === CONTRASEÑA_MAESTRA) {
 });
 
 // NAVEGACIÓN A SUBPÁGINAS
-
 const botones = document.querySelectorAll('.menu-btn');
 
 botones[0].addEventListener('click', function() {
@@ -209,10 +211,5 @@ botones[3].addEventListener('click', function() {
   window.location.href = "humano.html";
 });
 </script>
-// REVISAR SESIÓN AL CARGAR
-if (localStorage.getItem("sesionActiva") === "true") {
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('main-screen').classList.remove('hidden');
-}
 </body>
 </html>
