@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <h1 class="font-bold text-lg">${document.title}</h1>
 
-      <button onclick="window.location.href='index.html'"
-        class="bg-gray-800 text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition">
-        🏠 Menú
-      </button>
+    <button onclick="history.back()"
+  class="bg-gray-800 text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition">
+  🏠 Menú
+</button>
 
     </div>
   `;
