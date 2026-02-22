@@ -1,59 +1,89 @@
-<body class="gradient-bg min-h-screen">
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ética, Naturaleza y Sociedades - Material Pro</title>
 
-<!-- BARRA SUPERIOR -->
-<div class="w-full bg-green-600 text-white p-4 flex justify-between items-center shadow-lg">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
-  <button onclick="window.location.href='naturaleza.html'"
-    class="bg-white text-green-600 px-4 py-2 rounded-xl font-bold hover:scale-105 transition">
-    ⬅ Volver
-  </button>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <h1 class="font-bold text-lg">Ética, Naturaleza y Sociedades</h1>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
 
-  <button onclick="window.location.href='index.html'"
-    class="bg-gray-800 text-white px-4 py-2 rounded-xl font-bold hover:scale-105 transition">
-    🏠 Menú
-  </button>
+    .font-fredoka {
+      font-family: 'Fredoka', sans-serif;
+    }
 
-</div>
+    .gradient-bg {
+      background: linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 50%,
+        #f093fb 100%
+      );
+    }
 
-<div class="p-6">
+    .menu-btn {
+      transition: all 0.3s ease;
+    }
 
-<div class="max-w-5xl mx-auto text-center">
+    .menu-btn:hover {
+      transform: scale(1.08) translateY(-5px);
+    }
+  </style>
+</head>
 
-<h1 class="text-4xl md:text-6xl font-fredoka font-bold text-white mb-4">
-🌿 Ética, Naturaleza y Sociedades
-</h1>
+<body class="gradient-bg min-h-screen p-6">
 
-<p class="text-white text-lg mb-10 opacity-90">
-4 juegos disponibles
-</p>
+  <div class="max-w-5xl mx-auto text-center">
 
-<div class="grid md:grid-cols-2 gap-6">
+    <h1 class="text-4xl md:text-6xl font-fredoka font-bold text-white mb-4">
+      🌿 Ética, Naturaleza y Sociedades
+    </h1>
 
-<button onclick="window.location.href='doctodia.html'"
-class="menu-btn bg-gradient-to-r from-green-400 to-emerald-500 p-8 rounded-3xl text-white text-2xl font-bold">
-🧑‍⚕️ Docto Día
-</button>
+    <p class="text-white text-lg mb-10 opacity-90">
+      4 juegos disponibles
+    </p>
 
-<button onclick="window.location.href='profesiones.html'"
-class="menu-btn bg-gradient-to-r from-teal-400 to-cyan-500 p-8 rounded-3xl text-white text-2xl font-bold">
-👩‍🏫 Profesiones
-</button>
+    <div class="grid md:grid-cols-2 gap-6">
 
-<button onclick="window.location.href='recursosnaturales.html'"
-class="menu-btn bg-gradient-to-r from-blue-400 to-indigo-500 p-8 rounded-3xl text-white text-2xl font-bold">
-🌎 Recursos Naturales
-</button>
+      <button
+        onclick="window.location.href='doctodia.html'"
+        class="menu-btn bg-gradient-to-r from-green-400 to-emerald-500 p-8 rounded-3xl text-white text-2xl font-bold">
+        🧑‍⚕️ Docto Día
+      </button>
 
-<button onclick="window.location.href='cuidaelmedioambiente.html'"
-class="menu-btn bg-gradient-to-r from-purple-400 to-pink-500 p-8 rounded-3xl text-white text-2xl font-bold">
-🌱 Cuida el Medio Ambiente
-</button>
+      <button
+        onclick="window.location.href='profesiones.html'"
+        class="menu-btn bg-gradient-to-r from-teal-400 to-cyan-500 p-8 rounded-3xl text-white text-2xl font-bold">
+        👩‍🏫 Profesiones
+      </button>
 
-</div>
+      <button
+        onclick="window.location.href='recursosnaturales.html'"
+        class="menu-btn bg-gradient-to-r from-blue-400 to-indigo-500 p-8 rounded-3xl text-white text-2xl font-bold">
+        🌎 Recursos Naturales
+      </button>
 
-</div>
-</div>
+      <button
+        onclick="window.location.href='cuidaelmedioambiente.html'"
+        class="menu-btn bg-gradient-to-r from-purple-400 to-pink-500 p-8 rounded-3xl text-white text-2xl font-bold">
+        🌱 Cuida el Medio Ambiente
+      </button>
+
+    </div>
+
+    <button
+      onclick="window.location.href='index.html'"
+      class="mt-12 bg-white text-purple-600 font-bold py-3 px-8 rounded-xl hover:scale-105 transition">
+      ⬅ Volver al menú
+    </button>
+
+  </div>
 
 </body>
+</html>
