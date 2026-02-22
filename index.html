@@ -1,29 +1,56 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Games Menu</title>
+    <title>Games Menu System</title>
 </head>
 <body>
-    <h1>Juegos Dinámicos</h1>
-    <h2>Categoría: Alfabetización Global</h2>
-    <ul>
-        <li><a href="alfabetizacionglobal/index.html">Alfabetización Global</a></li>
-    </ul>
-    <h2>Categoría: Ética</h2>
-    <ul>
-        <li><a href="doctodia/index.html">Doctodía</a></li>
-        <li><a href="profesiones/index.html">Profesiones</a></li>
-        <li><a href="recursosnaturales/index.html">Recursos Naturales</a></li>
-        <li><a href="turistaenmexico/index.html">Turista en México</a></li>
-    </ul>
-    <h2>Categoría: Saberes</h2>
-    <ul>
-        <li><a href="fraccionespizzas/index.html">Fracciones Pizzas</a></li>
-        <li><a href="matemontesori/index.html">Matemontesori</a></li>
-        <li><a href="tablasdemultiplicar/index.html">Tablas de Multiplicar</a></li>
-        <li><a href="tiendita/index.html">Tiendita</a></li>
-    </ul>
+    <h1>Welcome to the Games Menu</h1>
+    <nav>
+        <ul>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#terms">Terms and Conditions</a></li>
+            <li>Games:
+                <ul>
+                    <li><strong>Category 1:</strong>
+                        <ul>
+                            <li><a href="#game1">Game 1</a></li>
+                            <li><a href="#game2">Game 2</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>Category 2:</strong>
+                        <ul>
+                            <li><a href="#game3">Game 3</a></li>
+                            <li><a href="#game4">Game 4</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="login">
+        <h2>Login</h2>
+        <form>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+    <div id="terms">
+        <h2>Terms and Conditions</h2>
+        <p>Please read the terms and conditions carefully...</p>
+    </div>
+
+    <div id="games">
+        <h2>Our Games</h2>
+        <p>Select a game from the menu.</p>
+    </div>
 </body>
 </html>
