@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="es" class="h-full">
-<head>
+ <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctora por un Día</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Nunito', sans-serif; }
@@ -28,87 +29,441 @@
       from { opacity: 0; transform: scale(0.3); }
       to { opacity: 1; transform: scale(1); }
     }
-    body { box-sizing: border-box; }
   </style>
-</head>
-<body class="h-full bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 overflow-auto">
-  <div id="app" class="w-full h-full flex items-center justify-center p-4">
-
-    <!-- Pantalla de Términos y Condiciones -->
-    <div id="terms-screen" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 bounce-in">
-      <div class="text-center mb-6">
-        <div class="text-6xl mb-4">🏥</div>
-        <h1 id="main-title" class="text-3xl font-extrabold text-purple-600 mb-2">Doctora por un Día</h1>
-        <p class="text-gray-500 text-sm">Juego Educativo de Simulación Médica</p>
-      </div>
-      <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 max-h-64 overflow-y-auto">
-        <h2 class="font-bold text-purple-700 mb-3 flex items-center gap-2">📋 Términos y Condiciones de Uso</h2>
-        <div class="text-sm text-gray-700 space-y-3">
-          <p><strong>Material creado por:</strong> <span id="author-display">Maestra María Fernanda Flores Valenzuela</span></p>
-          <p class="font-semibold text-purple-600">Al utilizar este material educativo, usted acepta las siguientes condiciones:</p>
-          <div class="space-y-2 pl-4">
-            <p>✅ <strong>Uso Personal:</strong> Este material es exclusivamente para uso personal del comprador original.</p>
-            <p>✅ <strong>Fines Educativos:</strong> Compartir solo con estudiantes bajo supervisión directa.</p>
-            <p>🚫 <strong>Prohibición de Distribución:</strong> No compartir con terceros.</p>
-            <p>🚫 <strong>Prohibición de Reventa:</strong> No se permite comercialización.</p>
-            <p>🚫 <strong>Prohibición de Modificaciones:</strong> No alterar el contenido.</p>
-            <p>⚖️ <strong>Propiedad Intelectual:</strong> Todos los derechos reservados.</p>
-          </div>
-          <p class="text-xs text-gray-500 mt-4 italic">El incumplimiento puede resultar en acciones legales.</p>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 mb-6 bg-yellow-50 p-4 rounded-xl">
-        <input type="checkbox" id="accept-terms" class="w-5 h-5 mt-1 accent-purple-600 cursor-pointer">
-        <label for="accept-terms" class="text-sm text-gray-700 cursor-pointer">He leído, comprendo y acepto los <strong>Términos y Condiciones de Uso</strong>.</label>
-      </div>
-      <button id="start-btn" disabled class="w-full py-4 bg-gray-300 text-gray-500 rounded-2xl font-bold text-lg cursor-not-allowed transition-all duration-300">
-        Acepta los términos para continuar
-      </button>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 overflow-auto">
+  <div id="app" class="w-full h-full flex items-center justify-center p-4"><!-- Pantalla de Términos y Condiciones -->
+   <div id="terms-screen" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 bounce-in">
+    <div class="text-center mb-6">
+     <div class="text-6xl mb-4">
+      🏥
+     </div>
+     <h1 id="main-title" class="text-3xl font-extrabold text-purple-600 mb-2">Doctora por un Día</h1>
+     <p class="text-gray-500 text-sm">Juego Educativo de Simulación Médica</p>
     </div>
-
-    <!-- Pantalla de Selección de Nivel -->
-    <div id="level-screen" class="hidden w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 relative">
-      <div class="text-center mb-8">
-        <div class="text-6xl mb-4 float">👩‍⚕️</div>
-        <div class="text-6xl mb-4 float absolute left-4 top-4">⚗️</div> <!-- Emoji de química -->
-        <h1 id="game-title-display" class="text-3xl font-extrabold text-purple-600 mb-2">Doctora por un Día</h1>
-        <p class="text-gray-600">¡Bienvenido/a! Selecciona tu nivel de experiencia médica</p>
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 max-h-64 overflow-y-auto">
+     <h2 class="font-bold text-purple-700 mb-3 flex items-center gap-2">📋 Términos y Condiciones de Uso</h2>
+     <div class="text-sm text-gray-700 space-y-3">
+      <p><strong>Material creado por:</strong> <span id="author-display">Maestra María Fernanda Flores Valenzuela</span></p>
+      <p class="font-semibold text-purple-600">Al utilizar este material educativo, usted acepta las siguientes condiciones:</p>
+      <div class="space-y-2 pl-4">
+       <p>✅ <strong>Uso Personal:</strong> Este material es exclusivamente para uso personal del comprador original.</p>
+       <p>✅ <strong>Fines Educativos:</strong> Está permitido compartir este recurso únicamente con estudiantes bajo su supervisión directa con propósitos pedagógicos.</p>
+       <p>🚫 <strong>Prohibición de Distribución:</strong> Queda estrictamente prohibido compartir, distribuir o transferir este material a colegas, terceros o cualquier persona que no sea estudiante directo del comprador.</p>
+       <p>🚫 <strong>Prohibición de Reventa:</strong> No está permitida la comercialización, venta o intercambio de este material bajo ninguna circunstancia.</p>
+       <p>🚫 <strong>Prohibición de Modificaciones:</strong> No se autoriza la alteración, adaptación o creación de obras derivadas de este contenido.</p>
+       <p>⚖️ <strong>Propiedad Intelectual:</strong> Todos los derechos de autor pertenecen a la creadora. El uso no autorizado constituye una violación de los derechos de propiedad intelectual.</p>
       </div>
-      <div class="grid gap-4">
-        <button onclick="startGame('easy')" class="group p-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
-          <div class="flex items-center gap-4"><span class="text-4xl">🌟</span>
-            <div class="text-left">
-              <h3 class="font-bold text-xl">Nivel Fácil</h3>
-              <p class="text-green-100 text-sm">Residente - Casos básicos del sistema digestivo</p>
-            </div>
-          </div>
-        </button>
-        <button onclick="startGame('medium')" class="group p-6 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
-          <div class="flex items-center gap-4"><span class="text-4xl">⭐⭐</span>
-            <div class="text-left">
-              <h3 class="font-bold text-xl">Nivel Medio</h3>
-              <p class="text-amber-100 text-sm">Médico General - Sistema circulatorio y respiratorio</p>
-            </div>
-          </div>
-        </button>
-        <button onclick="startGame('hard')" class="group p-6 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
-          <div class="flex items-center gap-4"><span class="text-4xl">⭐⭐⭐</span>
-            <div class="text-left">
-              <h3 class="font-bold text-xl">Nivel Difícil</h3>
-              <p class="text-red-100 text-sm">Especialista - Casos complejos multisistema</p>
-            </div>
-          </div>
-        </button>
-      </div>
+      <p class="text-xs text-gray-500 mt-4 italic">El incumplimiento de estos términos puede resultar en acciones legales correspondientes.</p>
+     </div>
     </div>
-
-    <!-- Pantalla de Juego y Resultados -->
-    <!-- (Aquí iría todo tu HTML de juego tal como lo tenías, sin cambios) -->
-
+    <div class="flex items-start gap-3 mb-6 bg-yellow-50 p-4 rounded-xl"><input type="checkbox" id="accept-terms" class="w-5 h-5 mt-1 accent-purple-600 cursor-pointer"> <label for="accept-terms" class="text-sm text-gray-700 cursor-pointer"> He leído, comprendo y acepto los <strong>Términos y Condiciones de Uso</strong>. Entiendo que este material es para mi uso personal y educativo exclusivamente. </label>
+    </div><button id="start-btn" disabled class="w-full py-4 bg-gray-300 text-gray-500 rounded-2xl font-bold text-lg cursor-not-allowed transition-all duration-300"> Acepta los términos para continuar </button>
+   </div><!-- Pantalla de Selección de Nivel -->
+   <div id="level-screen" class="hidden w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8">
+    <div class="text-center mb-8">
+     <div class="text-6xl mb-4 float">
+      👩‍⚕️
+     </div>
+     <h1 id="game-title-display" class="text-3xl font-extrabold text-purple-600 mb-2">Doctora por un Día</h1>
+     <p class="text-gray-600">¡Bienvenido/a! Selecciona tu nivel de experiencia médica</p>
+    </div>
+    <div class="grid gap-4"><button onclick="startGame('easy')" class="group p-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+      <div class="flex items-center gap-4"><span class="text-4xl">🌟</span>
+       <div class="text-left">
+        <h3 class="font-bold text-xl">Nivel Fácil</h3>
+        <p class="text-green-100 text-sm">Residente - Casos básicos del sistema digestivo</p>
+       </div>
+      </div></button> <button onclick="startGame('medium')" class="group p-6 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+      <div class="flex items-center gap-4"><span class="text-4xl">⭐⭐</span>
+       <div class="text-left">
+        <h3 class="font-bold text-xl">Nivel Medio</h3>
+        <p class="text-amber-100 text-sm">Médico General - Sistema circulatorio y respiratorio</p>
+       </div>
+      </div></button> <button onclick="startGame('hard')" class="group p-6 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl text-white transform hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+      <div class="flex items-center gap-4"><span class="text-4xl">⭐⭐⭐</span>
+       <div class="text-left">
+        <h3 class="font-bold text-xl">Nivel Difícil</h3>
+        <p class="text-red-100 text-sm">Especialista - Casos complejos multisistema</p>
+       </div>
+      </div></button>
+    </div>
+   </div><!-- Pantalla de Juego -->
+   <div id="game-screen" class="hidden w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-6 overflow-hidden">
+    <div class="flex justify-between items-center mb-4">
+     <div class="flex items-center gap-3"><span id="level-badge" class="px-4 py-1 rounded-full text-white font-bold text-sm"></span> <span id="case-counter" class="text-gray-500 text-sm"></span>
+     </div>
+     <div class="flex items-center gap-2"><span class="text-2xl">💊</span> <span id="score" class="font-bold text-purple-600 text-xl">0</span> <span class="text-gray-500">puntos</span>
+     </div>
+    </div><!-- Paciente -->
+    <div id="patient-card" class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-4 slide-in">
+     <div class="flex items-start gap-4">
+      <div id="patient-avatar" class="text-6xl"></div>
+      <div class="flex-1">
+       <div class="flex items-center gap-2 mb-2">
+        <h3 id="patient-name" class="font-bold text-lg text-gray-800"></h3><span id="patient-age" class="text-sm text-gray-500"></span>
+       </div>
+       <div class="bg-white rounded-xl p-4 shadow-sm">
+        <p class="text-gray-600 italic" id="patient-complaint">"..."</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Preguntas de diagnóstico -->
+    <div id="diagnosis-section" class="space-y-4">
+     <div id="question-container" class="bg-purple-50 rounded-2xl p-4">
+      <h4 id="question-text" class="font-bold text-purple-700 mb-3 flex items-center gap-2"><span>🔍</span> <span></span></h4>
+      <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+     </div>
+    </div><!-- Feedback -->
+    <div id="feedback-container" class="hidden mt-4 rounded-2xl p-4 bounce-in">
+     <div class="flex items-center gap-3"><span id="feedback-icon" class="text-4xl"></span>
+      <div>
+       <h4 id="feedback-title" class="font-bold text-lg"></h4>
+       <p id="feedback-text" class="text-sm"></p>
+      </div>
+     </div><button id="next-btn" class="mt-4 w-full py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-colors"> Siguiente Paciente → </button>
+    </div>
+   </div><!-- Pantalla de Resultados -->
+   <div id="results-screen" class="hidden w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8 text-center bounce-in">
+    <div class="text-7xl mb-4" id="results-emoji">
+     🏆
+    </div>
+    <h2 class="text-3xl font-extrabold text-purple-600 mb-2">¡Consulta Terminada!</h2>
+    <p id="results-message" class="text-gray-600 mb-6"></p>
+    <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
+     <p class="text-gray-500 text-sm mb-1">Puntuación Final</p>
+     <p id="final-score" class="text-5xl font-extrabold text-purple-600"></p>
+     <p id="score-details" class="text-sm text-gray-500 mt-2"></p>
+    </div>
+    <div class="grid grid-cols-2 gap-4"><button onclick="showLevelScreen()" class="py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-colors"> Cambiar Nivel </button> <button onclick="restartSameLevel()" class="py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-colors"> Jugar de Nuevo </button>
+    </div>
+   </div>
   </div>
-
   <script>
-    // --- Habilitar botón al aceptar términos ---
+    // Configuración por defecto
+    const defaultConfig = {
+      game_title: "Doctora por un Día",
+      author_name: "Maestra María Fernanda Flores Valenzuela"
+    };
+
+    // Estado del juego
+    let gameState = {
+      currentLevel: null,
+      currentCase: 0,
+      currentStep: 0,
+      score: 0,
+      correctAnswers: 0,
+      cases: []
+    };
+
+    // Casos médicos por nivel
+    const medicalCases = {
+      easy: [
+        {
+          patient: { name: "Sofía", age: "8 años", avatar: "👧", gender: "niña" },
+          complaint: "Me duele mucho la pancita después de comer... comí mucha sandía y luego tomé leche con chocolate.",
+          steps: [
+            {
+              question: "¿Qué sistema del cuerpo está afectado?",
+              options: ["Sistema Digestivo 🫃", "Sistema Respiratorio 🫁", "Sistema Nervioso 🧠", "Sistema Circulatorio ❤️"],
+              correct: 0,
+              explanation: "El dolor de estómago indica que el sistema digestivo está afectado."
+            },
+            {
+              question: "¿Cuál podría ser la causa del dolor?",
+              options: ["Indigestión por mezclar alimentos", "Infección en la garganta", "Dolor de cabeza", "Fractura de hueso"],
+              correct: 0,
+              explanation: "Mezclar sandía (fruta con mucha agua) con lácteos puede causar indigestión."
+            },
+            {
+              question: "¿Qué órgano procesa los alimentos que comemos?",
+              options: ["El estómago", "Los pulmones", "El cerebro", "El corazón"],
+              correct: 0,
+              explanation: "El estómago es el órgano principal que procesa y digiere los alimentos."
+            }
+          ]
+        },
+        {
+          patient: { name: "Miguel", age: "7 años", avatar: "👦", gender: "niño" },
+          complaint: "Me siento mal del estómago... comí muchos dulces en la piñata y ahora tengo ganas de vomitar.",
+          steps: [
+            {
+              question: "¿Por qué Miguel se siente mal?",
+              options: ["Exceso de azúcar en el estómago", "Le duele la cabeza", "Tiene frío", "Le duelen los pies"],
+              correct: 0,
+              explanation: "Comer muchos dulces sobrecarga el sistema digestivo con azúcar."
+            },
+            {
+              question: "¿Qué le recomendarías a Miguel?",
+              options: ["Tomar agua y descansar", "Comer más dulces", "Correr mucho", "No hacer nada"],
+              correct: 0,
+              explanation: "El agua ayuda a la digestión y el descanso permite que el estómago se recupere."
+            },
+            {
+              question: "¿Dónde comienza la digestión de los alimentos?",
+              options: ["En la boca", "En el estómago", "En los intestinos", "En el hígado"],
+              correct: 0,
+              explanation: "La digestión comienza en la boca con la masticación y la saliva."
+            }
+          ]
+        },
+        {
+          patient: { name: "Valentina", age: "9 años", avatar: "👧", gender: "niña" },
+          complaint: "No he podido ir al baño en tres días... solo como papitas y galletas, no me gustan las verduras.",
+          steps: [
+            {
+              question: "¿Qué problema digestivo tiene Valentina?",
+              options: ["Estreñimiento", "Diarrea", "Vómito", "Dolor de garganta"],
+              correct: 0,
+              explanation: "No poder evacuar por varios días se llama estreñimiento."
+            },
+            {
+              question: "¿Por qué es importante comer verduras y frutas?",
+              options: ["Tienen fibra que ayuda a la digestión", "Son de colores bonitos", "Saben muy dulces", "Son caras"],
+              correct: 0,
+              explanation: "La fibra de frutas y verduras ayuda al intestino a funcionar correctamente."
+            },
+            {
+              question: "¿Qué órgano absorbe el agua de los alimentos?",
+              options: ["El intestino grueso", "El corazón", "Los pulmones", "El cerebro"],
+              correct: 0,
+              explanation: "El intestino grueso absorbe agua y forma las heces."
+            }
+          ]
+        }
+      ],
+      medium: [
+        {
+          patient: { name: "Carlos", age: "10 años", avatar: "👦", gender: "niño" },
+          complaint: "Corrí mucho en educación física y ahora me cuesta respirar... siento que el corazón me late muy rápido.",
+          steps: [
+            {
+              question: "¿Qué sistemas están trabajando más durante el ejercicio?",
+              options: ["Circulatorio y Respiratorio", "Solo el Digestivo", "Solo el Nervioso", "El sistema óseo"],
+              correct: 0,
+              explanation: "Al hacer ejercicio, el corazón bombea más sangre y los pulmones trabajan más."
+            },
+            {
+              question: "¿Por qué el corazón late más rápido al correr?",
+              options: ["Para llevar más oxígeno a los músculos", "Porque está enfermo", "Para digerir mejor", "Para pensar más rápido"],
+              correct: 0,
+              explanation: "Los músculos necesitan más oxígeno durante el ejercicio, así que el corazón bombea más sangre."
+            },
+            {
+              question: "¿Qué gas necesitan nuestras células para funcionar?",
+              options: ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Helio"],
+              correct: 0,
+              explanation: "Las células usan oxígeno para producir energía."
+            },
+            {
+              question: "¿Qué órgano bombea la sangre a todo el cuerpo?",
+              options: ["El corazón", "Los pulmones", "El hígado", "El cerebro"],
+              correct: 0,
+              explanation: "El corazón es el motor que impulsa la sangre por todo el cuerpo."
+            }
+          ]
+        },
+        {
+          patient: { name: "Ana", age: "11 años", avatar: "👧", gender: "niña" },
+          complaint: "Tengo tos y me duele el pecho cuando respiro profundo... ayer me mojé en la lluvia y hacía mucho frío.",
+          steps: [
+            {
+              question: "¿Qué sistema parece estar afectado?",
+              options: ["Sistema Respiratorio", "Sistema Digestivo", "Sistema Muscular", "Sistema Óseo"],
+              correct: 0,
+              explanation: "La tos y el dolor al respirar indican problemas en el sistema respiratorio."
+            },
+            {
+              question: "¿Qué órganos forman parte del sistema respiratorio?",
+              options: ["Pulmones, tráquea y bronquios", "Corazón y venas", "Estómago e intestinos", "Cerebro y nervios"],
+              correct: 0,
+              explanation: "El sistema respiratorio incluye los pulmones, tráquea, bronquios y más."
+            },
+            {
+              question: "¿Qué pasa con el aire cuando entra a los pulmones?",
+              options: ["El oxígeno pasa a la sangre", "Se convierte en comida", "Se vuelve agua", "Desaparece"],
+              correct: 0,
+              explanation: "En los pulmones, el oxígeno del aire pasa a la sangre para distribuirse al cuerpo."
+            },
+            {
+              question: "¿Por qué es importante abrigarse cuando hace frío?",
+              options: ["Para proteger nuestro cuerpo de enfermedades", "Solo por moda", "Para verse bien", "No es importante"],
+              correct: 0,
+              explanation: "El frío puede debilitar nuestras defensas y facilitar infecciones respiratorias."
+            }
+          ]
+        },
+        {
+          patient: { name: "Diego", age: "9 años", avatar: "👦", gender: "niño" },
+          complaint: "Me corté el dedo con una hoja de papel y salió mucha sangre... luego dejó de sangrar solito.",
+          steps: [
+            {
+              question: "¿Qué sistema del cuerpo transporta la sangre?",
+              options: ["Sistema Circulatorio", "Sistema Digestivo", "Sistema Nervioso", "Sistema Respiratorio"],
+              correct: 0,
+              explanation: "El sistema circulatorio transporta la sangre por todo el cuerpo."
+            },
+            {
+              question: "¿Por qué dejó de sangrar la herida?",
+              options: ["Las plaquetas formaron un coágulo", "La sangre se acabó", "El dedo se curó mágicamente", "El aire selló la herida"],
+              correct: 0,
+              explanation: "Las plaquetas en la sangre ayudan a formar coágulos que detienen el sangrado."
+            },
+            {
+              question: "¿Qué células de la sangre llevan oxígeno?",
+              options: ["Glóbulos rojos", "Glóbulos blancos", "Plaquetas", "Plasma"],
+              correct: 0,
+              explanation: "Los glóbulos rojos contienen hemoglobina que transporta el oxígeno."
+            },
+            {
+              question: "¿Qué tipo de vasos sanguíneos son más pequeños?",
+              options: ["Capilares", "Arterias", "Venas", "El corazón"],
+              correct: 0,
+              explanation: "Los capilares son vasos muy pequeños donde ocurre el intercambio de sustancias."
+            }
+          ]
+        }
+      ],
+      hard: [
+        {
+          patient: { name: "Lucía", age: "12 años", avatar: "👧", gender: "niña" },
+          complaint: "Después de comer mariscos me salieron ronchas en la piel, me cuesta respirar y siento que el corazón me late muy fuerte...",
+          steps: [
+            {
+              question: "¿Qué tipo de reacción podría estar teniendo Lucía?",
+              options: ["Reacción alérgica", "Indigestión simple", "Fractura", "Dolor de cabeza"],
+              correct: 0,
+              explanation: "Los síntomas múltiples después de comer algo nuevo sugieren una reacción alérgica."
+            },
+            {
+              question: "¿Qué sistemas del cuerpo están siendo afectados?",
+              options: ["Circulatorio, respiratorio e inmunológico", "Solo el digestivo", "Solo el nervioso", "Solo el óseo"],
+              correct: 0,
+              explanation: "Una alergia severa afecta múltiples sistemas: la piel, la respiración y el corazón."
+            },
+            {
+              question: "¿Qué sistema del cuerpo nos protege de sustancias extrañas?",
+              options: ["Sistema Inmunológico", "Sistema Digestivo", "Sistema Muscular", "Sistema Óseo"],
+              correct: 0,
+              explanation: "El sistema inmunológico identifica y combate sustancias extrañas, aunque a veces reacciona exageradamente (alergias)."
+            },
+            {
+              question: "¿Por qué las ronchas aparecen en la piel durante una alergia?",
+              options: ["El cuerpo libera histamina que inflama los tejidos", "La piel se enfría", "Los huesos se mueven", "El estómago duele"],
+              correct: 0,
+              explanation: "La histamina causa inflamación y las características ronchas de las alergias."
+            },
+            {
+              question: "¿Esta situación requiere atención médica urgente?",
+              options: ["Sí, puede ser peligrosa", "No, se cura solo", "Solo necesita dormir", "Debe comer más mariscos"],
+              correct: 0,
+              explanation: "Las reacciones alérgicas severas (anafilaxia) requieren atención médica inmediata."
+            }
+          ]
+        },
+        {
+          patient: { name: "Andrés", age: "11 años", avatar: "👦", gender: "niño" },
+          complaint: "Me caí de la bicicleta, me golpeé la cabeza y ahora me duele mucho, veo borroso y tengo ganas de vomitar...",
+          steps: [
+            {
+              question: "¿Qué sistema podría estar afectado por el golpe en la cabeza?",
+              options: ["Sistema Nervioso", "Sistema Digestivo", "Sistema Respiratorio", "Sistema Circulatorio"],
+              correct: 0,
+              explanation: "Un golpe en la cabeza puede afectar el cerebro, parte del sistema nervioso."
+            },
+            {
+              question: "¿Por qué Andrés ve borroso después del golpe?",
+              options: ["El cerebro procesa la información visual", "Los ojos están cansados", "Necesita lentes", "Es normal después de caerse"],
+              correct: 0,
+              explanation: "El cerebro procesa lo que vemos; si se golpea, la visión puede afectarse temporalmente."
+            },
+            {
+              question: "¿Qué protege al cerebro de golpes?",
+              options: ["El cráneo y el líquido cefalorraquídeo", "Solo la piel", "Los músculos del cuello", "El cabello"],
+              correct: 0,
+              explanation: "El cráneo es un hueso duro y el líquido cefalorraquídeo amortigua el cerebro."
+            },
+            {
+              question: "¿Por qué tiene náuseas después del golpe?",
+              options: ["El cerebro controla el equilibrio y puede causar mareo", "Comió mucho", "Tiene hambre", "Es por el calor"],
+              correct: 0,
+              explanation: "El cerebro controla muchas funciones; un golpe puede causar náuseas y mareos."
+            },
+            {
+              question: "¿Qué debe hacer Andrés?",
+              options: ["Ir al médico inmediatamente", "Seguir andando en bici", "Ignorar los síntomas", "Dormir muchas horas sin supervisión"],
+              correct: 0,
+              explanation: "Los golpes en la cabeza con estos síntomas requieren evaluación médica urgente."
+            }
+          ]
+        },
+        {
+          patient: { name: "Mariana", age: "10 años", avatar: "👧", gender: "niña" },
+          complaint: "Llevo dos días con fiebre alta, me duele todo el cuerpo, tengo escalofríos y no tengo nada de hambre...",
+          steps: [
+            {
+              question: "¿Qué indica la fiebre en nuestro cuerpo?",
+              options: ["Que el sistema inmunológico está luchando contra una infección", "Que hace mucho calor afuera", "Que comió algo picante", "Que necesita hacer ejercicio"],
+              correct: 0,
+              explanation: "La fiebre es una respuesta del sistema inmunológico para combatir infecciones."
+            },
+            {
+              question: "¿Qué sistemas están respondiendo a la enfermedad?",
+              options: ["Inmunológico, nervioso y circulatorio", "Solo el digestivo", "Solo el respiratorio", "Solo el muscular"],
+              correct: 0,
+              explanation: "Múltiples sistemas trabajan juntos: el inmune combate la infección, el nervioso regula la temperatura."
+            },
+            {
+              question: "¿Por qué Mariana tiene escalofríos si tiene fiebre?",
+              options: ["El cerebro ajusta la temperatura corporal y causa temblores", "Porque tiene frío real", "Porque no comió", "Porque está asustada"],
+              correct: 0,
+              explanation: "El hipotálamo en el cerebro eleva la temperatura objetivo, causando escalofríos para generar calor."
+            },
+            {
+              question: "¿Qué células del cuerpo combaten las infecciones?",
+              options: ["Glóbulos blancos", "Glóbulos rojos", "Plaquetas", "Neuronas"],
+              correct: 0,
+              explanation: "Los glóbulos blancos son los soldados del sistema inmunológico."
+            },
+            {
+              question: "¿Por qué es importante descansar cuando estamos enfermos?",
+              options: ["El cuerpo usa energía para combatir la infección", "Para ver televisión", "No es importante", "Para no ir a la escuela"],
+              correct: 0,
+              explanation: "El descanso permite que el cuerpo concentre su energía en la recuperación."
+            }
+          ]
+        }
+      ]
+    };
+
+    // Inicialización del SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const title = config.game_title || defaultConfig.game_title;
+          const author = config.author_name || defaultConfig.author_name;
+          
+          document.getElementById('main-title').textContent = title;
+          document.getElementById('game-title-display').textContent = title;
+          document.getElementById('author-display').textContent = author;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["game_title", config.game_title || defaultConfig.game_title],
+          ["author_name", config.author_name || defaultConfig.author_name]
+        ])
+      });
+    }
+
+    // Manejo de términos y condiciones
     const acceptTerms = document.getElementById('accept-terms');
     const startBtn = document.getElementById('start-btn');
 
@@ -124,19 +479,196 @@
       }
     });
 
-    startBtn.addEventListener('click', () => {
-      if (!startBtn.disabled) {
+    startBtn.addEventListener('click', function() {
+      if (!this.disabled) {
         showLevelScreen();
       }
     });
 
     function showLevelScreen() {
       document.getElementById('terms-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.add('hidden');
       document.getElementById('level-screen').classList.remove('hidden');
     }
 
-    // --- Funciones de juego ---
-    function startGame(level){ /* Tu JS de iniciar juego aquí */ }
+    function startGame(level) {
+      gameState.currentLevel = level;
+      gameState.currentCase = 0;
+      gameState.currentStep = 0;
+      gameState.score = 0;
+      gameState.correctAnswers = 0;
+      gameState.cases = [...medicalCases[level]];
+      
+      document.getElementById('level-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      
+      updateLevelBadge();
+      loadCase();
+    }
+
+    function restartSameLevel() {
+      startGame(gameState.currentLevel);
+    }
+
+    function updateLevelBadge() {
+      const badge = document.getElementById('level-badge');
+      const levelNames = {
+        easy: { text: '🌟 Residente', color: 'bg-green-500' },
+        medium: { text: '⭐⭐ Médico General', color: 'bg-amber-500' },
+        hard: { text: '⭐⭐⭐ Especialista', color: 'bg-red-500' }
+      };
+      const level = levelNames[gameState.currentLevel];
+      badge.textContent = level.text;
+      badge.className = `px-4 py-1 rounded-full text-white font-bold text-sm ${level.color}`;
+    }
+
+    function loadCase() {
+      const currentCase = gameState.cases[gameState.currentCase];
+      const totalCases = gameState.cases.length;
+      
+      document.getElementById('case-counter').textContent = `Paciente ${gameState.currentCase + 1} de ${totalCases}`;
+      document.getElementById('score').textContent = gameState.score;
+      
+      // Cargar info del paciente
+      document.getElementById('patient-avatar').textContent = currentCase.patient.avatar;
+      document.getElementById('patient-name').textContent = currentCase.patient.name;
+      document.getElementById('patient-age').textContent = currentCase.patient.age;
+      document.getElementById('patient-complaint').textContent = currentCase.complaint;
+      
+      // Reiniciar animación
+      const patientCard = document.getElementById('patient-card');
+      patientCard.classList.remove('slide-in');
+      void patientCard.offsetWidth;
+      patientCard.classList.add('slide-in');
+      
+      loadStep();
+    }
+
+    function loadStep() {
+      const currentCase = gameState.cases[gameState.currentCase];
+      const step = currentCase.steps[gameState.currentStep];
+      
+      document.getElementById('question-text').innerHTML = `<span>🔍</span><span>${step.question}</span>`;
+      
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      
+      step.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'p-4 bg-white border-2 border-purple-200 rounded-xl text-left hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 font-medium text-gray-700';
+        button.textContent = option;
+        button.onclick = () => checkAnswer(index);
+        optionsContainer.appendChild(button);
+      });
+      
+      document.getElementById('feedback-container').classList.add('hidden');
+      document.getElementById('diagnosis-section').classList.remove('hidden');
+    }
+
+    function checkAnswer(selectedIndex) {
+      const currentCase = gameState.cases[gameState.currentCase];
+      const step = currentCase.steps[gameState.currentStep];
+      const isCorrect = selectedIndex === step.correct;
+      
+      // Deshabilitar botones
+      const buttons = document.getElementById('options-container').children;
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = true;
+        if (i === step.correct) {
+          buttons[i].className = 'p-4 bg-green-100 border-2 border-green-500 rounded-xl text-left font-medium text-green-700';
+        } else if (i === selectedIndex && !isCorrect) {
+          buttons[i].className = 'p-4 bg-red-100 border-2 border-red-500 rounded-xl text-left font-medium text-red-700';
+        } else {
+          buttons[i].className = 'p-4 bg-gray-100 border-2 border-gray-200 rounded-xl text-left font-medium text-gray-400';
+        }
+      }
+      
+      // Mostrar feedback
+      const feedbackContainer = document.getElementById('feedback-container');
+      const feedbackIcon = document.getElementById('feedback-icon');
+      const feedbackTitle = document.getElementById('feedback-title');
+      const feedbackText = document.getElementById('feedback-text');
+      
+      if (isCorrect) {
+        gameState.score += gameState.currentLevel === 'easy' ? 10 : gameState.currentLevel === 'medium' ? 15 : 20;
+        gameState.correctAnswers++;
+        feedbackContainer.className = 'mt-4 rounded-2xl p-4 bounce-in bg-green-100 border-2 border-green-300';
+        feedbackIcon.textContent = '✅';
+        feedbackTitle.textContent = '¡Excelente diagnóstico!';
+        feedbackTitle.className = 'font-bold text-lg text-green-700';
+        feedbackText.className = 'text-sm text-green-600';
+      } else {
+        feedbackContainer.className = 'mt-4 rounded-2xl p-4 bounce-in bg-amber-100 border-2 border-amber-300';
+        feedbackIcon.textContent = '💡';
+        feedbackTitle.textContent = 'No exactamente...';
+        feedbackTitle.className = 'font-bold text-lg text-amber-700';
+        feedbackText.className = 'text-sm text-amber-600';
+      }
+      
+      feedbackText.textContent = step.explanation;
+      document.getElementById('score').textContent = gameState.score;
+      
+      // Actualizar botón siguiente
+      const nextBtn = document.getElementById('next-btn');
+      const isLastStep = gameState.currentStep >= currentCase.steps.length - 1;
+      const isLastCase = gameState.currentCase >= gameState.cases.length - 1;
+      
+      if (isLastStep && isLastCase) {
+        nextBtn.textContent = 'Ver Resultados 🏆';
+      } else if (isLastStep) {
+        nextBtn.textContent = 'Siguiente Paciente →';
+      } else {
+        nextBtn.textContent = 'Siguiente Pregunta →';
+      }
+      
+      nextBtn.onclick = () => nextStep();
+      feedbackContainer.classList.remove('hidden');
+    }
+
+    function nextStep() {
+      const currentCase = gameState.cases[gameState.currentCase];
+      
+      if (gameState.currentStep < currentCase.steps.length - 1) {
+        gameState.currentStep++;
+        loadStep();
+      } else if (gameState.currentCase < gameState.cases.length - 1) {
+        gameState.currentCase++;
+        gameState.currentStep = 0;
+        loadCase();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.remove('hidden');
+      
+      const totalQuestions = gameState.cases.reduce((acc, c) => acc + c.steps.length, 0);
+      const percentage = Math.round((gameState.correctAnswers / totalQuestions) * 100);
+      
+      document.getElementById('final-score').textContent = gameState.score;
+      document.getElementById('score-details').textContent = `${gameState.correctAnswers} de ${totalQuestions} respuestas correctas (${percentage}%)`;
+      
+      let emoji, message;
+      if (percentage >= 90) {
+        emoji = '🏆👩‍⚕️';
+        message = '¡Increíble! Eres un/a doctor/a excepcional. ¡Tus pacientes están en las mejores manos!';
+      } else if (percentage >= 70) {
+        emoji = '⭐👏';
+        message = '¡Muy bien! Tienes grandes habilidades de diagnóstico. ¡Sigue practicando!';
+      } else if (percentage >= 50) {
+        emoji = '📚💪';
+        message = '¡Buen intento! Estás aprendiendo mucho sobre el cuerpo humano. ¡Sigue estudiando!';
+      } else {
+        emoji = '🌱📖';
+        message = '¡No te rindas! Cada paciente es una oportunidad de aprender. ¡Inténtalo de nuevo!';
+      }
+      
+      document.getElementById('results-emoji').textContent = emoji;
+      document.getElementById('results-message').textContent = message;
+    }
   </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d11d59813c8db62',t:'MTc3MTYzMDY3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
