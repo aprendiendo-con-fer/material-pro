@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adivina el Personaje Histórico</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    .font-title { font-family: 'Fredoka One', cursive; }
+    .font-body { font-family: 'Nunito', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
+    }
+    
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .bounce-in { animation: bounce-in 0.5s ease-out forwards; }
+    .sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+    
+    .btn-3d {
+      transform: translateY(0);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.1);
+      transition: all 0.15s ease;
+    }
+    
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 12px 25px rgba(0,0,0,0.15);
+    }
+    
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card-shadow {
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.5) inset;
+    }
+    
+    .clue-card {
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+      border: 3px dashed #f59e0b;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .star { 
+      display: inline-block;
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+    
+    .character-avatar {
+      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+      border: 4px solid #818cf8;
+    }
+    
+    .modal-overlay {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 overflow-auto">
+  <div id="app" class="min-h-full w-full"><!-- Pantalla Principal -->
+   <div id="main-menu" class="min-h-full flex flex-col items-center justify-center p-4 sm:p-8"><!-- Decoraciones -->
+    <div class="absolute top-4 left-4 text-4xl float-animation" style="animation-delay: 0s;">
+     📚
+    </div>
+    <div class="absolute top-4 right-4 text-4xl float-animation" style="animation-delay: 0.5s;">
+     🏛️
+    </div>
+    <div class="absolute bottom-4 left-4 text-4xl float-animation" style="animation-delay: 1s;">
+     🎨
+    </div>
+    <div class="absolute bottom-4 right-4 text-4xl float-animation" style="animation-delay: 1.5s;">
+     ⭐
+    </div>
+    <div class="text-center max-w-2xl mx-auto"><!-- Logo/Título -->
+     <div class="mb-6">
+      <div class="text-6xl sm:text-7xl mb-4">
+       🕵️‍♀️
+      </div>
+      <h1 id="main-title" class="font-title text-3xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 mb-2">¡Adivina el Personaje Histórico!</h1>
+      <p class="text-lg sm:text-xl text-gray-600 font-semibold">🌟 Aprende historia jugando 🌟</p>
+     </div><!-- Tarjeta de selección de nivel -->
+     <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow mb-6">
+      <h2 class="font-title text-2xl text-purple-700 mb-6">🎮 Selecciona tu nivel</h2>
+      <div class="grid gap-4"><!-- Nivel Básico --> <button onclick="startGame('basico')" class="btn-3d bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-2xl p-4 sm:p-5 text-left hover:from-green-500 hover:to-emerald-600 transition-all group">
+        <div class="flex items-center gap-4">
+         <div class="text-4xl sm:text-5xl group-hover:scale-110 transition-transform">
+          🌱
+         </div>
+         <div>
+          <h3 class="font-title text-xl sm:text-2xl">Nivel Básico</h3>
+          <p class="text-green-100 text-sm sm:text-base">6-7 años • Pistas fáciles y divertidas</p>
+          <div class="flex gap-1 mt-1"><span class="star">⭐</span>
+          </div>
+         </div>
+        </div></button> <!-- Nivel Medio --> <button onclick="startGame('medio')" class="btn-3d bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-2xl p-4 sm:p-5 text-left hover:from-blue-500 hover:to-indigo-600 transition-all group">
+        <div class="flex items-center gap-4">
+         <div class="text-4xl sm:text-5xl group-hover:scale-110 transition-transform">
+          🌿
+         </div>
+         <div>
+          <h3 class="font-title text-xl sm:text-2xl">Nivel Medio</h3>
+          <p class="text-blue-100 text-sm sm:text-base">8-10 años • ¡Un poco más difícil!</p>
+          <div class="flex gap-1 mt-1"><span class="star">⭐</span> <span class="star">⭐</span>
+          </div>
+         </div>
+        </div></button> <!-- Nivel Difícil --> <button onclick="startGame('dificil')" class="btn-3d bg-gradient-to-r from-orange-400 to-red-500 text-white rounded-2xl p-4 sm:p-5 text-left hover:from-orange-500 hover:to-red-600 transition-all group">
+        <div class="flex items-center gap-4">
+         <div class="text-4xl sm:text-5xl group-hover:scale-110 transition-transform">
+          🌳
+         </div>
+         <div>
+          <h3 class="font-title text-xl sm:text-2xl">Nivel Difícil</h3>
+          <p class="text-orange-100 text-sm sm:text-base">11-12 años • ¡Para expertos en historia!</p>
+          <div class="flex gap-1 mt-1"><span class="star">⭐</span> <span class="star">⭐</span> <span class="star">⭐</span>
+          </div>
+         </div>
+        </div></button>
+      </div>
+     </div><!-- Créditos y términos -->
+     <div class="bg-white/80 rounded-2xl p-4 text-center">
+      <p id="author-credit" class="text-purple-700 font-semibold text-sm sm:text-base mb-2">📝 Material elaborado por Maestra María Fernanda Flores Valenzuela</p><button onclick="showTerms()" class="text-indigo-600 hover:text-indigo-800 underline text-sm font-semibold transition-colors"> 📋 Ver Términos y Condiciones de Uso </button>
+     </div>
+    </div>
+   </div><!-- Pantalla de Juego -->
+   <div id="game-screen" class="min-h-full flex flex-col p-4 sm:p-6 hidden"><!-- Header del juego -->
+    <div class="bg-white rounded-2xl p-4 card-shadow mb-4">
+     <div class="flex flex-wrap items-center justify-between gap-4"><button onclick="goToMenu()" class="bg-gray-100 hover:bg-gray-200 rounded-xl px-4 py-2 font-semibold text-gray-700 transition-colors flex items-center gap-2"> <span>←</span> Menú </button>
+      <div class="flex items-center gap-4">
+       <div id="level-badge" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl font-title text-sm">
+        Nivel Básico
+       </div>
+       <div class="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-xl"><span class="text-xl">🏆</span> <span id="score" class="font-title text-xl text-yellow-700">0</span>
+       </div>
+      </div>
+     </div><!-- Progreso -->
+     <div class="mt-4">
+      <div class="flex justify-between text-sm text-gray-600 mb-2"><span>Personaje <span id="current-character">1</span> de <span id="total-characters">5</span></span> <span id="clues-remaining">3 pistas restantes</span>
+      </div>
+      <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+       <div id="progress-bar" class="progress-bar h-full rounded-full transition-all duration-500" style="width: 20%"></div>
+      </div>
+     </div>
+    </div><!-- Área del personaje misterioso -->
+    <div class="flex-1 flex flex-col lg:flex-row gap-4"><!-- Personaje -->
+     <div class="lg:w-1/3">
+      <div class="bg-white rounded-2xl p-6 card-shadow h-full flex flex-col items-center justify-center">
+       <div class="text-8xl mb-4 float-animation">
+        ❓
+       </div>
+       <h2 class="font-title text-2xl text-purple-700 text-center mb-2">Personaje Misterioso</h2>
+       <p class="text-gray-500 text-center">Lee las pistas para descubrir quién soy</p>
+       <div id="character-reveal" class="hidden text-center bounce-in">
+        <div id="character-emoji" class="text-8xl mb-4">
+         👤
+        </div>
+        <h3 id="character-name" class="font-title text-2xl text-purple-700"></h3>
+        <p id="character-fact" class="text-gray-600 mt-2 text-sm"></p>
+       </div>
+      </div>
+     </div><!-- Pistas y opciones -->
+     <div class="lg:w-2/3 flex flex-col gap-4"><!-- Pistas -->
+      <div class="bg-white rounded-2xl p-4 sm:p-6 card-shadow">
+       <h3 class="font-title text-xl text-amber-600 mb-4 flex items-center gap-2"><span class="text-2xl">💡</span> Pistas</h3>
+       <div id="clues-container" class="space-y-3"><!-- Las pistas se generan dinámicamente -->
+       </div><button id="show-clue-btn" onclick="revealNextClue()" class="mt-4 btn-3d bg-gradient-to-r from-amber-400 to-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-amber-500 hover:to-orange-600 transition-all"> ✨ Mostrar siguiente pista </button>
+      </div><!-- Opciones de respuesta -->
+      <div class="bg-white rounded-2xl p-4 sm:p-6 card-shadow flex-1">
+       <h3 class="font-title text-xl text-indigo-600 mb-4 flex items-center gap-2"><span class="text-2xl">🎯</span> ¿Quién es?</h3>
+       <div id="options-container" class="grid grid-cols-2 gap-3"><!-- Las opciones se generan dinámicamente -->
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Pantalla de Resultados -->
+   <div id="results-screen" class="min-h-full flex flex-col items-center justify-center p-4 sm:p-8 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-10 card-shadow max-w-lg w-full text-center">
+     <div id="results-emoji" class="text-8xl mb-4">
+      🎉
+     </div>
+     <h2 id="results-title" class="font-title text-3xl sm:text-4xl text-purple-700 mb-4">¡Excelente!</h2>
+     <p id="results-message" class="text-xl text-gray-600 mb-6">Has completado el juego</p>
+     <div class="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl p-6 mb-6">
+      <p class="text-gray-600 mb-2">Tu puntuación final</p>
+      <div class="font-title text-5xl text-yellow-600" id="final-score">
+       0
+      </div>
+      <p class="text-gray-500 mt-2">puntos</p>
+      <div id="stars-earned" class="flex justify-center gap-2 mt-4 text-4xl">
+       ⭐⭐⭐
+      </div>
+     </div>
+     <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="restartGame()" class="btn-3d bg-gradient-to-r from-green-400 to-emerald-500 text-white px-8 py-4 rounded-2xl font-title text-lg hover:from-green-500 hover:to-emerald-600 transition-all"> 🔄 Jugar de nuevo </button> <button onclick="goToMenu()" class="btn-3d bg-gradient-to-r from-purple-400 to-indigo-500 text-white px-8 py-4 rounded-2xl font-title text-lg hover:from-purple-500 hover:to-indigo-600 transition-all"> 🏠 Menú principal </button>
+     </div>
+    </div>
+   </div><!-- Modal de Términos y Condiciones -->
+   <div id="terms-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[90%] overflow-y-auto card-shadow">
+     <div class="flex justify-between items-start mb-6">
+      <h2 class="font-title text-2xl sm:text-3xl text-purple-700">📋 Términos y Condiciones</h2><button onclick="hideTerms()" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">×</button>
+     </div>
+     <div class="space-y-4 text-gray-700">
+      <div class="bg-purple-50 rounded-xl p-4 border-l-4 border-purple-500">
+       <h3 class="font-title text-lg text-purple-700 mb-2">📚 Material Educativo</h3>
+       <p>Este juego es material educativo diseñado exclusivamente para uso en el ámbito escolar y familiar.</p>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-500">
+       <h3 class="font-title text-lg text-blue-700 mb-2">✅ Uso Permitido</h3>
+       <ul class="list-disc list-inside space-y-1 text-sm">
+        <li>Uso personal educativo en casa o escuela</li>
+        <li>Compartir con alumnos asignados</li>
+        <li>Asignar como tarea a estudiantes</li>
+        <li>Uso en el salón de clases</li>
+        <li>Impresión para uso personal educativo</li>
+       </ul>
+      </div>
+      <div class="bg-red-50 rounded-xl p-4 border-l-4 border-red-500">
+       <h3 class="font-title text-lg text-red-700 mb-2">❌ Uso NO Permitido</h3>
+       <ul class="list-disc list-inside space-y-1 text-sm">
+        <li>Compartir con personas que no hayan adquirido el material</li>
+        <li>Redistribución o reventa del material</li>
+        <li>Modificación y distribución como propio</li>
+        <li>Uso comercial sin autorización</li>
+        <li>Compartir enlaces de descarga con terceros</li>
+       </ul>
+      </div>
+      <div class="bg-amber-50 rounded-xl p-4 border-l-4 border-amber-500">
+       <h3 class="font-title text-lg text-amber-700 mb-2">📝 Instrucciones para Docentes</h3>
+       <p class="text-sm mb-2">Este material puede ser utilizado de las siguientes maneras:</p>
+       <ul class="list-disc list-inside space-y-1 text-sm">
+        <li>Proyectar en clase para jugar en grupo</li>
+        <li>Enviar como tarea interactiva para casa</li>
+        <li>Usar como repaso de personajes históricos</li>
+        <li>Complemento para clases de historia</li>
+       </ul>
+      </div>
+      <div class="bg-green-50 rounded-xl p-4 border-l-4 border-green-500">
+       <h3 class="font-title text-lg text-green-700 mb-2">👩‍🏫 Autora</h3>
+       <p class="text-sm">Material elaborado con ❤️ por la <strong>Maestra María Fernanda Flores Valenzuela</strong></p>
+       <p class="text-sm mt-2 text-gray-500">Todos los derechos reservados © 2024</p>
+      </div>
+     </div><button onclick="hideTerms()" class="mt-6 w-full btn-3d bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-4 rounded-2xl font-title text-lg hover:from-purple-600 hover:to-indigo-600 transition-all"> ✓ Entendido </button>
+    </div>
+   </div><!-- Modal de respuesta correcta/incorrecta -->
+   <div id="feedback-modal" class="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4 hidden">
+    <div id="feedback-content" class="bg-white rounded-3xl p-8 max-w-md w-full text-center card-shadow bounce-in">
+     <div id="feedback-emoji" class="text-8xl mb-4">
+      🎉
+     </div>
+     <h2 id="feedback-title" class="font-title text-3xl text-purple-700 mb-2">¡Correcto!</h2>
+     <p id="feedback-message" class="text-xl text-gray-600 mb-4">¡Muy bien!</p>
+     <p id="feedback-points" class="text-lg text-amber-600 font-semibold"></p>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Configuración por defecto
+    const defaultConfig = {
+      game_title: 'Adivina el Personaje Histórico',
+      author_name: 'Maestra María Fernanda Flores Valenzuela'
+    };
+    
+    // Base de datos de personajes por nivel
+    const characters = {
+      basico: [
+        {
+          name: "Miguel Hidalgo",
+          emoji: "🔔",
+          clues: [
+            "🔔 Toqué una campana muy famosa",
+            "🇲🇽 Soy conocido como el Padre de la Patria",
+            "📅 Inicié algo muy importante en 1810"
+          ],
+          fact: "Inició la lucha por la Independencia de México tocando la campana de Dolores"
+        },
+        {
+          name: "Benito Juárez",
+          emoji: "⚖️",
+          clues: [
+            "📚 De niño era muy pobre pero estudié mucho",
+            "🏛️ Fui presidente de México",
+            "⚖️ Dije: 'El respeto al derecho ajeno es la paz'"
+          ],
+          fact: "Fue presidente de México y defendió las leyes y la justicia"
+        },
+        {
+          name: "Cristóbal Colón",
+          emoji: "⛵",
+          clues: [
+            "⛵ Viajé en tres barcos muy famosos",
+            "🌊 Crucé el océano Atlántico",
+            "🗺️ Llegué a América en 1492"
+          ],
+          fact: "Navegante que llegó a América pensando que había llegado a las Indias"
+        },
+        {
+          name: "Cleopatra",
+          emoji: "👑",
+          clues: [
+            "👑 Fui una reina muy poderosa",
+            "🐍 Me gustan las serpientes",
+            "🏛️ Viví en Egipto hace mucho tiempo"
+          ],
+          fact: "Fue la última reina del Antiguo Egipto, famosa por su inteligencia"
+        },
+        {
+          name: "Leonardo da Vinci",
+          emoji: "🎨",
+          clues: [
+            "🎨 Pinté cuadros muy famosos",
+            "✈️ Diseñé máquinas voladoras",
+            "😊 Pinté a una mujer con sonrisa misteriosa"
+          ],
+          fact: "Artista italiano que pintó la Mona Lisa y era inventor"
+        }
+      ],
+      medio: [
+        {
+          name: "Emiliano Zapata",
+          emoji: "🌾",
+          clues: [
+            "🌾 Luché para que los campesinos tuvieran tierras",
+            "🐴 Siempre montaba a caballo",
+            "📜 Mi lema era 'Tierra y Libertad'",
+            "🇲🇽 Participé en la Revolución Mexicana"
+          ],
+          fact: "Líder revolucionario que luchó por los derechos de los campesinos"
+        },
+        {
+          name: "Frida Kahlo",
+          emoji: "🎨",
+          clues: [
+            "🎨 Fui una pintora mexicana muy famosa",
+            "🦋 Me gustaba usar flores en el cabello",
+            "🖼️ Pinté muchos autorretratos",
+            "💔 Convertí mi dolor en arte"
+          ],
+          fact: "Artista mexicana reconocida mundialmente por sus autorretratos"
+        },
+        {
+          name: "Napoleón Bonaparte",
+          emoji: "🏰",
+          clues: [
+            "⚔️ Fui un gran militar y conquistador",
+            "🇫🇷 Llegué a ser Emperador de Francia",
+            "📏 Era de baja estatura pero muy valiente",
+            "🏝️ Terminé exiliado en una isla"
+          ],
+          fact: "Militar francés que conquistó gran parte de Europa"
+        },
+        {
+          name: "Sor Juana Inés de la Cruz",
+          emoji: "📖",
+          clues: [
+            "📖 Amaba leer y escribir poesía",
+            "✝️ Viví en un convento",
+            "🇲🇽 Soy una de las escritoras más importantes de México",
+            "🎭 También escribí obras de teatro"
+          ],
+          fact: "Poeta y escritora novohispana, llamada la Décima Musa"
+        },
+        {
+          name: "Isaac Newton",
+          emoji: "🍎",
+          clues: [
+            "🍎 Una manzana me dio una gran idea",
+            "🌍 Descubrí por qué las cosas caen al suelo",
+            "🔬 Fui científico y matemático",
+            "🌈 Estudié cómo funciona la luz"
+          ],
+          fact: "Científico inglés que descubrió la ley de la gravedad"
+        }
+      ],
+      dificil: [
+        {
+          name: "Simón Bolívar",
+          emoji: "⚔️",
+          clues: [
+            "🌎 Liberé varios países de Sudamérica",
+            "⚔️ Me llaman 'El Libertador'",
+            "🇻🇪 Nací en Venezuela",
+            "🗺️ Soñé con una América unida",
+            "🏛️ Fundé varias repúblicas"
+          ],
+          fact: "Militar venezolano que liberó a Bolivia, Colombia, Ecuador, Panamá, Perú y Venezuela"
+        },
+        {
+          name: "Marie Curie",
+          emoji: "⚗️",
+          clues: [
+            "⚗️ Fui científica y gané dos Premios Nobel",
+            "☢️ Descubrí elementos radiactivos",
+            "🇵🇱 Nací en Polonia pero viví en Francia",
+            "👩‍🔬 Fui la primera mujer profesora en la universidad de París",
+            "🔬 Mis descubrimientos ayudan a curar enfermedades"
+          ],
+          fact: "Científica que descubrió el radio y el polonio, pionera en el estudio de la radiactividad"
+        },
+        {
+          name: "Mahatma Gandhi",
+          emoji: "☮️",
+          clues: [
+            "☮️ Luché sin usar la violencia",
+            "🇮🇳 Ayudé a liberar a la India",
+            "🧘 Practicaba el ayuno como protesta",
+            "👓 Usaba lentes redondos y vestía de blanco",
+            "🕊️ Me llaman el 'Alma Grande'"
+          ],
+          fact: "Líder pacifista que logró la independencia de la India mediante la resistencia no violenta"
+        },
+        {
+          name: "Moctezuma II",
+          emoji: "🦅",
+          clues: [
+            "🦅 Fui el último gran tlatoani azteca",
+            "🏛️ Gobernaba Tenochtitlan",
+            "👑 Mi palacio era más grande que muchos en Europa",
+            "☕ Bebía chocolate en vasos de oro",
+            "🗡️ Recibí a los conquistadores españoles"
+          ],
+          fact: "Emperador azteca que gobernaba cuando llegaron los españoles"
+        },
+        {
+          name: "Nelson Mandela",
+          emoji: "✊",
+          clues: [
+            "✊ Luché contra el racismo en mi país",
+            "🇿🇦 Fui presidente de Sudáfrica",
+            "⛓️ Estuve en prisión 27 años",
+            "🏆 Gané el Premio Nobel de la Paz",
+            "🌈 Hablaba de reconciliación y perdón"
+          ],
+          fact: "Líder sudafricano que luchó contra el apartheid y promovió la paz"
+        }
+      ]
+    };
+    
+    // Estado del juego
+    let gameState = {
+      level: 'basico',
+      currentCharacterIndex: 0,
+      revealedClues: 0,
+      score: 0,
+      characters: [],
+      currentCharacter: null
+    };
+    
+    // Inicializar SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const title = config.game_title || defaultConfig.game_title;
+          const author = config.author_name || defaultConfig.author_name;
+          
+          document.getElementById('main-title').textContent = '¡' + title + '!';
+          document.getElementById('author-credit').innerHTML = '📝 Material elaborado por ' + author;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['game_title', config.game_title || defaultConfig.game_title],
+          ['author_name', config.author_name || defaultConfig.author_name]
+        ])
+      });
+    }
+    
+    // Funciones del juego
+    function startGame(level) {
+      gameState.level = level;
+      gameState.score = 0;
+      gameState.currentCharacterIndex = 0;
+      gameState.characters = shuffleArray([...characters[level]]);
+      
+      updateLevelBadge();
+      loadCharacter();
+      showScreen('game-screen');
+    }
+    
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    
+    function updateLevelBadge() {
+      const badge = document.getElementById('level-badge');
+      const levelNames = {
+        basico: 'Nivel Básico 🌱',
+        medio: 'Nivel Medio 🌿',
+        dificil: 'Nivel Difícil 🌳'
+      };
+      badge.textContent = levelNames[gameState.level];
+    }
+    
+    function loadCharacter() {
+      if (gameState.currentCharacterIndex >= gameState.characters.length) {
+        showResults();
+        return;
+      }
+      
+      gameState.currentCharacter = gameState.characters[gameState.currentCharacterIndex];
+      gameState.revealedClues = 0;
+      
+      // Actualizar UI
+      document.getElementById('current-character').textContent = gameState.currentCharacterIndex + 1;
+      document.getElementById('total-characters').textContent = gameState.characters.length;
+      document.getElementById('score').textContent = gameState.score;
+      
+      // Actualizar barra de progreso
+      const progress = ((gameState.currentCharacterIndex) / gameState.characters.length) * 100;
+      document.getElementById('progress-bar').style.width = progress + '%';
+      
+      // Resetear área del personaje
+      document.getElementById('character-reveal').classList.add('hidden');
+      document.querySelector('.float-animation').classList.remove('hidden');
+      
+      // Generar pistas
+      renderClues();
+      
+      // Generar opciones
+      renderOptions();
+      
+      // Revelar primera pista automáticamente
+      revealNextClue();
+    }
+    
+    function renderClues() {
+      const container = document.getElementById('clues-container');
+      container.innerHTML = '';
+      
+      const totalClues = gameState.currentCharacter.clues.length;
+      
+      gameState.currentCharacter.clues.forEach((clue, index) => {
+        const clueDiv = document.createElement('div');
+        clueDiv.id = `clue-${index}`;
+        clueDiv.className = 'clue-card rounded-xl p-4 opacity-50 blur-sm transition-all duration-300';
+        clueDiv.innerHTML = `
+          <p class="font-semibold text-amber-800">🔒 Pista ${index + 1}</p>
+        `;
+        container.appendChild(clueDiv);
+      });
+      
+      updateCluesRemaining();
+    }
+    
+    function revealNextClue() {
+      const totalClues = gameState.currentCharacter.clues.length;
+      
+      if (gameState.revealedClues >= totalClues) return;
+      
+      const clueDiv = document.getElementById(`clue-${gameState.revealedClues}`);
+      clueDiv.classList.remove('opacity-50', 'blur-sm');
+      clueDiv.innerHTML = `
+        <p class="font-semibold text-amber-800">${gameState.currentCharacter.clues[gameState.revealedClues]}</p>
+      `;
+      
+      gameState.revealedClues++;
+      updateCluesRemaining();
+      
+      if (gameState.revealedClues >= totalClues) {
+        document.getElementById('show-clue-btn').disabled = true;
+        document.getElementById('show-clue-btn').classList.add('opacity-50');
+      }
+    }
+    
+    function updateCluesRemaining() {
+      const remaining = gameState.currentCharacter.clues.length - gameState.revealedClues;
+      const text = remaining === 0 ? '¡Todas las pistas reveladas!' : `${remaining} pista${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''}`;
+      document.getElementById('clues-remaining').textContent = text;
+    }
+    
+    function renderOptions() {
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+      
+      // Obtener opciones incorrectas del mismo nivel
+      const allCharacters = characters[gameState.level];
+      const wrongOptions = allCharacters
+        .filter(c => c.name !== gameState.currentCharacter.name)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+      
+      const options = shuffleArray([gameState.currentCharacter, ...wrongOptions]);
+      
+      options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'btn-3d bg-gradient-to-br from-indigo-100 to-purple-100 hover:from-indigo-200 hover:to-purple-200 border-2 border-indigo-200 rounded-xl p-4 text-left transition-all';
+        button.innerHTML = `
+          <div class="text-3xl mb-2">${option.emoji}</div>
+          <div class="font-semibold text-indigo-800">${option.name}</div>
+        `;
+        button.onclick = () => checkAnswer(option.name);
+        container.appendChild(button);
+      });
+    }
+    
+    function checkAnswer(selectedName) {
+      const isCorrect = selectedName === gameState.currentCharacter.name;
+      
+      if (isCorrect) {
+        // Calcular puntos basados en pistas usadas
+        const basePoints = { basico: 100, medio: 150, dificil: 200 }[gameState.level];
+        const cluesPenalty = (gameState.revealedClues - 1) * 20;
+        const points = Math.max(basePoints - cluesPenalty, 30);
+        
+        gameState.score += points;
+        
+        showFeedback(true, points);
+        revealCharacter();
+        
+        setTimeout(() => {
+          hideFeedback();
+          gameState.currentCharacterIndex++;
+          loadCharacter();
+        }, 2500);
+      } else {
+        showFeedback(false, 0);
+        setTimeout(hideFeedback, 1500);
+      }
+    }
+    
+    function revealCharacter() {
+      document.querySelector('.float-animation').classList.add('hidden');
+      const reveal = document.getElementById('character-reveal');
+      reveal.classList.remove('hidden');
+      document.getElementById('character-emoji').textContent = gameState.currentCharacter.emoji;
+      document.getElementById('character-name').textContent = gameState.currentCharacter.name;
+      document.getElementById('character-fact').textContent = gameState.currentCharacter.fact;
+    }
+    
+    function showFeedback(correct, points) {
+      const modal = document.getElementById('feedback-modal');
+      const emoji = document.getElementById('feedback-emoji');
+      const title = document.getElementById('feedback-title');
+      const message = document.getElementById('feedback-message');
+      const pointsText = document.getElementById('feedback-points');
+      
+      if (correct) {
+        const messages = ['¡Excelente!', '¡Muy bien!', '¡Increíble!', '¡Genial!', '¡Fantástico!'];
+        emoji.textContent = ['🎉', '⭐', '🏆', '🌟', '✨'][Math.floor(Math.random() * 5)];
+        title.textContent = messages[Math.floor(Math.random() * messages.length)];
+        title.className = 'font-title text-3xl text-green-600 mb-2';
+        message.textContent = '¡Conoces muy bien la historia!';
+        pointsText.textContent = `+${points} puntos`;
+      } else {
+        emoji.textContent = '🤔';
+        title.textContent = 'Intenta de nuevo';
+        title.className = 'font-title text-3xl text-amber-600 mb-2';
+        message.textContent = 'Lee las pistas con cuidado';
+        pointsText.textContent = '';
+      }
+      
+      modal.classList.remove('hidden');
+    }
+    
+    function hideFeedback() {
+      document.getElementById('feedback-modal').classList.add('hidden');
+    }
+    
+    function showResults() {
+      const maxScore = {
+        basico: 500,
+        medio: 750,
+        dificil: 1000
+      }[gameState.level];
+      
+      const percentage = gameState.score / maxScore;
+      
+      let emoji, title, message, stars;
+      
+      if (percentage >= 0.9) {
+        emoji = '🏆';
+        title = '¡EXTRAORDINARIO!';
+        message = '¡Eres un verdadero experto en historia!';
+        stars = '⭐⭐⭐';
+      } else if (percentage >= 0.7) {
+        emoji = '🎉';
+        title = '¡Muy bien!';
+        message = '¡Conoces muy bien a estos personajes!';
+        stars = '⭐⭐';
+      } else if (percentage >= 0.5) {
+        emoji = '😊';
+        title = '¡Buen trabajo!';
+        message = 'Sigue aprendiendo sobre historia';
+        stars = '⭐';
+      } else {
+        emoji = '📚';
+        title = '¡Sigue practicando!';
+        message = 'La historia es fascinante, ¡sigue explorando!';
+        stars = '⭐';
+      }
+      
+      document.getElementById('results-emoji').textContent = emoji;
+      document.getElementById('results-title').textContent = title;
+      document.getElementById('results-message').textContent = message;
+      document.getElementById('final-score').textContent = gameState.score;
+      document.getElementById('stars-earned').textContent = stars;
+      
+      showScreen('results-screen');
+    }
+    
+    function restartGame() {
+      startGame(gameState.level);
+    }
+    
+    function goToMenu() {
+      showScreen('main-menu');
+    }
+    
+    function showScreen(screenId) {
+      document.getElementById('main-menu').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.add('hidden');
+      document.getElementById(screenId).classList.remove('hidden');
+      
+      // Reset show clue button
+      if (screenId === 'game-screen') {
+        const btn = document.getElementById('show-clue-btn');
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      }
+    }
+    
+    function showTerms() {
+      document.getElementById('terms-modal').classList.remove('hidden');
+    }
+    
+    function hideTerms() {
+      document.getElementById('terms-modal').classList.add('hidden');
+    }
+    
+    // Cerrar modal de términos al hacer clic fuera
+    document.getElementById('terms-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'terms-modal') {
+        hideTerms();
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d24841c071db589',t:'MTc3MTgyNjU2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
