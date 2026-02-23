@@ -1,110 +1,806 @@
 <!doctype html>
 <html lang="es" class="h-full">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Viste la Profesión</title>
-<script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<script src="/_sdk/element_sdk.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-* { font-family: 'Quicksand', sans-serif; }
-.title-font { font-family: 'Fredoka', sans-serif; }
-
-@keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-@keyframes pulse-glow {0%,100%{box-shadow:0 0 20px rgba(255,200,0,0.5);}50%{box-shadow:0 0 40px rgba(255,200,0,0.8);}}
-@keyframes sparkle {0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.2);}}
-@keyframes bounce-in {0%{transform:scale(0);opacity:0;}50%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
-@keyframes slide-up {from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-@keyframes confetti {0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(100px) rotate(720deg);opacity:0;}}
-@keyframes shake {0%,100%{transform:translateX(0);}25%{transform:translateX(-10px);}75%{transform:translateX(10px);}}
-
-.float-animation {animation: float 3s ease-in-out infinite;}
-.pulse-glow {animation: pulse-glow 2s ease-in-out infinite;}
-.sparkle {animation: sparkle 1.5s ease-in-out infinite;}
-.bounce-in {animation: bounce-in 0.5s ease-out forwards;}
-.slide-up {animation: slide-up 0.4s ease-out forwards;}
-
-.item-slot {transition: all 0.3s ease; cursor:pointer;}
-.item-slot:hover {transform: scale(1.1); filter: brightness(1.1);}
-.item-slot.selected {transform: scale(1.15); filter: drop-shadow(0 0 10px gold);}
-.drop-zone {transition: all 0.3s ease;}
-.drop-zone.highlight {background: rgba(255,215,0,0.3); border-color: gold;}
-.correct-item {animation: bounce-in 0.5s ease-out; filter: drop-shadow(0 0 8px lime);}
-.wrong-item {animation: shake 0.5s ease-out;}
-.profession-card {transition: all 0.3s ease;}
-.profession-card:hover {transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.2);}
-.star {display:inline-block; font-size:2rem; color:#fbbf24; text-shadow:0 0 10px rgba(251,191,36,0.8);}
-.star.empty {color:#d1d5db; text-shadow:none;}
-.level-badge {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);}
-.confetti-piece {position:absolute; width:10px; height:10px; animation: confetti 1s ease-out forwards;}
-body { box-sizing: border-box; }
-</style>
-<script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-</head>
-<body class="h-full overflow-auto">
-<div id="app" class="min-h-full bg-gradient-to-br from-purple-400 via-pink-300 to-orange-300">
-
-  <!-- Pantalla de Inicio -->
-  <div id="start-screen" class="min-h-full flex flex-col items-center justify-center p-4">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viste la Profesión</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Quicksand', sans-serif; }
+    .title-font { font-family: 'Fredoka', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 200, 0, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(255, 200, 0, 0.8); }
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes slide-up {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
+    }
+    
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+    .bounce-in { animation: bounce-in 0.5s ease-out forwards; }
+    .slide-up { animation: slide-up 0.4s ease-out forwards; }
+    
+    .item-slot {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .item-slot:hover {
+      transform: scale(1.1);
+      filter: brightness(1.1);
+    }
+    
+    .item-slot.selected {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 10px gold);
+    }
+    
+    .drop-zone {
+      transition: all 0.3s ease;
+    }
+    
+    .drop-zone.highlight {
+      background: rgba(255, 215, 0, 0.3);
+      border-color: gold;
+    }
+    
+    .correct-item {
+      animation: bounce-in 0.5s ease-out;
+      filter: drop-shadow(0 0 8px lime);
+    }
+    
+    .wrong-item {
+      animation: shake 0.5s ease-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    
+    .profession-card {
+      transition: all 0.3s ease;
+    }
+    
+    .profession-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    .star {
+      display: inline-block;
+      font-size: 2rem;
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+    }
+    
+    .star.empty {
+      color: #d1d5db;
+      text-shadow: none;
+    }
+    
+    .level-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confetti 1s ease-out forwards;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full bg-gradient-to-br from-purple-400 via-pink-300 to-orange-300">
+   <!-- Pantalla de Inicio -->
+   <div id="start-screen" class="min-h-full flex flex-col items-center justify-center p-4">
     <div class="text-center max-w-2xl mx-auto">
-      <div class="float-animation mb-6">
-        <span class="text-8xl">👔</span>
+     <div class="float-animation mb-6">
+      <span class="text-8xl">👔</span>
+     </div>
+     <h1 id="main-title" class="title-font text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">🎮 Viste la Profesión 🎮</h1>
+     <p class="text-xl text-white/90 mb-8 drop-shadow">¡Aprende sobre diferentes profesiones y oficios vistiendo a tu personaje!</p>
+     <div class="bg-white/90 backdrop-blur rounded-3xl p-8 shadow-2xl mb-6">
+      <h2 class="title-font text-2xl font-bold text-purple-600 mb-6">¿Cómo quieres jugar?</h2>
+      <div class="grid grid-cols-2 gap-6 mb-6">
+       <button onclick="selectGender('mujer')" class="gender-btn group bg-gradient-to-br from-pink-400 to-rose-500 p-6 rounded-2xl text-white transition-all hover:scale-105 hover:shadow-xl"> <span class="text-6xl block mb-2">👩</span> <span class="font-bold text-lg">Mujer</span> </button> <button onclick="selectGender('hombre')" class="gender-btn group bg-gradient-to-br from-blue-400 to-indigo-500 p-6 rounded-2xl text-white transition-all hover:scale-105 hover:shadow-xl"> <span class="text-6xl block mb-2">👨</span> <span class="font-bold text-lg">Hombre</span> </button>
       </div>
-      <h1 class="title-font text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">🎮 Viste la Profesión 🎮</h1>
-      <p class="text-xl text-white/90 mb-8 drop-shadow">¡Aprende sobre diferentes profesiones y oficios vistiendo a tu personaje!</p>
-      <div class="bg-white/90 backdrop-blur rounded-3xl p-8 shadow-2xl mb-6">
-        <h2 class="title-font text-2xl font-bold text-purple-600 mb-6">¿Cómo quieres jugar?</h2>
-        <div class="grid grid-cols-2 gap-6 mb-6">
-          <button onclick="selectGender('mujer')" class="gender-btn group bg-gradient-to-br from-pink-400 to-rose-500 p-6 rounded-2xl text-white transition-all hover:scale-105 hover:shadow-xl"> <span class="text-6xl block mb-2">👩</span> <span class="font-bold text-lg">Mujer</span> </button>
-          <button onclick="selectGender('hombre')" class="gender-btn group bg-gradient-to-br from-blue-400 to-indigo-500 p-6 rounded-2xl text-white transition-all hover:scale-105 hover:shadow-xl"> <span class="text-6xl block mb-2">👨</span> <span class="font-bold text-lg">Hombre</span> </button>
-        </div>
-        <div id="gender-selected" class="hidden text-green-600 font-bold mb-4">✓ Personaje seleccionado</div>
-        <button onclick="startGame()" id="start-btn" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-xl py-4 px-8 rounded-full transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed pulse-glow" disabled> 🚀 ¡Comenzar Aventura! </button>
-      </div>
-      <p class="text-white/80 text-sm italic drop-shadow">💖 Material creado por Mtra. María Fernanda Flores Valenzuela con mucho amor 💖</p>
+      <div id="gender-selected" class="hidden text-green-600 font-bold mb-4">
+       ✓ Personaje seleccionado
+      </div><button onclick="startGame()" id="start-btn" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-xl py-4 px-8 rounded-full transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed pulse-glow" disabled> 🚀 ¡Comenzar Aventura! </button>
+     </div>
+     <p id="author-credit" class="text-white/80 text-sm italic drop-shadow">💖 Material creado por Mtra. María Fernanda Flores Valenzuela con mucho amor 💖</p>
     </div>
-  </div>
-
-  <!-- Pantalla de Selección de Nivel -->
-  <div id="level-screen" class="hidden min-h-full flex flex-col items-center justify-center p-4">
+   </div><!-- Pantalla de Selección de Nivel -->
+   <div id="level-screen" class="hidden min-h-full flex flex-col items-center justify-center p-4">
     <div class="text-center max-w-4xl mx-auto">
-      <h2 class="title-font text-4xl font-bold text-white mb-8 drop-shadow-lg">🌟 Selecciona el Nivel 🌟</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <button onclick="selectLevel(1)" class="level-card bg-gradient-to-br from-green-400 to-emerald-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌱</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 1</h3><p class="text-green-100">Fácil</p><p class="text-sm mt-2 text-green-100">3 elementos por profesión</p></button>
-        <button onclick="selectLevel(2)" class="level-card bg-gradient-to-br from-yellow-400 to-amber-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌿</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 2</h3><p class="text-yellow-100">Medio</p><p class="text-sm mt-2 text-yellow-100">4 elementos por profesión</p></button>
-        <button onclick="selectLevel(3)" class="level-card bg-gradient-to-br from-red-400 to-rose-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌳</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 3</h3><p class="text-red-100">Difícil</p><p class="text-sm mt-2 text-red-100">5 elementos por profesión</p></button>
-      </div>
-      <div class="flex justify-center gap-4">
-        <button onclick="goToStart()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-8 rounded-full hover:bg-white/40 transition-all"> 🏠 Inicio </button>
-      </div>
+     <h2 class="title-font text-4xl font-bold text-white mb-8 drop-shadow-lg">🌟 Selecciona el Nivel 🌟</h2>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <button onclick="selectLevel(1)" class="level-card bg-gradient-to-br from-green-400 to-emerald-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌱</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 1</h3><p class="text-green-100">Fácil</p><p class="text-sm mt-2 text-green-100">3 elementos por profesión</p></button> <button onclick="selectLevel(2)" class="level-card bg-gradient-to-br from-yellow-400 to-amber-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌿</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 2</h3><p class="text-yellow-100">Medio</p><p class="text-sm mt-2 text-yellow-100">4 elementos por profesión</p></button> <button onclick="selectLevel(3)" class="level-card bg-gradient-to-br from-red-400 to-rose-500 p-8 rounded-3xl text-white transition-all hover:scale-105 hover:shadow-2xl"> <span class="text-5xl block mb-3">🌳</span> <h3 class="title-font text-2xl font-bold mb-2">Nivel 3</h3><p class="text-red-100">Difícil</p><p class="text-sm mt-2 text-red-100">5 elementos por profesión</p></button>
+     </div><button onclick="goToStart()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-8 rounded-full hover:bg-white/40 transition-all"> ← Volver al Inicio </button>
     </div>
-  </div>
-
-  <!-- Pantalla de Selección de Profesión -->
-  <div id="profession-screen" class="hidden min-h-full p-4">
+   </div><!-- Pantalla de Selección de Profesión -->
+   <div id="profession-screen" class="hidden min-h-full p-4">
     <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-6">
-        <h2 class="title-font text-3xl font-bold text-white mb-2 drop-shadow-lg">👷 Elige una Profesión 👷</h2>
-        <div class="flex justify-center items-center gap-4 mb-4">
-          <span id="level-indicator" class="level-badge text-white px-4 py-2 rounded-full font-bold"></span>
-          <span id="progress-indicator" class="bg-white/80 text-purple-600 px-4 py-2 rounded-full font-bold"></span>
-        </div>
+     <div class="text-center mb-6">
+      <h2 class="title-font text-3xl font-bold text-white mb-2 drop-shadow-lg">👷 Elige una Profesión 👷</h2>
+      <div class="flex justify-center items-center gap-4 mb-4">
+       <span id="level-indicator" class="level-badge text-white px-4 py-2 rounded-full font-bold"></span> <span id="progress-indicator" class="bg-white/80 text-purple-600 px-4 py-2 rounded-full font-bold"></span>
       </div>
-      <div id="professions-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6"></div>
-      <div class="text-center flex justify-center gap-4">
-        <button onclick="goToLevelSelect()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-8 rounded-full hover:bg-white/40 transition-all"> ← Cambiar Nivel </button>
-        <button onclick="goToStart()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-8 rounded-full hover:bg-white/40 transition-all"> 🏠 Inicio </button>
-      </div>
+     </div>
+     <div id="professions-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6">
+      <!-- Se llenará dinámicamente -->
+     </div>
+     <div class="text-center">
+      <button onclick="goToLevelSelect()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-8 rounded-full hover:bg-white/40 transition-all"> ← Cambiar Nivel </button>
+     </div>
     </div>
+   </div><!-- Pantalla de Juego -->
+   <div id="game-screen" class="hidden min-h-full p-4">
+    <div class="max-w-6xl mx-auto">
+     <!-- Header del juego -->
+     <div class="bg-white/90 backdrop-blur rounded-2xl p-4 mb-4 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+       <span id="current-profession-icon" class="text-4xl"></span>
+       <div>
+        <h3 id="current-profession-name" class="title-font text-xl font-bold text-purple-600"></h3>
+        <p id="current-profession-desc" class="text-sm text-gray-600"></p>
+       </div>
+      </div>
+      <div class="flex items-center gap-4">
+       <div class="text-center">
+        <span class="text-sm text-gray-500">Puntaje</span>
+        <p id="score-display" class="title-font text-2xl font-bold text-yellow-500">0</p>
+       </div>
+       <div class="text-center">
+        <span class="text-sm text-gray-500">Correctos</span>
+        <p id="correct-display" class="title-font text-2xl font-bold text-green-500">0/0</p>
+       </div>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Personaje -->
+      <div class="lg:col-span-1">
+       <div class="bg-white/90 backdrop-blur rounded-2xl p-6 text-center">
+        <h4 class="title-font text-lg font-bold text-purple-600 mb-4">Tu Personaje</h4>
+        <div id="character-display" class="relative mx-auto w-48 h-64 bg-gradient-to-b from-sky-200 to-sky-100 rounded-3xl flex items-center justify-center mb-4">
+         <span id="base-character" class="text-8xl"></span>
+         <div id="equipped-items" class="absolute inset-0 flex flex-wrap items-end justify-center gap-1 p-2">
+          <!-- Items equipados aparecerán aquí -->
+         </div>
+        </div>
+        <div id="equipped-list" class="flex flex-wrap justify-center gap-2">
+         <!-- Lista de items equipados -->
+        </div>
+       </div>
+      </div><!-- Zona de elementos -->
+      <div class="lg:col-span-2">
+       <div class="bg-white/90 backdrop-blur rounded-2xl p-6">
+        <h4 class="title-font text-lg font-bold text-purple-600 mb-4 text-center">🎯 Selecciona los elementos correctos para esta profesión</h4>
+        <div id="items-grid" class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+         <!-- Items disponibles -->
+        </div>
+        <div id="feedback-message" class="mt-4 text-center text-lg font-bold hidden"></div>
+       </div>
+      </div>
+     </div>
+     <div class="mt-4 flex justify-center gap-4">
+      <button onclick="goToProfessionSelect()" class="bg-white/30 backdrop-blur text-white font-bold py-3 px-6 rounded-full hover:bg-white/40 transition-all"> ← Otra Profesión </button> <button onclick="checkCompletion()" id="verify-btn" class="bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-all shadow-lg"> ✓ Verificar </button>
+     </div>
+    </div>
+   </div><!-- Pantalla de Victoria -->
+   <div id="victory-screen" class="hidden min-h-full flex flex-col items-center justify-center p-4">
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+    <div class="text-center max-w-lg mx-auto bg-white/95 backdrop-blur rounded-3xl p-8 shadow-2xl relative z-10">
+     <div class="bounce-in">
+      <span class="text-8xl block mb-4">🏆</span>
+     </div>
+     <h2 class="title-font text-4xl font-bold text-purple-600 mb-4">¡Excelente!</h2>
+     <p id="victory-profession" class="text-xl text-gray-700 mb-4"></p>
+     <div id="stars-display" class="mb-6">
+      <!-- Estrellas -->
+     </div>
+     <p id="victory-score" class="text-2xl font-bold text-yellow-500 mb-6"></p>
+     <div class="flex flex-col gap-3">
+      <button onclick="playAgainSameProfession()" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white font-bold py-3 px-6 rounded-full hover:scale-105 transition-all"> 🔄 Repetir Profesión </button> <button onclick="goToProfessionSelect()" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white font-bold py-3 px-6 rounded-full hover:scale-105 transition-all"> 🎯 Otra Profesión </button> <button onclick="goToStart()" class="bg-white/50 text-purple-600 font-bold py-3 px-6 rounded-full hover:bg-white/70 transition-all"> 🏠 Inicio </button>
+     </div>
+    </div>
+   </div>
   </div>
+  <script>
+    // Configuración por defecto
+    const defaultConfig = {
+      game_title: "🎮 Viste la Profesión 🎮",
+      author_text: "💖 Material creado por Mtra. María Fernanda Flores Valenzuela con mucho amor 💖",
+      background_color: "#c084fc",
+      card_color: "#ffffff",
+      text_color: "#7c3aed",
+      primary_action_color: "#f59e0b",
+      secondary_action_color: "#8b5cf6",
+      font_family: "Quicksand",
+      font_size: 16
+    };
 
-  <!-- El resto de las pantallas (Juego, Victoria, etc.) mantiene el mismo patrón con botones de 🏠 Inicio añadidos -->
+    let config = { ...defaultConfig };
 
-</div>
+    // Estado del juego
+    let gameState = {
+      gender: null,
+      level: 1,
+      currentProfession: null,
+      selectedItems: [],
+      score: 0,
+      completedProfessions: []
+    };
 
-<script>
-// ... Aquí va todo tu script de navegación, selección de género, niveles, profesiones y lógica de juego ...
-</script>
-</body>
+    // Base de datos de profesiones con sus elementos
+    const professions = [
+      {
+        id: 'bombero',
+        name: 'Bombero/a',
+        icon: '🚒',
+        description: 'Apaga incendios y salva vidas',
+        items: ['🪖', '🧥', '🥾', '🧯', '💧'],
+        allItems: ['🪖', '🧥', '🥾', '🧯', '💧', '🪓', '📟']
+      },
+      {
+        id: 'medico',
+        name: 'Médico/a',
+        icon: '🏥',
+        description: 'Cuida la salud de las personas',
+        items: ['🩺', '💉', '🥼', '😷', '💊'],
+        allItems: ['🩺', '💉', '🥼', '😷', '💊', '🔬', '📋']
+      },
+      {
+        id: 'policia',
+        name: 'Policía',
+        icon: '🚔',
+        description: 'Protege a la comunidad',
+        items: ['🎖️', '🔫', '📻', '🦺', '🔦'],
+        allItems: ['🎖️', '🔫', '📻', '🦺', '🔦', '🚨', '⛓️']
+      },
+      {
+        id: 'chef',
+        name: 'Chef',
+        icon: '👨‍🍳',
+        description: 'Prepara deliciosos platillos',
+        items: ['👨‍🍳', '🔪', '🍳', '📖', '🧂'],
+        allItems: ['👨‍🍳', '🔪', '🍳', '📖', '🧂', '🥄', '⏱️']
+      },
+      {
+        id: 'maestro',
+        name: 'Maestro/a',
+        icon: '🏫',
+        description: 'Enseña y forma estudiantes',
+        items: ['📚', '✏️', '📐', '🎓', '📝'],
+        allItems: ['📚', '✏️', '📐', '🎓', '📝', '🗂️', '🖍️']
+      },
+      {
+        id: 'cientifico',
+        name: 'Científico/a',
+        icon: '🔬',
+        description: 'Investiga y descubre',
+        items: ['🔬', '🧪', '🥽', '🥼', '📊'],
+        allItems: ['🔬', '🧪', '🥽', '🥼', '📊', '🧫', '💻']
+      },
+      {
+        id: 'astronauta',
+        name: 'Astronauta',
+        icon: '🚀',
+        description: 'Explora el espacio',
+        items: ['🧑‍🚀', '🚀', '🛸', '📡', '🔭'],
+        allItems: ['🧑‍🚀', '🚀', '🛸', '📡', '🔭', '🌙', '⭐']
+      },
+      {
+        id: 'veterinario',
+        name: 'Veterinario/a',
+        icon: '🐾',
+        description: 'Cuida la salud de los animales',
+        items: ['🩺', '💉', '🐕', '🩹', '🥼'],
+        allItems: ['🩺', '💉', '🐕', '🩹', '🥼', '🐈', '💊']
+      },
+      {
+        id: 'piloto',
+        name: 'Piloto',
+        icon: '✈️',
+        description: 'Vuela aviones',
+        items: ['🧑‍✈️', '✈️', '🎧', '🗺️', '🕶️'],
+        allItems: ['🧑‍✈️', '✈️', '🎧', '🗺️', '🕶️', '📻', '🧳']
+      },
+      {
+        id: 'constructor',
+        name: 'Constructor/a',
+        icon: '🏗️',
+        description: 'Construye edificios',
+        items: ['⛑️', '🔨', '🧱', '📐', '🦺'],
+        allItems: ['⛑️', '🔨', '🧱', '📐', '🦺', '🪚', '📏']
+      },
+      {
+        id: 'artista',
+        name: 'Artista',
+        icon: '🎨',
+        description: 'Crea obras de arte',
+        items: ['🎨', '🖌️', '🖼️', '✏️', '📒'],
+        allItems: ['🎨', '🖌️', '🖼️', '✏️', '📒', '🎭', '✂️']
+      },
+      {
+        id: 'dentista',
+        name: 'Dentista',
+        icon: '🦷',
+        description: 'Cuida la salud dental',
+        items: ['🦷', '🪥', '🥼', '😷', '🔍'],
+        allItems: ['🦷', '🪥', '🥼', '😷', '🔍', '💧', '🪞']
+      },
+      {
+        id: 'fotografo',
+        name: 'Fotógrafo/a',
+        icon: '📷',
+        description: 'Captura momentos especiales',
+        items: ['📷', '📸', '💡', '🖼️', '💻'],
+        allItems: ['📷', '📸', '💡', '🖼️', '💻', '🎞️', '📱']
+      },
+      {
+        id: 'granjero',
+        name: 'Granjero/a',
+        icon: '🌾',
+        description: 'Cultiva alimentos',
+        items: ['🌾', '🚜', '🥕', '🌻', '🧤'],
+        allItems: ['🌾', '🚜', '🥕', '🌻', '🧤', '🪴', '💧']
+      },
+      {
+        id: 'mecanico',
+        name: 'Mecánico/a',
+        icon: '🔧',
+        description: 'Repara vehículos',
+        items: ['🔧', '🔩', '🚗', '⛽', '🧰'],
+        allItems: ['🔧', '🔩', '🚗', '⛽', '🧰', '🛞', '🪛']
+      },
+      {
+        id: 'musico',
+        name: 'Músico/a',
+        icon: '🎵',
+        description: 'Crea y toca música',
+        items: ['🎵', '🎸', '🎹', '🎤', '🎧'],
+        allItems: ['🎵', '🎸', '🎹', '🎤', '🎧', '🥁', '🎺']
+      },
+      {
+        id: 'detective',
+        name: 'Detective',
+        icon: '🕵️',
+        description: 'Investiga casos',
+        items: ['🔍', '🔎', '📋', '🔦', '📷'],
+        allItems: ['🔍', '🔎', '📋', '🔦', '📷', '🗂️', '🖊️']
+      },
+      {
+        id: 'electricista',
+        name: 'Electricista',
+        icon: '⚡',
+        description: 'Trabaja con electricidad',
+        items: ['⚡', '🔌', '💡', '🧰', '🦺'],
+        allItems: ['⚡', '🔌', '💡', '🧰', '🦺', '📏', '🔧']
+      }
+    ];
+
+    // Todos los items posibles para mezclar
+    const allGameItems = [
+      '🪖', '🧥', '🥾', '🧯', '🪓', '📟', '🚿',
+      '🩺', '💉', '🥼', '😷', '💊', '🔬', '📋',
+      '🎖️', '🔫', '📻', '🦺', '🔦', '🚨', '⛓️',
+      '👨‍🍳', '🔪', '🍳', '📖', '🧂', '🥄', '⏱️',
+      '📚', '✏️', '📐', '🎓', '📝', '🗂️', '🖍️',
+      '🧪', '🥽', '📊', '🧫', '💻',
+      '🧑‍🚀', '🚀', '🛸', '📡', '🔭', '🌙', '⭐',
+      '🐕', '🩹', '🐈',
+      '🧑‍✈️', '✈️', '🎧', '🗺️', '🕶️', '🧳',
+      '⛑️', '🔨', '🧱', '🪚', '📏',
+      '🎨', '🖌️', '🖼️', '📒', '🎭', '✂️',
+      '🦷', '🪥', '🔍', '💧', '🪞',
+      '📷', '📸', '💡', '🎞️', '📱',
+      '🌾', '🚜', '🥕', '🌻', '🧤', '🪴',
+      '🔧', '🔩', '🚗', '⛽', '🧰', '🛞', '🪛',
+      '🎵', '🎸', '🎹', '🎤', '🥁', '🎺',
+      '🔎', '🖊️',
+      '⚡', '🔌'
+    ];
+
+    // Funciones de navegación
+    function showScreen(screenId) {
+      document.querySelectorAll('#app > div').forEach(screen => {
+        screen.classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function goToStart() {
+      gameState = {
+        gender: null,
+        level: 1,
+        currentProfession: null,
+        selectedItems: [],
+        score: 0,
+        completedProfessions: []
+      };
+      document.getElementById('start-btn').disabled = true;
+      document.getElementById('gender-selected').classList.add('hidden');
+      document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.classList.remove('ring-4', 'ring-yellow-400');
+      });
+      showScreen('start-screen');
+    }
+
+    function goToLevelSelect() {
+      showScreen('level-screen');
+    }
+
+    function goToProfessionSelect() {
+      renderProfessionsGrid();
+      showScreen('profession-screen');
+    }
+
+    function selectGender(gender) {
+      gameState.gender = gender;
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('gender-selected').classList.remove('hidden');
+      
+      document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.classList.remove('ring-4', 'ring-yellow-400');
+      });
+      
+      event.currentTarget.classList.add('ring-4', 'ring-yellow-400');
+    }
+
+    function selectLevel(level) {
+      gameState.level = level;
+      goToProfessionSelect();
+    }
+
+    function startGame() {
+      if (!gameState.gender) return;
+      goToLevelSelect();
+    }
+
+    function getItemsCountByLevel(level) {
+      switch(level) {
+        case 1: return 3;
+        case 2: return 4;
+        case 3: return 5;
+        default: return 3;
+      }
+    }
+
+    function renderProfessionsGrid() {
+      const grid = document.getElementById('professions-grid');
+      const levelNames = ['', 'Fácil', 'Medio', 'Difícil'];
+      
+      document.getElementById('level-indicator').textContent = `Nivel ${gameState.level}: ${levelNames[gameState.level]}`;
+      document.getElementById('progress-indicator').textContent = `Completadas: ${gameState.completedProfessions.length}/${professions.length}`;
+      
+      grid.innerHTML = professions.map(prof => {
+        const isCompleted = gameState.completedProfessions.includes(prof.id);
+        return `
+          <button onclick="selectProfession('${prof.id}')" 
+            class="profession-card bg-white rounded-2xl p-4 text-center shadow-lg hover:shadow-xl transition-all ${isCompleted ? 'ring-4 ring-green-400' : ''}">
+            <span class="text-4xl block mb-2">${prof.icon}</span>
+            <h3 class="font-bold text-purple-600 text-sm">${prof.name}</h3>
+            ${isCompleted ? '<span class="text-green-500 text-xs">✓ Completada</span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectProfession(professionId) {
+      const profession = professions.find(p => p.id === professionId);
+      if (!profession) return;
+      
+      gameState.currentProfession = profession;
+      gameState.selectedItems = [];
+      
+      renderGameScreen();
+      showScreen('game-screen');
+    }
+
+    function renderGameScreen() {
+      const prof = gameState.currentProfession;
+      const itemsNeeded = getItemsCountByLevel(gameState.level);
+      
+      // Actualizar header
+      document.getElementById('current-profession-icon').textContent = prof.icon;
+      document.getElementById('current-profession-name').textContent = prof.name;
+      document.getElementById('current-profession-desc').textContent = prof.description;
+      document.getElementById('score-display').textContent = gameState.score;
+      document.getElementById('correct-display').textContent = `0/${itemsNeeded}`;
+      
+      // Personaje base
+      document.getElementById('base-character').textContent = gameState.gender === 'mujer' ? '👩' : '👨';
+      document.getElementById('equipped-list').innerHTML = '';
+      
+      // Generar items mezclados
+      const correctItems = prof.items.slice(0, itemsNeeded);
+      const otherItems = allGameItems.filter(item => !correctItems.includes(item));
+      const shuffledOthers = shuffleArray(otherItems).slice(0, 12 - itemsNeeded);
+      const allItems = shuffleArray([...correctItems, ...shuffledOthers]);
+      
+      // Renderizar items
+      const itemsGrid = document.getElementById('items-grid');
+      itemsGrid.innerHTML = allItems.map(item => `
+        <button onclick="toggleItem('${item}')" 
+          class="item-slot text-4xl p-3 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl hover:from-purple-200 hover:to-pink-200 transition-all"
+          data-item="${item}">
+          ${item}
+        </button>
+      `).join('');
+      
+      document.getElementById('feedback-message').classList.add('hidden');
+    }
+
+    function toggleItem(item) {
+      const itemsNeeded = getItemsCountByLevel(gameState.level);
+      const index = gameState.selectedItems.indexOf(item);
+      
+      if (index > -1) {
+        gameState.selectedItems.splice(index, 1);
+      } else if (gameState.selectedItems.length < itemsNeeded) {
+        gameState.selectedItems.push(item);
+      } else {
+        showFeedback('⚠️ Ya seleccionaste el máximo de elementos', 'text-orange-500');
+        return;
+      }
+      
+      updateSelectedItemsUI();
+    }
+
+    function updateSelectedItemsUI() {
+      const itemsNeeded = getItemsCountByLevel(gameState.level);
+      
+      // Actualizar contador
+      document.getElementById('correct-display').textContent = `${gameState.selectedItems.length}/${itemsNeeded}`;
+      
+      // Actualizar estilos de items
+      document.querySelectorAll('.item-slot').forEach(slot => {
+        const item = slot.dataset.item;
+        if (gameState.selectedItems.includes(item)) {
+          slot.classList.add('selected', 'ring-4', 'ring-yellow-400', 'bg-yellow-100');
+        } else {
+          slot.classList.remove('selected', 'ring-4', 'ring-yellow-400', 'bg-yellow-100');
+        }
+      });
+      
+      // Mostrar items equipados
+      const equippedList = document.getElementById('equipped-list');
+      equippedList.innerHTML = gameState.selectedItems.map(item => `
+        <span class="text-3xl bg-white rounded-full p-2 shadow-md bounce-in">${item}</span>
+      `).join('');
+    }
+
+    function checkCompletion() {
+      const prof = gameState.currentProfession;
+      const itemsNeeded = getItemsCountByLevel(gameState.level);
+      const correctItems = prof.items.slice(0, itemsNeeded);
+      
+      if (gameState.selectedItems.length !== itemsNeeded) {
+        showFeedback(`⚠️ Selecciona ${itemsNeeded} elementos`, 'text-orange-500');
+        return;
+      }
+      
+      let correctCount = 0;
+      
+      gameState.selectedItems.forEach(item => {
+        if (correctItems.includes(item)) {
+          correctCount++;
+        }
+      });
+      
+      // Mostrar retroalimentación visual
+      document.querySelectorAll('.item-slot').forEach(slot => {
+        const item = slot.dataset.item;
+        if (gameState.selectedItems.includes(item)) {
+          if (correctItems.includes(item)) {
+            slot.classList.add('correct-item');
+            slot.classList.remove('wrong-item');
+          } else {
+            slot.classList.add('wrong-item');
+            slot.classList.remove('correct-item');
+          }
+        }
+      });
+      
+      if (correctCount === itemsNeeded) {
+        // Victoria
+        const levelMultiplier = gameState.level;
+        const points = correctCount * 10 * levelMultiplier;
+        gameState.score += points;
+        
+        if (!gameState.completedProfessions.includes(prof.id)) {
+          gameState.completedProfessions.push(prof.id);
+        }
+        
+        setTimeout(() => {
+          showVictoryScreen(correctCount, itemsNeeded, points);
+        }, 1000);
+      } else {
+        showFeedback(`🔄 ${correctCount}/${itemsNeeded} correctos. ¡Intenta de nuevo!`, 'text-blue-500');
+        
+        // Reset después de mostrar feedback
+        setTimeout(() => {
+          gameState.selectedItems = [];
+          updateSelectedItemsUI();
+          document.querySelectorAll('.item-slot').forEach(slot => {
+            slot.classList.remove('correct-item', 'wrong-item');
+          });
+        }, 2000);
+      }
+    }
+
+    function showFeedback(message, colorClass) {
+      const feedback = document.getElementById('feedback-message');
+      feedback.textContent = message;
+      feedback.className = `mt-4 text-center text-lg font-bold slide-up ${colorClass}`;
+      feedback.classList.remove('hidden');
+    }
+
+    function showVictoryScreen(correct, total, points) {
+      const prof = gameState.currentProfession;
+      
+      document.getElementById('victory-profession').innerHTML = 
+        `¡Has vestido correctamente a un/a <strong>${prof.name}</strong>! ${prof.icon}`;
+      
+      document.getElementById('victory-score').textContent = `+${points} puntos`;
+      
+      // Calcular estrellas
+      const starCount = gameState.level;
+      const starsHTML = Array(3).fill(0).map((_, i) => 
+        `<span class="star ${i < starCount ? '' : 'empty'}">★</span>`
+      ).join('');
+      document.getElementById('stars-display').innerHTML = starsHTML;
+      
+      // Confetti
+      createConfetti();
+      
+      showScreen('victory-screen');
+    }
+
+    function createConfetti() {
+      const container = document.getElementById('confetti-container');
+      container.innerHTML = '';
+      
+      const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '-10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        container.appendChild(confetti);
+      }
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 2000);
+    }
+
+    function playAgainSameProfession() {
+      gameState.selectedItems = [];
+      renderGameScreen();
+      showScreen('game-screen');
+    }
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // SDK de elementos
+    async function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      document.getElementById('main-title').textContent = config.game_title || defaultConfig.game_title;
+      document.getElementById('author-credit').textContent = config.author_text || defaultConfig.author_text;
+      
+      // Aplicar colores
+      document.body.style.setProperty('--bg-color', config.background_color);
+      document.body.style.setProperty('--card-color', config.card_color);
+      document.body.style.setProperty('--text-color', config.text_color);
+      
+      // Aplicar fuente
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      document.body.style.fontFamily = `${fontFamily}, Quicksand, sans-serif`;
+      
+      // Aplicar tamaño de fuente base
+      const baseSize = config.font_size || defaultConfig.font_size;
+      document.body.style.fontSize = `${baseSize}px`;
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+          },
+          {
+            get: () => cfg.card_color || defaultConfig.card_color,
+            set: (v) => { cfg.card_color = v; window.elementSdk.setConfig({ card_color: v }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+          },
+          {
+            get: () => cfg.primary_action_color || defaultConfig.primary_action_color,
+            set: (v) => { cfg.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }
+          },
+          {
+            get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color,
+            set: (v) => { cfg.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.font_family || defaultConfig.font_family,
+          set: (v) => { cfg.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => cfg.font_size || defaultConfig.font_size,
+          set: (v) => { cfg.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ["game_title", cfg.game_title || defaultConfig.game_title],
+        ["author_text", cfg.author_text || defaultConfig.author_text]
+      ]);
+    }
+
+    // Inicialización
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d28c194e3047790',t:'MTc3MTg3MTAyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
