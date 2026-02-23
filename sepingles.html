@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Vocabulary Master</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    body { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+    .card-inner.flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; width: 100%; height: 100%; }
+    .card-back { transform: rotateY(180deg); }
+    @keyframes bounce-in { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes slide-down { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); } 50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.8); } }
+    @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .bounce-in { animation: bounce-in 0.5s ease-out; }
+    .slide-down { animation: slide-down 0.4s ease-out; }
+    .pulse-glow { animation: pulse-glow 2s infinite; }
+    .fade-in { animation: fade-in 0.3s ease-in; }
+    .progress-fill { transition: width 0.5s ease-out; }
+    .emoji-icon { font-size: 4rem; line-height: 1; }
+    .stage-badge { position: absolute; top-4; right-4; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+    .stage-complete { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.5); color: #86efac; }
+    .stage-active { background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); color: #93c5fd; }
+    .memory-card { transition: all 0.3s ease; cursor: pointer; }
+    .memory-card:hover { transform: scale(1.05); }
+    .memory-card.matched { pointer-events: none; opacity: 0.5; }
+    .fill-blank-input { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); color: white; }
+    .fill-blank-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+    .fill-blank-input:focus { background: rgba(255, 255, 255, 0.15); border-color: rgba(59, 130, 246, 0.5); outline: none; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="w-full min-h-full">
+   <!-- Modal de Términos y Condiciones -->
+   <div id="terms-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-800 rounded-3xl shadow-2xl max-w-2xl max-h-96 overflow-y-auto border border-white/10 slide-down">
+     <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-6 border-b border-white/10">
+      <h2 class="text-2xl font-bold text-white">Términos y Condiciones</h2>
+      <p class="text-white/70 text-sm mt-1">© Maestra María Fernanda Flores Valenzuela</p>
+     </div>
+     <div class="p-6 text-white/80 text-sm space-y-4">
+      <div>
+       <h3 class="text-white font-bold mb-2">1. LICENCIA DE USO</h3>
+       <p>Este material educativo ("Software") es propiedad intelectual de Maestra María Fernanda Flores Valenzuela. Se concede una licencia restringida y no transferible para su uso exclusivo.</p>
+      </div>
+      <div>
+       <h3 class="text-white font-bold mb-2">2. RESTRICCIONES</h3>
+       <p>El Software solo puede ser utilizado por el maestro/docente que lo ha adquirido ("Licenciatario") y sus estudiantes directos. Está prohibida toda forma de:</p>
+       <ul class="list-disc list-inside ml-2 mt-1 space-y-1">
+        <li>Redistribución, venta o cesión a terceros</li>
+        <li>Reproducción no autorizada</li>
+        <li>Modificación del código fuente</li>
+        <li>Uso comercial fuera del contexto educativo</li>
+        <li>Publicación en repositorios públicos sin autorización</li>
+       </ul>
+      </div>
+      <div>
+       <h3 class="text-white font-bold mb-2">3. USO EDUCATIVO</h3>
+       <p>Este Software se proporciona con propósitos educativos únicamente. El Licenciatario es responsable de su uso apropiado en entornos académicos.</p>
+      </div>
+      <div>
+       <h3 class="text-white font-bold mb-2">4. PROPIEDAD INTELECTUAL</h3>
+       <p>Todos los derechos de autor, marcas registradas y otros derechos de propiedad intelectual permanecen con Maestra María Fernanda Flores Valenzuela.</p>
+      </div>
+      <div>
+       <h3 class="text-white font-bold mb-2">5. DISCLAIMER</h3>
+       <p>El Software se proporciona "tal cual". La autora no es responsable de daños directos o indirectos derivados de su uso.</p>
+      </div>
+     </div>
+     <div class="sticky bottom-0 bg-slate-700/50 border-t border-white/10 p-4 flex gap-3">
+      <button onclick="declineTerms()" class="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-lg transition-all">Rechazar</button> <button onclick="acceptTerms()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-all">Aceptar</button>
+     </div>
+    </div>
+   </div><!-- Main Menu -->
+   <div id="main-menu" class="hidden max-w-5xl mx-auto p-4 md:p-8">
+    <header class="text-center mb-8 bounce-in">
+     <h1 id="app-title" class="text-4xl md:text-5xl font-extrabold text-white mb-2 drop-shadow-lg">🎓 English Vocabulary Master</h1>
+     <p id="creator-credit" class="text-white/60 text-sm mb-4">Material creado por Maestra María Fernanda Flores Valenzuela</p>
+     <p id="welcome-msg" class="text-xl text-white/80">Aprende vocabulario en inglés de forma progresiva y efectiva</p>
+    </header><!-- Stats Overview -->
+    <div id="stats-panel" class="bg-white/5 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/10">
+     <h2 class="text-xl font-bold text-white mb-4">📊 Tu Progreso</h2>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl p-4 border border-blue-500/20">
+       <div id="stat-memorization" class="text-2xl font-bold text-blue-400">
+        0
+       </div>
+       <div class="text-blue-200 text-xs mt-1">
+        Memorización
+       </div>
+      </div>
+      <div class="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl p-4 border border-purple-500/20">
+       <div id="stat-comprehension" class="text-2xl font-bold text-purple-400">
+        0
+       </div>
+       <div class="text-purple-200 text-xs mt-1">
+        Comprensión
+       </div>
+      </div>
+      <div class="bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl p-4 border border-green-500/20">
+       <div id="stat-game" class="text-2xl font-bold text-green-400">
+        0
+       </div>
+       <div class="text-green-200 text-xs mt-1">
+        Juego
+       </div>
+      </div>
+      <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 rounded-xl p-4 border border-yellow-500/20">
+       <div id="stat-total" class="text-2xl font-bold text-yellow-400">
+        0
+       </div>
+       <div class="text-yellow-200 text-xs mt-1">
+        Total
+       </div>
+      </div>
+     </div>
+    </div><!-- Level Selection -->
+    <div class="mb-8">
+     <h2 class="text-xl font-bold text-white mb-4">🎯 Selecciona tu Nivel</h2>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <button onclick="selectLevel('basic')" class="group bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-green-400/30">
+       <div class="text-4xl mb-2 group-hover:scale-110 transition-transform">
+        🌱
+       </div>
+       <div class="text-xl">
+        Básico
+       </div>
+       <div class="text-xs opacity-80">
+        50 palabras esenciales
+       </div></button> <button onclick="selectLevel('intermediate')" class="group bg-gradient-to-br from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-yellow-400/30">
+       <div class="text-4xl mb-2 group-hover:scale-110 transition-transform">
+        🌿
+       </div>
+       <div class="text-xl">
+        Intermedio
+       </div>
+       <div class="text-xs opacity-80">
+        60 palabras comunes
+       </div></button> <button onclick="selectLevel('expert')" class="group bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-red-400/30">
+       <div class="text-4xl mb-2 group-hover:scale-110 transition-transform">
+        🌳
+       </div>
+       <div class="text-xl">
+        Experto
+       </div>
+       <div class="text-xs opacity-80">
+        70 palabras avanzadas
+       </div></button>
+     </div>
+    </div><!-- Category Selection -->
+    <div id="category-section" class="hidden">
+     <h2 class="text-xl font-bold text-white mb-4">📚 Selecciona una Categoría</h2>
+     <div id="categories-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div><!-- Learning Stage Selection -->
+     <h2 class="text-xl font-bold text-white mb-4">📖 Elige tu Etapa de Aprendizaje</h2>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <button onclick="startMemorization()" class="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-blue-400/30">
+       <div class="text-4xl mb-2">
+        🧠
+       </div>
+       <div class="text-lg">
+        Memorización
+       </div>
+       <div class="text-xs opacity-80">
+        Conoce y memoriza palabras
+       </div></button> <button onclick="startComprehension()" class="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-purple-400/30">
+       <div class="text-4xl mb-2">
+        🎯
+       </div>
+       <div class="text-lg">
+        Comprensión
+       </div>
+       <div class="text-xs opacity-80">
+        Completa y relaciona palabras
+       </div></button> <button onclick="startGameMode()" class="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-6 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all border border-green-400/30">
+       <div class="text-4xl mb-2">
+        🎮
+       </div>
+       <div class="text-lg">
+        Juego
+       </div>
+       <div class="text-xs opacity-80">
+        Quiz desafiante y emocionante
+       </div></button>
+     </div>
+    </div>
+   </div><!-- Memorization Stage -->
+   <div id="memorization-screen" class="hidden max-w-2xl mx-auto p-4 md:p-8">
+    <div class="flex justify-between items-center mb-6">
+     <button onclick="backToMenu()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-4 rounded-lg transition-all border border-white/20">← Atrás</button>
+     <div class="stage-badge stage-active">
+      Etapa 1: Memorización
+     </div>
+     <div class="text-white font-bold"><span id="mem-progress">1</span>/<span id="mem-total">10</span>
+     </div>
+    </div>
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl p-6 mb-6 border border-white/10">
+     <div id="mem-progress-bar" class="progress-fill bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full mb-4" style="width: 0%"></div>
+     <div class="text-center mb-6">
+      <div id="mem-emoji" class="emoji-icon mb-4"></div>
+      <h2 id="mem-english" class="text-3xl font-bold text-white mb-2"></h2>
+      <p id="mem-spanish" class="text-2xl text-blue-300"></p>
+     </div>
+     <p id="mem-example" class="text-white/70 italic text-center"></p>
+    </div>
+    <div class="flex justify-center gap-4">
+     <button onclick="memPrev()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-lg transition-all border border-white/20">← Anterior</button> <button onclick="memNext()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-all">Siguiente →</button>
+    </div>
+   </div><!-- Comprehension Stage -->
+   <div id="comprehension-screen" class="hidden max-w-2xl mx-auto p-4 md:p-8">
+    <div class="flex justify-between items-center mb-6">
+     <button onclick="backToMenu()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-4 rounded-lg transition-all border border-white/20">← Atrás</button>
+     <div class="stage-badge stage-active">
+      Etapa 2: Comprensión
+     </div>
+     <div class="text-white font-bold"><span id="comp-progress">1</span>/<span id="comp-total">10</span>
+     </div>
+    </div>
+    <div id="comp-progress-bar" class="progress-fill bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full mb-6" style="width: 0%"></div>
+    <div id="comprehension-content" class="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 mb-6">
+     <!-- Dynamic content loaded here -->
+    </div>
+    <div class="flex justify-center gap-4">
+     <button onclick="compPrev()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-lg transition-all border border-white/20">← Anterior</button> <button onclick="compCheckAnswer()" id="comp-check-btn" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-all">Verificar</button>
+    </div>
+   </div><!-- Game Mode Screen -->
+   <div id="game-screen" class="hidden max-w-2xl mx-auto p-4 md:p-8">
+    <div class="flex justify-between items-center mb-6">
+     <button onclick="backToMenu()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-2 px-4 rounded-lg transition-all border border-white/20">← Atrás</button>
+     <div class="stage-badge stage-active">
+      Etapa 3: Juego
+     </div>
+     <div class="text-white font-bold">
+      Pregunta <span id="game-current">1</span>/<span id="game-total">10</span>
+     </div>
+    </div>
+    <div id="game-progress-bar" class="progress-fill bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full mb-6" style="width: 0%"></div>
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 mb-6">
+     <div class="text-center mb-6">
+      <div id="game-emoji" class="emoji-icon mb-4"></div>
+      <p id="game-question" class="text-xl font-bold text-white"></p>
+     </div>
+     <div id="game-options" class="grid grid-cols-1 gap-3"></div>
+    </div>
+    <div id="game-feedback" class="hidden text-center mb-6">
+     <div id="feedback-message" class="text-2xl font-bold mb-4"></div><button onclick="gameNext()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-8 rounded-lg transition-all">Continuar →</button>
+    </div>
+   </div><!-- Results Screen -->
+   <div id="results-screen" class="hidden max-w-2xl mx-auto p-4 md:p-8">
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 text-center bounce-in">
+     <div id="results-emoji" class="text-6xl mb-4">
+      🏆
+     </div>
+     <h2 class="text-3xl font-bold text-white mb-2">¡Cuestionario Completado!</h2>
+     <p id="results-message" class="text-xl text-white/80 mb-6"></p>
+     <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-green-500/20 rounded-lg p-4 border border-green-500/30">
+       <div id="results-correct" class="text-3xl font-bold text-green-400">
+        0
+       </div>
+       <div class="text-green-300 text-sm">
+        Correctas
+       </div>
+      </div>
+      <div class="bg-red-500/20 rounded-lg p-4 border border-red-500/30">
+       <div id="results-incorrect" class="text-3xl font-bold text-red-400">
+        0
+       </div>
+       <div class="text-red-300 text-sm">
+        Incorrectas
+       </div>
+      </div>
+      <div class="bg-blue-500/20 rounded-lg p-4 border border-blue-500/30">
+       <div id="results-percentage" class="text-3xl font-bold text-blue-400">
+        0%
+       </div>
+       <div class="text-blue-300 text-sm">
+        Calificación
+       </div>
+      </div>
+     </div>
+     <div class="flex flex-col gap-3">
+      <button onclick="retryGame()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-8 rounded-lg transition-all">🔄 Intentar de Nuevo</button> <button onclick="backToMenu()" class="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-lg transition-all border border-white/20">🏠 Volver al Menú</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Vocabulary Database
+    const vocabularyData = {
+      basic: {
+        animals: [
+          { id: 'b_a_1', word: 'Dog', spanish: 'Perro', emoji: '🐕', example: 'The dog is playing in the park.' },
+          { id: 'b_a_2', word: 'Cat', spanish: 'Gato', emoji: '🐱', example: 'My cat likes to sleep.' },
+          { id: 'b_a_3', word: 'Bird', spanish: 'Pájaro', emoji: '🐦', example: 'The bird sings beautifully.' },
+          { id: 'b_a_4', word: 'Fish', spanish: 'Pez', emoji: '🐟', example: 'The fish swims in the water.' },
+          { id: 'b_a_5', word: 'Cow', spanish: 'Vaca', emoji: '🐄', example: 'The cow gives us milk.' },
+          { id: 'b_a_6', word: 'Horse', spanish: 'Caballo', emoji: '🐴', example: 'The horse runs fast.' },
+          { id: 'b_a_7', word: 'Pig', spanish: 'Cerdo', emoji: '🐷', example: 'The pig lives on a farm.' },
+          { id: 'b_a_8', word: 'Chicken', spanish: 'Pollo', emoji: '🐔', example: 'The chicken lays eggs.' },
+          { id: 'b_a_9', word: 'Duck', spanish: 'Pato', emoji: '🦆', example: 'The duck swims in the pond.' },
+          { id: 'b_a_10', word: 'Rabbit', spanish: 'Conejo', emoji: '🐰', example: 'The rabbit eats carrots.' }
+        ],
+        colors: [
+          { id: 'b_c_1', word: 'Red', spanish: 'Rojo', emoji: '🔴', example: 'The apple is red.' },
+          { id: 'b_c_2', word: 'Blue', spanish: 'Azul', emoji: '🔵', example: 'The sky is blue.' },
+          { id: 'b_c_3', word: 'Green', spanish: 'Verde', emoji: '🟢', example: 'The grass is green.' },
+          { id: 'b_c_4', word: 'Yellow', spanish: 'Amarillo', emoji: '🟡', example: 'The sun is yellow.' },
+          { id: 'b_c_5', word: 'Orange', spanish: 'Naranja', emoji: '🟠', example: 'The orange is orange.' },
+          { id: 'b_c_6', word: 'Purple', spanish: 'Morado', emoji: '🟣', example: 'Grapes are purple.' },
+          { id: 'b_c_7', word: 'Black', spanish: 'Negro', emoji: '⚫', example: 'The night is black.' },
+          { id: 'b_c_8', word: 'White', spanish: 'Blanco', emoji: '⚪', example: 'Snow is white.' },
+          { id: 'b_c_9', word: 'Pink', spanish: 'Rosa', emoji: '💗', example: 'The flower is pink.' },
+          { id: 'b_c_10', word: 'Brown', spanish: 'Marrón', emoji: '🟤', example: 'The tree is brown.' }
+        ],
+        numbers: [
+          { id: 'b_n_1', word: 'One', spanish: 'Uno', emoji: '1️⃣', example: 'I have one apple.' },
+          { id: 'b_n_2', word: 'Two', spanish: 'Dos', emoji: '2️⃣', example: 'She has two cats.' },
+          { id: 'b_n_3', word: 'Three', spanish: 'Tres', emoji: '3️⃣', example: 'There are three books.' },
+          { id: 'b_n_4', word: 'Four', spanish: 'Cuatro', emoji: '4️⃣', example: 'Four seasons in a year.' },
+          { id: 'b_n_5', word: 'Five', spanish: 'Cinco', emoji: '5️⃣', example: 'I have five fingers.' },
+          { id: 'b_n_6', word: 'Six', spanish: 'Seis', emoji: '6️⃣', example: 'Six eggs in the box.' },
+          { id: 'b_n_7', word: 'Seven', spanish: 'Siete', emoji: '7️⃣', example: 'Seven days in a week.' },
+          { id: 'b_n_8', word: 'Eight', spanish: 'Ocho', emoji: '8️⃣', example: 'The octopus has eight legs.' },
+          { id: 'b_n_9', word: 'Nine', spanish: 'Nueve', emoji: '9️⃣', example: 'Nine lives for a cat.' },
+          { id: 'b_n_10', word: 'Ten', spanish: 'Diez', emoji: '🔟', example: 'I count to ten.' }
+        ],
+        food: [
+          { id: 'b_f_1', word: 'Apple', spanish: 'Manzana', emoji: '🍎', example: 'An apple a day keeps the doctor away.' },
+          { id: 'b_f_2', word: 'Banana', spanish: 'Plátano', emoji: '🍌', example: 'Monkeys love bananas.' },
+          { id: 'b_f_3', word: 'Bread', spanish: 'Pan', emoji: '🍞', example: 'I eat bread for breakfast.' },
+          { id: 'b_f_4', word: 'Milk', spanish: 'Leche', emoji: '🥛', example: 'Milk is white.' },
+          { id: 'b_f_5', word: 'Egg', spanish: 'Huevo', emoji: '🥚', example: 'I like fried eggs.' },
+          { id: 'b_f_6', word: 'Rice', spanish: 'Arroz', emoji: '🍚', example: 'Rice is popular in Asia.' },
+          { id: 'b_f_7', word: 'Water', spanish: 'Agua', emoji: '💧', example: 'Water is essential for life.' },
+          { id: 'b_f_8', word: 'Cheese', spanish: 'Queso', emoji: '🧀', example: 'Mice love cheese.' },
+          { id: 'b_f_9', word: 'Meat', spanish: 'Carne', emoji: '🥩', example: 'Meat is a source of protein.' },
+          { id: 'b_f_10', word: 'Pizza', spanish: 'Pizza', emoji: '🍕', example: 'Pizza is my favorite food.' }
+        ],
+        family: [
+          { id: 'b_fm_1', word: 'Mother', spanish: 'Madre', emoji: '👩', example: 'My mother is kind.' },
+          { id: 'b_fm_2', word: 'Father', spanish: 'Padre', emoji: '👨', example: 'My father works hard.' },
+          { id: 'b_fm_3', word: 'Sister', spanish: 'Hermana', emoji: '👧', example: 'My sister is younger.' },
+          { id: 'b_fm_4', word: 'Brother', spanish: 'Hermano', emoji: '👦', example: 'My brother plays soccer.' },
+          { id: 'b_fm_5', word: 'Baby', spanish: 'Bebé', emoji: '👶', example: 'The baby is sleeping.' },
+          { id: 'b_fm_6', word: 'Grandmother', spanish: 'Abuela', emoji: '👵', example: 'Grandmother tells stories.' },
+          { id: 'b_fm_7', word: 'Grandfather', spanish: 'Abuelo', emoji: '👴', example: 'Grandfather is wise.' },
+          { id: 'b_fm_8', word: 'Uncle', spanish: 'Tío', emoji: '👨‍🦱', example: 'Uncle visits on weekends.' },
+          { id: 'b_fm_9', word: 'Aunt', spanish: 'Tía', emoji: '👩‍🦱', example: 'Aunt makes delicious cookies.' },
+          { id: 'b_fm_10', word: 'Cousin', spanish: 'Primo/Prima', emoji: '🧒', example: 'My cousin lives nearby.' }
+        ]
+      },
+      intermediate: {
+        professions: [
+          { id: 'i_p_1', word: 'Doctor', spanish: 'Doctor/a', emoji: '👨‍⚕️', example: 'The doctor helps sick people.' },
+          { id: 'i_p_2', word: 'Teacher', spanish: 'Maestro/a', emoji: '👩‍🏫', example: 'The teacher explains the lesson.' },
+          { id: 'i_p_3', word: 'Engineer', spanish: 'Ingeniero/a', emoji: '👷', example: 'The engineer designs buildings.' },
+          { id: 'i_p_4', word: 'Chef', spanish: 'Chef', emoji: '👨‍🍳', example: 'The chef cooks amazing food.' },
+          { id: 'i_p_5', word: 'Police Officer', spanish: 'Policía', emoji: '👮', example: 'The police officer protects people.' },
+          { id: 'i_p_6', word: 'Firefighter', spanish: 'Bombero/a', emoji: '🧑‍🚒', example: 'The firefighter saves lives.' },
+          { id: 'i_p_7', word: 'Nurse', spanish: 'Enfermero/a', emoji: '👩‍⚕️', example: 'The nurse takes care of patients.' },
+          { id: 'i_p_8', word: 'Pilot', spanish: 'Piloto', emoji: '👨‍✈️', example: 'The pilot flies the airplane.' },
+          { id: 'i_p_9', word: 'Lawyer', spanish: 'Abogado/a', emoji: '⚖️', example: 'The lawyer defends his client.' },
+          { id: 'i_p_10', word: 'Artist', spanish: 'Artista', emoji: '🎨', example: 'The artist paints beautiful pictures.' }
+        ],
+        weather: [
+          { id: 'i_w_1', word: 'Sunny', spanish: 'Soleado', emoji: '☀️', example: 'It is sunny today.' },
+          { id: 'i_w_2', word: 'Rainy', spanish: 'Lluvioso', emoji: '🌧️', example: 'Bring an umbrella, it is rainy.' },
+          { id: 'i_w_3', word: 'Cloudy', spanish: 'Nublado', emoji: '☁️', example: 'The sky is cloudy.' },
+          { id: 'i_w_4', word: 'Windy', spanish: 'Ventoso', emoji: '💨', example: 'It is very windy outside.' },
+          { id: 'i_w_5', word: 'Snowy', spanish: 'Nevado', emoji: '❄️', example: 'It is snowy in winter.' },
+          { id: 'i_w_6', word: 'Stormy', spanish: 'Tormentoso', emoji: '⛈️', example: 'The weather is stormy tonight.' },
+          { id: 'i_w_7', word: 'Foggy', spanish: 'Brumoso', emoji: '🌫️', example: 'The morning is foggy.' },
+          { id: 'i_w_8', word: 'Hot', spanish: 'Caliente', emoji: '🥵', example: 'Summer days are hot.' },
+          { id: 'i_w_9', word: 'Cold', spanish: 'Frío', emoji: '🥶', example: 'Winter nights are cold.' },
+          { id: 'i_w_10', word: 'Humid', spanish: 'Húmedo', emoji: '💦', example: 'Tropical areas are humid.' }
+        ],
+        transportation: [
+          { id: 'i_t_1', word: 'Car', spanish: 'Coche/Auto', emoji: '🚗', example: 'I drive my car to work.' },
+          { id: 'i_t_2', word: 'Bus', spanish: 'Autobús', emoji: '🚌', example: 'The bus stops here.' },
+          { id: 'i_t_3', word: 'Train', spanish: 'Tren', emoji: '🚂', example: 'The train is fast.' },
+          { id: 'i_t_4', word: 'Airplane', spanish: 'Avión', emoji: '✈️', example: 'The airplane flies high.' },
+          { id: 'i_t_5', word: 'Bicycle', spanish: 'Bicicleta', emoji: '🚲', example: 'I ride my bicycle to school.' },
+          { id: 'i_t_6', word: 'Motorcycle', spanish: 'Motocicleta', emoji: '🏍️', example: 'The motorcycle is loud.' },
+          { id: 'i_t_7', word: 'Boat', spanish: 'Barco', emoji: '⛵', example: 'The boat sails on the sea.' },
+          { id: 'i_t_8', word: 'Helicopter', spanish: 'Helicóptero', emoji: '🚁', example: 'The helicopter landed on the roof.' },
+          { id: 'i_t_9', word: 'Subway', spanish: 'Metro', emoji: '🚇', example: 'I take the subway downtown.' },
+          { id: 'i_t_10', word: 'Taxi', spanish: 'Taxi', emoji: '🚕', example: 'Call a taxi to the airport.' }
+        ],
+        body: [
+          { id: 'i_b_1', word: 'Head', spanish: 'Cabeza', emoji: '🗣️', example: 'Use your head to think.' },
+          { id: 'i_b_2', word: 'Eye', spanish: 'Ojo', emoji: '👁️', example: 'The eye sees everything.' },
+          { id: 'i_b_3', word: 'Ear', spanish: 'Oreja', emoji: '👂', example: 'Listen with your ears.' },
+          { id: 'i_b_4', word: 'Nose', spanish: 'Nariz', emoji: '👃', example: 'The nose smells flowers.' },
+          { id: 'i_b_5', word: 'Mouth', spanish: 'Boca', emoji: '👄', example: 'Open your mouth wide.' },
+          { id: 'i_b_6', word: 'Hand', spanish: 'Mano', emoji: '✋', example: 'Raise your hand to speak.' },
+          { id: 'i_b_7', word: 'Foot', spanish: 'Pie', emoji: '🦶', example: 'My foot hurts.' },
+          { id: 'i_b_8', word: 'Heart', spanish: 'Corazón', emoji: '❤️', example: 'The heart pumps blood.' },
+          { id: 'i_b_9', word: 'Brain', spanish: 'Cerebro', emoji: '🧠', example: 'The brain controls everything.' },
+          { id: 'i_b_10', word: 'Teeth', spanish: 'Dientes', emoji: '🦷', example: 'Brush your teeth daily.' }
+        ],
+        house: [
+          { id: 'i_h_1', word: 'Kitchen', spanish: 'Cocina', emoji: '🍳', example: 'I cook in the kitchen.' },
+          { id: 'i_h_2', word: 'Bedroom', spanish: 'Dormitorio', emoji: '🛏️', example: 'I sleep in the bedroom.' },
+          { id: 'i_h_3', word: 'Bathroom', spanish: 'Baño', emoji: '🚿', example: 'The bathroom is clean.' },
+          { id: 'i_h_4', word: 'Living Room', spanish: 'Sala', emoji: '🛋️', example: 'We watch TV in the living room.' },
+          { id: 'i_h_5', word: 'Garden', spanish: 'Jardín', emoji: '🌺', example: 'Flowers grow in the garden.' },
+          { id: 'i_h_6', word: 'Door', spanish: 'Puerta', emoji: '🚪', example: 'Close the door please.' },
+          { id: 'i_h_7', word: 'Window', spanish: 'Ventana', emoji: '🪟', example: 'Open the window for fresh air.' },
+          { id: 'i_h_8', word: 'Roof', spanish: 'Techo', emoji: '🏠', example: 'The roof protects us from rain.' },
+          { id: 'i_h_9', word: 'Stairs', spanish: 'Escaleras', emoji: '🪜', example: 'Climb the stairs carefully.' },
+          { id: 'i_h_10', word: 'Garage', spanish: 'Garaje', emoji: '🚙', example: 'Park the car in the garage.' }
+        ]
+      },
+      expert: {
+        emotions: [
+          { id: 'e_e_1', word: 'Excited', spanish: 'Emocionado', emoji: '🤩', example: 'I am excited about the trip.' },
+          { id: 'e_e_2', word: 'Anxious', spanish: 'Ansioso', emoji: '😰', example: 'She feels anxious before exams.' },
+          { id: 'e_e_3', word: 'Frustrated', spanish: 'Frustrado', emoji: '😤', example: 'He was frustrated with the delay.' },
+          { id: 'e_e_4', word: 'Grateful', spanish: 'Agradecido', emoji: '🙏', example: 'I am grateful for your help.' },
+          { id: 'e_e_5', word: 'Confused', spanish: 'Confundido', emoji: '😕', example: 'The instructions left me confused.' },
+          { id: 'e_e_6', word: 'Determined', spanish: 'Determinado', emoji: '💪', example: 'She is determined to succeed.' },
+          { id: 'e_e_7', word: 'Overwhelmed', spanish: 'Abrumado', emoji: '😵', example: 'He felt overwhelmed by work.' },
+          { id: 'e_e_8', word: 'Peaceful', spanish: 'Pacífico', emoji: '😌', example: 'The garden is peaceful.' },
+          { id: 'e_e_9', word: 'Jealous', spanish: 'Celoso', emoji: '😒', example: 'He was jealous of her success.' },
+          { id: 'e_e_10', word: 'Nostalgic', spanish: 'Nostálgico', emoji: '🥹', example: 'Old photos make me nostalgic.' }
+        ],
+        technology: [
+          { id: 'e_t_1', word: 'Software', spanish: 'Software', emoji: '💻', example: 'The software needs an update.' },
+          { id: 'e_t_2', word: 'Hardware', spanish: 'Hardware', emoji: '🖥️', example: 'The hardware is very powerful.' },
+          { id: 'e_t_3', word: 'Database', spanish: 'Base de datos', emoji: '🗄️', example: 'The database stores information.' },
+          { id: 'e_t_4', word: 'Network', spanish: 'Red', emoji: '🌐', example: 'The network is secure.' },
+          { id: 'e_t_5', word: 'Algorithm', spanish: 'Algoritmo', emoji: '🔢', example: 'The algorithm solves problems.' },
+          { id: 'e_t_6', word: 'Encryption', spanish: 'Cifrado', emoji: '🔐', example: 'Encryption protects your data.' },
+          { id: 'e_t_7', word: 'Bandwidth', spanish: 'Ancho de banda', emoji: '📶', example: 'High bandwidth enables fast downloads.' },
+          { id: 'e_t_8', word: 'Interface', spanish: 'Interfaz', emoji: '🖱️', example: 'The user interface is intuitive.' },
+          { id: 'e_t_9', word: 'Server', spanish: 'Servidor', emoji: '🖧', example: 'The server handles requests.' },
+          { id: 'e_t_10', word: 'Browser', spanish: 'Navegador', emoji: '🔍', example: 'Open your browser to search.' }
+        ],
+        business: [
+          { id: 'e_b_1', word: 'Investment', spanish: 'Inversión', emoji: '📈', example: 'This is a good investment.' },
+          { id: 'e_b_2', word: 'Revenue', spanish: 'Ingresos', emoji: '💰', example: 'Revenue increased this quarter.' },
+          { id: 'e_b_3', word: 'Strategy', spanish: 'Estrategia', emoji: '♟️', example: 'Our strategy is working.' },
+          { id: 'e_b_4', word: 'Deadline', spanish: 'Fecha límite', emoji: '⏰', example: 'The deadline is tomorrow.' },
+          { id: 'e_b_5', word: 'Budget', spanish: 'Presupuesto', emoji: '💵', example: 'We are over budget.' },
+          { id: 'e_b_6', word: 'Negotiation', spanish: 'Negociación', emoji: '🤝', example: 'The negotiation was successful.' },
+          { id: 'e_b_7', word: 'Partnership', spanish: 'Asociación', emoji: '👥', example: 'We formed a new partnership.' },
+          { id: 'e_b_8', word: 'Stakeholder', spanish: 'Interesado', emoji: '👔', example: 'Stakeholders approved the plan.' },
+          { id: 'e_b_9', word: 'Entrepreneur', spanish: 'Emprendedor', emoji: '🚀', example: 'She is a successful entrepreneur.' },
+          { id: 'e_b_10', word: 'Marketing', spanish: 'Marketing', emoji: '📢', example: 'Marketing drives sales.' }
+        ],
+        environment: [
+          { id: 'e_en_1', word: 'Sustainable', spanish: 'Sostenible', emoji: '♻️', example: 'We need sustainable solutions.' },
+          { id: 'e_en_2', word: 'Pollution', spanish: 'Contaminación', emoji: '🏭', example: 'Pollution harms the environment.' },
+          { id: 'e_en_3', word: 'Ecosystem', spanish: 'Ecosistema', emoji: '🌿', example: 'The ecosystem is fragile.' },
+          { id: 'e_en_4', word: 'Renewable', spanish: 'Renovable', emoji: '🔋', example: 'Solar energy is renewable.' },
+          { id: 'e_en_5', word: 'Conservation', spanish: 'Conservación', emoji: '🌲', example: 'Conservation protects wildlife.' },
+          { id: 'e_en_6', word: 'Biodiversity', spanish: 'Biodiversidad', emoji: '🦎', example: 'Biodiversity is essential.' },
+          { id: 'e_en_7', word: 'Carbon Footprint', spanish: 'Huella de carbono', emoji: '👣', example: 'Reduce your carbon footprint.' },
+          { id: 'e_en_8', word: 'Deforestation', spanish: 'Deforestación', emoji: '🪓', example: 'Deforestation destroys habitats.' },
+          { id: 'e_en_9', word: 'Climate Change', spanish: 'Cambio climático', emoji: '🌡️', example: 'Climate change is real.' },
+          { id: 'e_en_10', word: 'Recycling', spanish: 'Reciclaje', emoji: '🗑️', example: 'Recycling helps the planet.' }
+        ],
+        academic: [
+          { id: 'e_a_1', word: 'Hypothesis', spanish: 'Hipótesis', emoji: '🔬', example: 'Test your hypothesis carefully.' },
+          { id: 'e_a_2', word: 'Thesis', spanish: 'Tesis', emoji: '📝', example: 'She defended her thesis.' },
+          { id: 'e_a_3', word: 'Analysis', spanish: 'Análisis', emoji: '📊', example: 'The analysis shows results.' },
+          { id: 'e_a_4', word: 'Methodology', spanish: 'Metodología', emoji: '📋', example: 'Explain your methodology.' },
+          { id: 'e_a_5', word: 'Conclusion', spanish: 'Conclusión', emoji: '✅', example: 'Write a clear conclusion.' },
+          { id: 'e_a_6', word: 'Reference', spanish: 'Referencia', emoji: '📚', example: 'Cite your references properly.' },
+          { id: 'e_a_7', word: 'Abstract', spanish: 'Resumen', emoji: '📄', example: 'The abstract summarizes the paper.' },
+          { id: 'e_a_8', word: 'Peer Review', spanish: 'Revisión por pares', emoji: '👀', example: 'Submit for peer review.' },
+          { id: 'e_a_9', word: 'Symposium', spanish: 'Simposio', emoji: '🎤', example: 'Present at the symposium.' },
+          { id: 'e_a_10', word: 'Dissertation', spanish: 'Disertación', emoji: '🎓', example: 'Complete your dissertation.' }
+        ]
+      }
+    };
+
+    const categoryEmojis = {
+      animals: '🐾', colors: '🎨', numbers: '🔢', food: '🍎', family: '👨‍👩‍👧‍👦',
+      professions: '💼', weather: '🌤️', transportation: '🚗', body: '🧍', house: '🏠',
+      emotions: '💭', technology: '💻', business: '📊', environment: '🌍', academic: '🎓'
+    };
+
+    const categoryNames = {
+      animals: 'Animales', colors: 'Colores', numbers: 'Números', food: 'Comida', family: 'Familia',
+      professions: 'Profesiones', weather: 'Clima', transportation: 'Transporte', body: 'Partes del Cuerpo', house: 'Casa',
+      emotions: 'Emociones', technology: 'Tecnología', business: 'Negocios', environment: 'Medio Ambiente', academic: 'Académico'
+    };
+
+    // App State
+    let currentLevel = null;
+    let currentCategory = null;
+    let currentWords = [];
+    let currentIndex = 0;
+    let userProgress = [];
+    let gameQuestions = [];
+    let gameIndex = 0;
+    let gameScore = 0;
+    let gameCorrect = 0;
+    let gameIncorrect = 0;
+    let termsAccepted = false;
+
+    const defaultConfig = {
+      app_title: 'English Vocabulary Master',
+      creator_name: 'Maestra María Fernanda Flores Valenzuela',
+      font_family: 'Poppins',
+      font_size: 16
+    };
+
+    async function initApp() {
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const title = config.app_title || defaultConfig.app_title;
+            const creator = config.creator_name || defaultConfig.creator_name;
+            document.getElementById('app-title').textContent = '🎓 ' + title;
+            document.getElementById('creator-credit').textContent = `Material creado por ${creator}`;
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['app_title', config.app_title || defaultConfig.app_title],
+            ['creator_name', config.creator_name || defaultConfig.creator_name]
+          ])
+        });
+      }
+
+      if (window.dataSdk) {
+        await window.dataSdk.init({
+          onDataChanged: (data) => {
+            userProgress = data;
+            updateStats();
+          }
+        });
+      }
+
+      updateStats();
+    }
+
+    function updateStats() {
+      const memo = userProgress.filter(p => p.stage === 'memorization').length;
+      const comp = userProgress.filter(p => p.stage === 'comprehension').length;
+      const game = userProgress.filter(p => p.stage === 'game').length;
+      const total = getTotalWordCount();
+
+      document.getElementById('stat-memorization').textContent = memo;
+      document.getElementById('stat-comprehension').textContent = comp;
+      document.getElementById('stat-game').textContent = game;
+      document.getElementById('stat-total').textContent = total;
+    }
+
+    function getTotalWordCount() {
+      let count = 0;
+      Object.values(vocabularyData).forEach(level => {
+        Object.values(level).forEach(category => {
+          count += category.length;
+        });
+      });
+      return count;
+    }
+
+    function acceptTerms() {
+      termsAccepted = true;
+      document.getElementById('terms-modal').classList.add('hidden');
+      document.getElementById('main-menu').classList.remove('hidden');
+    }
+
+    function declineTerms() {
+      window.location.href = 'about:blank';
+    }
+
+    function selectLevel(level) {
+      if (!termsAccepted) {
+        showNotification('Por favor acepta los Términos y Condiciones primero.');
+        return;
+      }
+      currentLevel = level;
+      showCategories();
+    }
+
+    function showCategories() {
+      document.getElementById('category-section').classList.remove('hidden');
+      const grid = document.getElementById('categories-grid');
+      grid.innerHTML = '';
+
+      const categories = Object.keys(vocabularyData[currentLevel]);
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-4 rounded-xl transition-all transform hover:scale-105 border border-white/20 fade-in';
+        btn.style.animationDelay = '0.1s';
+        btn.innerHTML = `
+          <div class="text-3xl mb-2">${categoryEmojis[cat]}</div>
+          <div class="text-sm">${categoryNames[cat]}</div>
+          <div class="text-xs opacity-70">${vocabularyData[currentLevel][cat].length} palabras</div>
+        `;
+        btn.onclick = () => selectCategory(cat);
+        grid.appendChild(btn);
+      });
+
+      document.getElementById('category-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function selectCategory(category) {
+      currentCategory = category;
+      currentWords = [...vocabularyData[currentLevel][category]];
+    }
+
+    function startMemorization() {
+      if (!currentCategory) {
+        showNotification('Por favor selecciona una categoría primero.');
+        return;
+      }
+
+      currentIndex = 0;
+      document.getElementById('main-menu').classList.add('hidden');
+      document.getElementById('memorization-screen').classList.remove('hidden');
+      document.getElementById('mem-total').textContent = currentWords.length;
+      showMemCard();
+    }
+
+    function showMemCard() {
+      const word = currentWords[currentIndex];
+      document.getElementById('mem-emoji').textContent = word.emoji;
+      document.getElementById('mem-english').textContent = word.word;
+      document.getElementById('mem-spanish').textContent = word.spanish;
+      document.getElementById('mem-example').textContent = `"${word.example}"`;
+      document.getElementById('mem-progress').textContent = currentIndex + 1;
+      
+      const progress = ((currentIndex + 1) / currentWords.length) * 100;
+      document.getElementById('mem-progress-bar').style.width = `${progress}%`;
+    }
+
+    function memNext() {
+      if (currentIndex < currentWords.length - 1) {
+        currentIndex++;
+        showMemCard();
+      } else {
+        startComprehension();
+      }
+    }
+
+    function memPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showMemCard();
+      }
+    }
+
+    function startComprehension() {
+      currentIndex = 0;
+      document.getElementById('memorization-screen').classList.add('hidden');
+      document.getElementById('comprehension-screen').classList.remove('hidden');
+      document.getElementById('comp-total').textContent = currentWords.length;
+      showCompCard();
+    }
+
+    function showCompCard() {
+      const word = currentWords[currentIndex];
+      const content = document.getElementById('comprehension-content');
+      
+      const type = currentIndex % 2 === 0 ? 'fill' : 'match';
+      
+      if (type === 'fill') {
+        content.innerHTML = `
+          <div class="text-center">
+            <div class="emoji-icon mb-4">${word.emoji}</div>
+            <p class="text-white/70 mb-6">Escribe la palabra en inglés:</p>
+            <input type="text" id="comp-answer" placeholder="Escribe aquí..." class="w-full bg-white/10 border-2 border-white/20 text-white placeholder-white/50 px-4 py-3 rounded-lg text-lg font-semibold text-center fill-blank-input" autofocus>
+            <p class="text-white/50 mt-4 text-sm">Pista: ${word.spanish}</p>
+          </div>
+        `;
+      } else {
+        const options = [word.word, ...shuffleArray(currentWords.filter((w, i) => i !== currentIndex).map(w => w.word)).slice(0, 3)];
+        shuffleArray(options);
+        
+        content.innerHTML = `
+          <div class="text-center">
+            <div class="emoji-icon mb-4">${word.emoji}</div>
+            <p class="text-white/70 mb-6">Selecciona la palabra correcta:</p>
+            <div class="grid grid-cols-2 gap-3">
+              ${options.map((opt, idx) => `
+                <button onclick="selectCompOption('${opt}', '${word.word}')" class="bg-white/10 hover:bg-white/20 border-2 border-white/20 text-white font-bold py-3 px-4 rounded-lg transition-all comp-option">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('comp-progress').textContent = currentIndex + 1;
+      const progress = ((currentIndex + 1) / currentWords.length) * 100;
+      document.getElementById('comp-progress-bar').style.width = `${progress}%`;
+    }
+
+    function selectCompOption(selected, correct) {
+      if (selected === correct) {
+        compNext();
+      } else {
+        document.querySelectorAll('.comp-option').forEach(btn => btn.disabled = true);
+        setTimeout(() => {
+          showCompCard();
+          document.querySelectorAll('.comp-option').forEach(btn => btn.disabled = false);
+        }, 1000);
+      }
+    }
+
+    function compCheckAnswer() {
+      const input = document.getElementById('comp-answer');
+      if (!input) return;
+
+      const answer = input.value.trim().toLowerCase();
+      const correct = currentWords[currentIndex].word.toLowerCase();
+
+      if (answer === correct) {
+        compNext();
+      } else {
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 500);
+      }
+    }
+
+    function compNext() {
+      if (currentIndex < currentWords.length - 1) {
+        currentIndex++;
+        showCompCard();
+      } else {
+        startGameMode();
+      }
+    }
+
+    function compPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showCompCard();
+      }
+    }
+
+    function startGameMode() {
+      gameQuestions = shuffleArray([...currentWords]).slice(0, Math.min(10, currentWords.length));
+      gameIndex = 0;
+      gameScore = 0;
+      gameCorrect = 0;
+      gameIncorrect = 0;
+
+      document.getElementById('comprehension-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('game-total').textContent = gameQuestions.length;
+      showGameCard();
+    }
+
+    function showGameCard() {
+      const question = gameQuestions[gameIndex];
+      document.getElementById('game-emoji').textContent = question.emoji;
+      document.getElementById('game-question').textContent = `¿Cuál es la traducción de "${question.spanish}"?`;
+      document.getElementById('game-current').textContent = gameIndex + 1;
+
+      const progress = ((gameIndex + 1) / gameQuestions.length) * 100;
+      document.getElementById('game-progress-bar').style.width = `${progress}%`;
+
+      const correctAnswer = question.word;
+      let options = [correctAnswer];
+
+      const allWords = Object.values(vocabularyData[currentLevel])
+        .flat()
+        .map(w => w.word)
+        .filter(w => w !== correctAnswer);
+
+      options = options.concat(shuffleArray(allWords).slice(0, 3));
+      options = shuffleArray(options);
+
+      const container = document.getElementById('game-options');
+      container.innerHTML = '';
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg transition-all border border-white/20 fade-in';
+        btn.textContent = opt;
+        btn.onclick = () => checkGameAnswer(opt, correctAnswer, btn);
+        container.appendChild(btn);
+      });
+
+      document.getElementById('game-feedback').classList.add('hidden');
+    }
+
+    function checkGameAnswer(selected, correct, btn) {
+      const isCorrect = selected === correct;
+      const allBtns = document.querySelectorAll('#game-options button');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btn.classList.add('bg-green-500', 'border-green-500');
+        btn.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20');
+        gameScore += 10;
+        gameCorrect++;
+        document.getElementById('feedback-message').textContent = '✅ ¡Correcto!';
+        document.getElementById('feedback-message').className = 'text-2xl font-bold text-green-400 mb-4';
+      } else {
+        btn.classList.add('bg-red-500', 'border-red-500');
+        btn.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20');
+        gameIncorrect++;
+        document.getElementById('feedback-message').textContent = `❌ Incorrecto. La respuesta es: ${correct}`;
+        document.getElementById('feedback-message').className = 'text-2xl font-bold text-red-400 mb-4';
+
+        allBtns.forEach(b => {
+          if (b.textContent === correct) {
+            b.classList.add('bg-green-500', 'border-green-500');
+            b.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20');
+          }
+        });
+      }
+
+      document.getElementById('game-feedback').classList.remove('hidden');
+    }
+
+    function gameNext() {
+      if (gameIndex < gameQuestions.length - 1) {
+        gameIndex++;
+        showGameCard();
+      } else {
+        showGameResults();
+      }
+    }
+
+    function showGameResults() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.remove('hidden');
+
+      const percentage = Math.round((gameCorrect / gameQuestions.length) * 100);
+      document.getElementById('results-correct').textContent = gameCorrect;
+      document.getElementById('results-incorrect').textContent = gameIncorrect;
+      document.getElementById('results-percentage').textContent = percentage + '%';
+
+      let emoji, message;
+      if (percentage >= 90) {
+        emoji = '🏆';
+        message = '¡Excelente! Eres un experto en vocabulario.';
+      } else if (percentage >= 70) {
+        emoji = '⭐';
+        message = '¡Muy bien! Sigue practicando.';
+      } else if (percentage >= 50) {
+        emoji = '💪';
+        message = 'Buen esfuerzo. Continúa estudiando.';
+      } else {
+        emoji = '📚';
+        message = 'Sigue practicando, ¡lo harás mejor!';
+      }
+
+      document.getElementById('results-emoji').textContent = emoji;
+      document.getElementById('results-message').textContent = message;
+    }
+
+    function retryGame() {
+      document.getElementById('results-screen').classList.add('hidden');
+      startGameMode();
+    }
+
+    function backToMenu() {
+      document.getElementById('memorization-screen').classList.add('hidden');
+      document.getElementById('comprehension-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('results-screen').classList.add('hidden');
+      document.getElementById('main-menu').classList.remove('hidden');
+      currentCategory = null;
+      document.getElementById('category-section').classList.add('hidden');
+      updateStats();
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 text-slate-800 px-6 py-3 rounded-full shadow-lg font-bold z-50 slide-down';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 2500);
+    }
+
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d24617d901c2590',t:'MTc3MTgyNTE0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
