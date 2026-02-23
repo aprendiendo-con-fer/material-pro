@@ -1,215 +1,195 @@
 <!doctype html>
 <html lang="es" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Material Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Pro</title>
 
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
-  <style>
-    * { box-sizing: border-box; }
-    .font-fredoka { font-family: 'Fredoka', sans-serif; }
-    .font-nunito { font-family: 'Nunito', sans-serif; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    }
+<style>
+*{box-sizing:border-box;}
+.font-fredoka{font-family:'Fredoka',sans-serif;}
+.font-nunito{font-family:'Nunito',sans-serif;}
 
-    .card-gradient {
-      background: linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%);
-    }
+.gradient-bg{
+background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+}
 
-    .btn-lenguajes {
-      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-    }
-    .btn-lenguajes:hover {
-      box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
-    }
+.card-gradient{
+background:linear-gradient(145deg,#ffffff 0%,#f0f4ff 100%);
+}
 
-    .btn-saberes {
-      background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
-      box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-    }
-    .btn-saberes:hover {
-      box-shadow: 0 12px 35px rgba(78, 205, 196, 0.6);
-    }
+.menu-btn{
+transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+}
+.menu-btn:hover{
+transform:scale(1.08) translateY(-5px);
+}
+.menu-btn:active{
+transform:scale(1.15);
+}
 
-    .btn-etica {
-      background: linear-gradient(135deg, #A770EF 0%, #CF8BF3 50%, #FDB99B 100%);
-      box-shadow: 0 8px 25px rgba(167, 112, 239, 0.4);
-    }
-    .btn-etica:hover {
-      box-shadow: 0 12px 35px rgba(167, 112, 239, 0.6);
-    }
-
-    .btn-humano {
-      background: linear-gradient(135deg, #5B86E5 0%, #36D1DC 100%);
-      box-shadow: 0 8px 25px rgba(91, 134, 229, 0.4);
-    }
-    .btn-humano:hover {
-      box-shadow: 0 12px 35px rgba(91, 134, 229, 0.6);
-    }
-
-    .menu-btn {
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .menu-btn:hover {
-      transform: scale(1.08) translateY(-5px);
-    }
-    .menu-btn:active {
-      transform: scale(1.15);
-    }
-  </style>
+.btn-lenguajes{
+background:linear-gradient(135deg,#FF6B6B 0%,#FF8E53 100%);
+box-shadow:0 8px 25px rgba(255,107,107,.4);
+}
+.btn-saberes{
+background:linear-gradient(135deg,#4ECDC4 0%,#44A08D 100%);
+box-shadow:0 8px 25px rgba(78,205,196,.4);
+}
+.btn-etica{
+background:linear-gradient(135deg,#A770EF 0%,#CF8BF3 50%,#FDB99B 100%);
+box-shadow:0 8px 25px rgba(167,112,239,.4);
+}
+.btn-humano{
+background:linear-gradient(135deg,#5B86E5 0%,#36D1DC 100%);
+box-shadow:0 8px 25px rgba(91,134,229,.4);
+}
+</style>
 </head>
 
 <body class="h-full font-nunito">
 <div class="h-full w-full gradient-bg overflow-auto">
 
-  <!-- LOGIN -->
-  <div id="login-screen" class="min-h-full w-full flex items-center justify-center p-4">
-    <div class="card-gradient rounded-3xl shadow-2xl p-8 w-full max-w-md">
+<!-- LOGIN -->
+<div id="login-screen" class="min-h-full w-full flex items-center justify-center p-4">
+<div class="card-gradient rounded-3xl shadow-2xl p-8 w-full max-w-md">
 
-      <div class="text-center mb-8">
-        <div class="text-6xl mb-4">🎨</div>
-        <h1 class="text-4xl font-fredoka font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-          Material Pro
-        </h1>
-        <p class="text-gray-500 mt-2 text-sm">Recursos educativos interactivos</p>
-      </div>
+<div class="text-center mb-8">
+<div class="text-6xl mb-4">🎨</div>
+<h1 class="text-4xl font-fredoka font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+Material Pro
+</h1>
+<p class="text-gray-500 mt-2 text-sm">Recursos educativos interactivos</p>
+</div>
 
-      <form id="login-form" class="space-y-5">
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">
-            🔑 Contraseña de Acceso
-          </label>
-          <input type="password" id="password"
-                 class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none">
-        </div>
+<form id="login-form" class="space-y-5">
+<div>
+<label class="block text-sm font-semibold text-gray-700 mb-2">
+🔑 Contraseña de Acceso
+</label>
+<input type="password" id="password" required
+class="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none">
+</div>
 
-        <div id="error-message"
-             class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-r-lg text-sm">
-          ⚠️ Contraseña incorrecta
-        </div>
+<div id="error-message"
+class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-r-lg text-sm">
+⚠️ Contraseña incorrecta
+</div>
 
-        <button type="submit"
-                class="w-full py-4 rounded-xl font-bold text-white text-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-105 transition-all">
-          🚀 Ingresar
-        </button>
-      </form>
-    </div>
-  </div>
+<button type="submit"
+class="w-full py-4 rounded-xl font-bold text-white text-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-105 transition-all">
+🚀 Ingresar
+</button>
+</form>
 
-  <!-- MENU PRINCIPAL -->
-  <div id="main-screen" class="hidden min-h-full w-full p-4 md:p-8">
-    <div class="max-w-4xl mx-auto text-center">
+</div>
+</div>
 
-      <h1 class="text-5xl md:text-7xl font-fredoka font-bold text-white drop-shadow-lg mb-10">
-        Material Pro
-      </h1>
+<!-- MENU -->
+<div id="main-screen" class="hidden min-h-full w-full p-4 md:p-8">
+<div class="max-w-5xl mx-auto text-center">
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex justify-between items-center mb-8">
+<h1 class="text-4xl md:text-6xl font-fredoka font-bold text-white drop-shadow-lg">
+Material Pro
+</h1>
 
-        <button class="menu-btn btn-lenguajes rounded-3xl p-6 text-white">
-          <div class="flex flex-col items-center gap-3">
-            <span class="text-5xl">📖</span>
-            <span class="text-xl md:text-2xl font-fredoka font-bold">
-              Lenguajes
-            </span>
-            <span class="text-sm opacity-90">
-              Alfabetización Global
-            </span>
-          </div>
-        </button>
+<button onclick="cerrarSesion()"
+class="bg-white text-purple-700 px-4 py-2 rounded-xl font-bold hover:scale-105 transition">
+Cerrar sesión
+</button>
+</div>
 
-        <button class="menu-btn btn-saberes rounded-3xl p-6 text-white">
-          <div class="flex flex-col items-center gap-3">
-            <span class="text-5xl">🔬</span>
-            <span class="text-xl md:text-2xl font-fredoka font-bold text-center">
-              Saberes y Pensamiento Científico
-            </span>
-            <span class="text-sm opacity-90">
-              Matemáticas Interactivas
-            </span>
-          </div>
-        </button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <button class="menu-btn btn-etica rounded-3xl p-6 text-white">
-          <div class="flex flex-col items-center gap-3">
-            <span class="text-5xl">🌿</span>
-            <span class="text-xl md:text-2xl font-fredoka font-bold text-center">
-              Ética, Naturaleza y Sociedades
-            </span>
-            <span class="text-sm opacity-90">
-              Valores y Comunidad
-            </span>
-          </div>
-        </button>
+<button onclick="irPagina('lenguajes.html')" class="menu-btn btn-lenguajes rounded-3xl p-6 text-white">
+<div class="flex flex-col items-center gap-3">
+<span class="text-5xl">📖</span>
+<span class="text-xl font-fredoka font-bold">Lenguajes</span>
+<span class="text-sm opacity-90">Alfabetización Global</span>
+</div>
+</button>
 
-        <button class="menu-btn btn-humano rounded-3xl p-6 text-white">
-          <div class="flex flex-col items-center gap-3">
-            <span class="text-5xl">🤝</span>
-            <span class="text-xl md:text-2xl font-fredoka font-bold text-center">
-              De lo Humano y lo Comunitario
-            </span>
-            <span class="text-sm opacity-90">
-              Sociedad y Cultura
-            </span>
-          </div>
-        </button>
+<button onclick="irPagina('saberes.html')" class="menu-btn btn-saberes rounded-3xl p-6 text-white">
+<div class="flex flex-col items-center gap-3">
+<span class="text-5xl">🔬</span>
+<span class="text-xl font-fredoka font-bold text-center">
+Saberes y Pensamiento Científico
+</span>
+<span class="text-sm opacity-90">Matemáticas Interactivas</span>
+</div>
+</button>
 
-      </div>
-    </div>
-  </div>
+<button onclick="irPagina('etica.html')" class="menu-btn btn-etica rounded-3xl p-6 text-white">
+<div class="flex flex-col items-center gap-3">
+<span class="text-5xl">🌿</span>
+<span class="text-xl font-fredoka font-bold text-center">
+Ética, Naturaleza y Sociedades
+</span>
+<span class="text-sm opacity-90">Valores y Comunidad</span>
+</div>
+</button>
+
+<button onclick="irPagina('humano.html')" class="menu-btn btn-humano rounded-3xl p-6 text-white">
+<div class="flex flex-col items-center gap-3">
+<span class="text-5xl">🤝</span>
+<span class="text-xl font-fredoka font-bold text-center">
+De lo Humano y lo Comunitario
+</span>
+<span class="text-sm opacity-90">Sociedad y Cultura</span>
+</div>
+</button>
+
+</div>
+</div>
+</div>
 
 </div>
 
 <script>
-const CONTRASEÑA_MAESTRA = "Pro20-26*";
+const CONTRASENA_MAESTRA = "Pro20-26*";
 
-// REVISAR SESIÓN AL CARGAR
-if (localStorage.getItem("sesionActiva") === "true") {
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('main-screen').classList.remove('hidden');
+// Verificar sesión al cargar
+window.onload = function(){
+if(localStorage.getItem("sesionActiva")==="true"){
+mostrarMenu();
+}
+};
+
+// Login
+document.getElementById("login-form").addEventListener("submit",function(e){
+e.preventDefault();
+const pass=document.getElementById("password").value;
+
+if(pass===CONTRASENA_MAESTRA){
+localStorage.setItem("sesionActiva","true");
+mostrarMenu();
+}else{
+document.getElementById("error-message").classList.remove("hidden");
+document.getElementById("password").value="";
+}
+});
+
+function mostrarMenu(){
+document.getElementById("login-screen").classList.add("hidden");
+document.getElementById("main-screen").classList.remove("hidden");
 }
 
-// FORMULARIO LOGIN
-document.getElementById('login-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const password = document.getElementById('password').value;
+function cerrarSesion(){
+localStorage.removeItem("sesionActiva");
+location.reload();
+}
 
-  if (password === CONTRASEÑA_MAESTRA) {
-    localStorage.setItem("sesionActiva", "true");
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('main-screen').classList.remove('hidden');
-  } else {
-    document.getElementById('error-message').classList.remove('hidden');
-    document.getElementById('password').value = '';
-  }
-});
-
-// NAVEGACIÓN A SUBPÁGINAS
-const botones = document.querySelectorAll('.menu-btn');
-
-botones[0].addEventListener('click', function() {
-  window.location.href = "lenguajes.html";
-});
-
-botones[1].addEventListener('click', function() {
-  window.location.href = "saberes.html";
-});
-
-botones[2].addEventListener('click', function() {
-  window.location.href = "etica.html";
-});
-
-botones[3].addEventListener('click', function() {
-  window.location.href = "humano.html";
-});
+function irPagina(pagina){
+window.location.href=pagina;
+}
 </script>
+
 </body>
 </html>
