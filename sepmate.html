@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MateAventuras Primaria</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    .title-font { font-family: 'Fredoka', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    @keyframes bounce-soft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.8); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .bounce-animation { animation: bounce-soft 2s ease-in-out infinite; }
+    .sparkle-animation { animation: sparkle 1.5s ease-in-out infinite; }
+    .slide-up { animation: slide-up 0.5s ease-out forwards; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .shake { animation: shake 0.5s ease-in-out; }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: confetti-fall 3s linear forwards;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    .game-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.02);
+    }
+    
+    .btn-game {
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-game:hover {
+      transform: translateY(-2px);
+    }
+    .btn-game:active {
+      transform: scale(0.98);
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+      background-size: 200% 100%;
+      animation: gradient-move 2s linear infinite;
+    }
+    @keyframes gradient-move {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    
+    .star-earned {
+      animation: bounce-soft 0.5s ease-out;
+    }
+    
+    .option-btn {
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+    .option-btn.correct {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      animation: pulse-glow 0.5s ease-out;
+    }
+    .option-btn.incorrect {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      animation: shake 0.5s ease-out;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full"></div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      main_title: 'MateAventuras',
+      author_name: 'María Fernanda Flores Valenzuela',
+      primary_color: '#8b5cf6',
+      secondary_color: '#fbbf24',
+      background_color: '#fef3c7',
+      text_color: '#1e1b4b',
+      accent_color: '#10b981'
+    };
+
+    let config = { ...defaultConfig };
+
+    // Game State
+    let currentScreen = 'home';
+    let selectedLevel = null;
+    let selectedGame = null;
+    let currentQuestion = 0;
+    let score = 0;
+    let totalQuestions = 10;
+    let questions = [];
+    let answeredCorrectly = 0;
+    let streak = 0;
+    let showingTerms = false;
+
+    // SEP Mexico Math Topics by Level
+    const gamesByLevel = {
+      easy: {
+        name: 'Nivel Fácil',
+        subtitle: '1° y 2° Grado',
+        emoji: '🌟',
+        color: '#10b981',
+        games: [
+          { id: 'counting', name: 'Conteo Mágico', icon: '🔢', desc: 'Cuenta objetos del 1 al 100' },
+          { id: 'addition', name: 'Suma Divertida', icon: '➕', desc: 'Sumas hasta el 20' },
+          { id: 'subtraction', name: 'Resta Aventura', icon: '➖', desc: 'Restas hasta el 20' },
+          { id: 'shapes', name: 'Figuras Locas', icon: '🔷', desc: 'Identifica figuras geométricas' },
+          { id: 'comparison', name: 'Mayor o Menor', icon: '⚖️', desc: 'Compara números' },
+          { id: 'sequences', name: 'Secuencias', icon: '📊', desc: 'Completa la secuencia' }
+        ]
+      },
+      medium: {
+        name: 'Nivel Medio',
+        subtitle: '3° y 4° Grado',
+        emoji: '⭐',
+        color: '#f59e0b',
+        games: [
+          { id: 'multiplication', name: 'Multi-Reto', icon: '✖️', desc: 'Tablas de multiplicar' },
+          { id: 'division', name: 'División Espacial', icon: '➗', desc: 'Divisiones exactas' },
+          { id: 'fractions', name: 'Fracciones Fun', icon: '🥧', desc: 'Fracciones básicas' },
+          { id: 'measurement', name: 'Medidas Locas', icon: '📏', desc: 'Unidades de medida' },
+          { id: 'time', name: 'Reloj Veloz', icon: '🕐', desc: 'Lee la hora' },
+          { id: 'money', name: 'Tiendita', icon: '💰', desc: 'Operaciones con dinero' }
+        ]
+      },
+      hard: {
+        name: 'Nivel Difícil',
+        subtitle: '5° y 6° Grado',
+        emoji: '🏆',
+        color: '#8b5cf6',
+        games: [
+          { id: 'decimals', name: 'Decimales Pro', icon: '🔬', desc: 'Operaciones con decimales' },
+          { id: 'percentages', name: 'Porcentajes', icon: '📈', desc: 'Calcula porcentajes' },
+          { id: 'geometry', name: 'Geo-Máster', icon: '📐', desc: 'Áreas y perímetros' },
+          { id: 'equations', name: 'Ecuaciones', icon: '🧮', desc: 'Encuentra el valor de X' },
+          { id: 'proportions', name: 'Proporciones', icon: '⚡', desc: 'Razones y proporciones' },
+          { id: 'statistics', name: 'Estadística', icon: '📊', desc: 'Promedio y moda' }
+        ]
+      }
+    };
+
+    // Question Generators
+    const questionGenerators = {
+      // EASY LEVEL
+      counting: () => {
+        const items = ['🍎', '⭐', '🌸', '🐱', '🎈', '🍪', '🌺', '🐶'];
+        const item = items[Math.floor(Math.random() * items.length)];
+        const count = Math.floor(Math.random() * 10) + 1;
+        const display = Array(count).fill(item).join(' ');
+        const options = generateOptions(count, 1, 15);
+        return { question: `¿Cuántos ${item} hay?`, display, answer: count, options };
+      },
+      addition: () => {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        const answer = a + b;
+        return { question: `${a} + ${b} = ?`, answer, options: generateOptions(answer, 2, 20) };
+      },
+      subtraction: () => {
+        const a = Math.floor(Math.random() * 10) + 10;
+        const b = Math.floor(Math.random() * Math.min(a, 10)) + 1;
+        const answer = a - b;
+        return { question: `${a} - ${b} = ?`, answer, options: generateOptions(answer, 0, 20) };
+      },
+      shapes: () => {
+        const shapes = [
+          { name: 'Círculo', emoji: '⚫', sides: 0 },
+          { name: 'Triángulo', emoji: '🔺', sides: 3 },
+          { name: 'Cuadrado', emoji: '🟦', sides: 4 },
+          { name: 'Rectángulo', emoji: '🟩', sides: 4 },
+          { name: 'Pentágono', emoji: '⬟', sides: 5 },
+          { name: 'Hexágono', emoji: '⬡', sides: 6 }
+        ];
+        const type = Math.random() > 0.5 ? 'identify' : 'sides';
+        if (type === 'identify') {
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          const wrongOptions = shapes.filter(s => s.name !== shape.name).map(s => s.name);
+          const options = [shape.name, ...wrongOptions.slice(0, 3)].sort(() => Math.random() - 0.5);
+          return { question: `¿Qué figura es esta? ${shape.emoji}`, answer: shape.name, options, isText: true };
+        } else {
+          const shape = shapes.filter(s => s.sides > 0)[Math.floor(Math.random() * 5)];
+          return { question: `¿Cuántos lados tiene un ${shape.name}?`, answer: shape.sides, options: generateOptions(shape.sides, 3, 8) };
+        }
+      },
+      comparison: () => {
+        const a = Math.floor(Math.random() * 50) + 1;
+        let b = Math.floor(Math.random() * 50) + 1;
+        while (b === a) b = Math.floor(Math.random() * 50) + 1;
+        const answer = a > b ? '>' : '<';
+        return { question: `${a} ___ ${b}`, answer, options: ['>', '<', '='], isText: true };
+      },
+      sequences: () => {
+        const start = Math.floor(Math.random() * 10) + 1;
+        const step = Math.floor(Math.random() * 3) + 1;
+        const seq = [start, start + step, start + step * 2, '?'];
+        const answer = start + step * 3;
+        return { question: `Completa: ${seq.join(', ')}`, answer, options: generateOptions(answer, start, start + step * 5) };
+      },
+
+      // MEDIUM LEVEL
+      multiplication: () => {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        const answer = a * b;
+        return { question: `${a} × ${b} = ?`, answer, options: generateOptions(answer, 1, 100) };
+      },
+      division: () => {
+        const b = Math.floor(Math.random() * 9) + 2;
+        const answer = Math.floor(Math.random() * 10) + 1;
+        const a = b * answer;
+        return { question: `${a} ÷ ${b} = ?`, answer, options: generateOptions(answer, 1, 20) };
+      },
+      fractions: () => {
+        const fractions = [
+          { display: '1/2', value: 0.5, visual: '🟦⬜' },
+          { display: '1/4', value: 0.25, visual: '🟦⬜⬜⬜' },
+          { display: '3/4', value: 0.75, visual: '🟦🟦🟦⬜' },
+          { display: '1/3', value: 0.33, visual: '🟦⬜⬜' },
+          { display: '2/3', value: 0.67, visual: '🟦🟦⬜' }
+        ];
+        const frac = fractions[Math.floor(Math.random() * fractions.length)];
+        const wrongOptions = fractions.filter(f => f.display !== frac.display).map(f => f.display);
+        return { 
+          question: `¿Qué fracción representa esto?`, 
+          display: frac.visual,
+          answer: frac.display, 
+          options: [frac.display, ...wrongOptions.slice(0, 3)].sort(() => Math.random() - 0.5),
+          isText: true 
+        };
+      },
+      measurement: () => {
+        const conversions = [
+          { q: '¿Cuántos centímetros hay en 1 metro?', a: 100 },
+          { q: '¿Cuántos metros hay en 1 kilómetro?', a: 1000 },
+          { q: '¿Cuántos gramos hay en 1 kilogramo?', a: 1000 },
+          { q: '¿Cuántos mililitros hay en 1 litro?', a: 1000 },
+          { q: '¿Cuántos minutos hay en 1 hora?', a: 60 }
+        ];
+        const conv = conversions[Math.floor(Math.random() * conversions.length)];
+        return { question: conv.q, answer: conv.a, options: generateOptions(conv.a, 10, 2000) };
+      },
+      time: () => {
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const minutes = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+        const display = `🕐 ${hour}:${minutes.toString().padStart(2, '0')}`;
+        const answer = `${hour}:${minutes.toString().padStart(2, '0')}`;
+        const options = [answer];
+        while (options.length < 4) {
+          const h = Math.floor(Math.random() * 12) + 1;
+          const m = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+          const opt = `${h}:${m.toString().padStart(2, '0')}`;
+          if (!options.includes(opt)) options.push(opt);
+        }
+        return { question: `¿Qué hora marca el reloj?`, display, answer, options: options.sort(() => Math.random() - 0.5), isText: true };
+      },
+      money: () => {
+        const prices = [
+          { item: '🍎 Manzana', price: 8 },
+          { item: '🥛 Leche', price: 22 },
+          { item: '🍞 Pan', price: 15 },
+          { item: '🧀 Queso', price: 45 },
+          { item: '🍪 Galletas', price: 18 }
+        ];
+        const item1 = prices[Math.floor(Math.random() * prices.length)];
+        const item2 = prices[Math.floor(Math.random() * prices.length)];
+        const answer = item1.price + item2.price;
+        return { 
+          question: `${item1.item} cuesta $${item1.price} y ${item2.item} cuesta $${item2.price}. ¿Cuánto pagas en total?`,
+          answer,
+          options: generateOptions(answer, 10, 100)
+        };
+      },
+
+      // HARD LEVEL
+      decimals: () => {
+        const a = (Math.random() * 10).toFixed(1);
+        const b = (Math.random() * 10).toFixed(1);
+        const op = Math.random() > 0.5 ? '+' : '-';
+        let answer;
+        if (op === '+') {
+          answer = (parseFloat(a) + parseFloat(b)).toFixed(1);
+        } else {
+          const larger = Math.max(parseFloat(a), parseFloat(b));
+          const smaller = Math.min(parseFloat(a), parseFloat(b));
+          answer = (larger - smaller).toFixed(1);
+          return { question: `${larger} ${op} ${smaller} = ?`, answer, options: generateDecimalOptions(parseFloat(answer)), isText: true };
+        }
+        return { question: `${a} ${op} ${b} = ?`, answer, options: generateDecimalOptions(parseFloat(answer)), isText: true };
+      },
+      percentages: () => {
+        const percentages = [10, 20, 25, 50, 75];
+        const percent = percentages[Math.floor(Math.random() * percentages.length)];
+        const base = [100, 200, 50, 80, 120][Math.floor(Math.random() * 5)];
+        const answer = (base * percent) / 100;
+        return { question: `¿Cuánto es el ${percent}% de ${base}?`, answer, options: generateOptions(answer, 1, base) };
+      },
+      geometry: () => {
+        const type = Math.random() > 0.5 ? 'area' : 'perimeter';
+        const shape = Math.random() > 0.5 ? 'rectangle' : 'square';
+        
+        if (shape === 'square') {
+          const side = Math.floor(Math.random() * 8) + 2;
+          const answer = type === 'area' ? side * side : side * 4;
+          const unit = type === 'area' ? 'cm²' : 'cm';
+          return { 
+            question: `Calcula el ${type === 'area' ? 'área' : 'perímetro'} de un cuadrado con lado de ${side} cm`,
+            answer,
+            options: generateOptions(answer, 4, 100),
+            suffix: unit
+          };
+        } else {
+          const length = Math.floor(Math.random() * 8) + 3;
+          const width = Math.floor(Math.random() * 5) + 2;
+          const answer = type === 'area' ? length * width : (length + width) * 2;
+          const unit = type === 'area' ? 'cm²' : 'cm';
+          return { 
+            question: `Calcula el ${type === 'area' ? 'área' : 'perímetro'} de un rectángulo de ${length} × ${width} cm`,
+            answer,
+            options: generateOptions(answer, 4, 100),
+            suffix: unit
+          };
+        }
+      },
+      equations: () => {
+        const answer = Math.floor(Math.random() * 15) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        const result = answer + b;
+        return { question: `x + ${b} = ${result}. ¿Cuánto vale x?`, answer, options: generateOptions(answer, 1, 25) };
+      },
+      proportions: () => {
+        const a = Math.floor(Math.random() * 5) + 2;
+        const b = Math.floor(Math.random() * 5) + 2;
+        const c = a * (Math.floor(Math.random() * 3) + 2);
+        const answer = (c * b) / a;
+        return { question: `Si ${a} es a ${b}, entonces ${c} es a...?`, answer, options: generateOptions(answer, 2, 30) };
+      },
+      statistics: () => {
+        const numbers = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10) + 1);
+        const sum = numbers.reduce((a, b) => a + b, 0);
+        const avg = sum / numbers.length;
+        const answer = Math.round(avg);
+        return { 
+          question: `¿Cuál es el promedio de: ${numbers.join(', ')}?`, 
+          answer, 
+          options: generateOptions(answer, 1, 15) 
+        };
+      }
+    };
+
+    function generateOptions(correct, min, max) {
+      const options = new Set([correct]);
+      while (options.size < 4) {
+        const opt = Math.floor(Math.random() * (max - min + 1)) + min;
+        if (opt !== correct) options.add(opt);
+      }
+      return Array.from(options).sort(() => Math.random() - 0.5);
+    }
+
+    function generateDecimalOptions(correct) {
+      const options = new Set([correct.toFixed(1)]);
+      while (options.size < 4) {
+        const variation = (Math.random() * 4 - 2).toFixed(1);
+        const opt = (correct + parseFloat(variation)).toFixed(1);
+        if (opt !== correct.toFixed(1) && parseFloat(opt) >= 0) options.add(opt);
+      }
+      return Array.from(options).sort(() => Math.random() - 0.5);
+    }
+
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#1dd1a1'];
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 30);
+      }
+    }
+
+    function renderHome() {
+      const levelData = Object.entries(gamesByLevel);
+      return `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, ${config.background_color} 0%, #fde68a 50%, #fed7aa 100%);">
+          <!-- Decorative Elements -->
+          <div class="fixed top-10 left-10 text-6xl float-animation opacity-30">🔢</div>
+          <div class="fixed top-20 right-20 text-5xl float-animation opacity-30" style="animation-delay: 0.5s;">➕</div>
+          <div class="fixed bottom-32 left-20 text-5xl float-animation opacity-30" style="animation-delay: 1s;">📐</div>
+          <div class="fixed bottom-20 right-10 text-6xl float-animation opacity-30" style="animation-delay: 1.5s;">🧮</div>
+          
+          <div class="relative z-10 p-6 md:p-8 max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8 slide-up">
+              <div class="inline-block bg-white/80 backdrop-blur-sm rounded-3xl px-8 py-6 shadow-xl">
+                <h1 id="main-title" class="title-font text-4xl md:text-6xl font-bold mb-2" style="background: linear-gradient(135deg, ${config.primary_color}, ${config.secondary_color}); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                  ${config.main_title}
+                </h1>
+                <p class="text-lg md:text-xl" style="color: ${config.text_color};">¡Aprende matemáticas jugando! 🎮✨</p>
+              </div>
+            </div>
+
+            <!-- Level Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              ${levelData.map(([key, level], index) => `
+                <div class="game-card slide-up" style="animation-delay: ${index * 0.1}s;">
+                  <button onclick="selectLevel('${key}')" class="w-full bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border-4 hover:shadow-2xl" style="border-color: ${level.color};">
+                    <div class="text-5xl mb-4 bounce-animation">${level.emoji}</div>
+                    <h2 class="title-font text-2xl font-bold mb-1" style="color: ${level.color};">${level.name}</h2>
+                    <p class="text-gray-600 font-semibold">${level.subtitle}</p>
+                    <div class="mt-4 px-4 py-2 rounded-full text-white font-bold" style="background: ${level.color};">
+                      ${level.games.length} Juegos
+                    </div>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center space-y-4">
+              <div class="inline-block bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
+                <p class="font-bold" style="color: ${config.primary_color};">📚 Material elaborado por</p>
+                <p id="author-name" class="text-xl font-bold" style="color: ${config.text_color};">Mtra. ${config.author_name}</p>
+              </div>
+              <div>
+                <button onclick="showTerms()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full text-sm font-semibold text-gray-700 transition-all">
+                  📋 Términos y Condiciones
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTerms() {
+      return `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, ${config.background_color} 0%, #fde68a 100%);">
+          <div class="p-6 md:p-8 max-w-4xl mx-auto">
+            <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl slide-up">
+              <button onclick="goHome()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-800 font-semibold transition-all">
+                ← Volver al inicio
+              </button>
+              
+              <h1 class="title-font text-3xl md:text-4xl font-bold mb-6" style="color: ${config.primary_color};">
+                📋 Términos y Condiciones de Uso
+              </h1>
+              
+              <div class="space-y-6 text-gray-700 leading-relaxed">
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                  <h2 class="font-bold text-lg mb-2" style="color: ${config.text_color};">⚠️ AVISO IMPORTANTE</h2>
+                  <p>Este material educativo es propiedad intelectual de <strong>Mtra. ${config.author_name}</strong> y está protegido por las leyes de derechos de autor.</p>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                  <h2 class="font-bold text-lg mb-2 text-green-700">✅ USO PERMITIDO</h2>
+                  <ul class="list-disc list-inside space-y-2">
+                    <li>El comprador puede utilizar este material para su uso personal docente</li>
+                    <li>Puede ser utilizado en el aula con sus alumnos</li>
+                    <li>Puede asignarse como tarea para los estudiantes del comprador</li>
+                    <li>Uso exclusivo en el contexto educativo del adquiriente</li>
+                  </ul>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                  <h2 class="font-bold text-lg mb-2 text-red-700">🚫 USO NO PERMITIDO</h2>
+                  <ul class="list-disc list-inside space-y-2">
+                    <li><strong>NO</strong> está permitido compartir, distribuir o reenviar este material a terceros</li>
+                    <li><strong>NO</strong> puede ser compartido con colegas, otros docentes o instituciones</li>
+                    <li><strong>NO</strong> está permitida la reproducción parcial o total para su reventa</li>
+                    <li><strong>NO</strong> puede ser modificado y redistribuido</li>
+                    <li><strong>NO</strong> puede ser publicado en plataformas públicas o redes sociales</li>
+                    <li><strong>NO</strong> puede ser utilizado para fines comerciales sin autorización expresa</li>
+                  </ul>
+                </div>
+
+                <div class="bg-purple-50 border-l-4 p-4 rounded-r-lg" style="border-color: ${config.primary_color};">
+                  <h2 class="font-bold text-lg mb-2" style="color: ${config.primary_color};">📌 LICENCIA DE USO</h2>
+                  <p>La compra de este material otorga una <strong>licencia de uso individual e intransferible</strong>. Cada docente o institución que desee utilizar este recurso debe adquirir su propia licencia.</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                  <h2 class="font-bold text-lg mb-2 text-blue-700">⚖️ CONSECUENCIAS DEL USO INDEBIDO</h2>
+                  <p>El incumplimiento de estos términos puede resultar en acciones legales conforme a la Ley Federal del Derecho de Autor de México.</p>
+                </div>
+
+                <div class="text-center pt-6 border-t border-gray-200">
+                  <p class="font-bold" style="color: ${config.primary_color};">
+                    Al utilizar este material, usted acepta estos términos y condiciones.
+                  </p>
+                  <p class="mt-2 text-gray-500">
+                    © ${new Date().getFullYear()} - Todos los derechos reservados
+                  </p>
+                  <p class="font-semibold mt-2" style="color: ${config.text_color};">
+                    Mtra. ${config.author_name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGameSelection() {
+      const level = gamesByLevel[selectedLevel];
+      return `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, ${config.background_color} 0%, #fde68a 100%);">
+          <div class="p-6 md:p-8 max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8 slide-up">
+              <button onclick="goHome()" class="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg font-bold hover:shadow-xl transition-all flex items-center gap-2" style="color: ${config.text_color};">
+                ← Volver
+              </button>
+              <div class="bg-white/80 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg">
+                <span class="text-3xl mr-2">${level.emoji}</span>
+                <span class="title-font text-2xl font-bold" style="color: ${level.color};">${level.name}</span>
+              </div>
+            </div>
+
+            <!-- Games Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              ${level.games.map((game, index) => `
+                <div class="slide-up" style="animation-delay: ${index * 0.05}s;">
+                  <button onclick="startGame('${game.id}')" class="game-card w-full bg-white/90 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-lg border-3 hover:shadow-2xl text-left" style="border-color: ${level.color}20; border-width: 3px;">
+                    <div class="text-4xl md:text-5xl mb-3">${game.icon}</div>
+                    <h3 class="title-font text-lg md:text-xl font-bold mb-1" style="color: ${level.color};">${game.name}</h3>
+                    <p class="text-gray-600 text-sm">${game.desc}</p>
+                    <div class="mt-3 inline-flex items-center gap-1 px-3 py-1 rounded-full text-white text-sm font-bold" style="background: ${level.color};">
+                      ¡Jugar! →
+                    </div>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-8 slide-up" style="animation-delay: 0.3s;">
+              <div class="inline-block bg-white/60 backdrop-blur-sm rounded-xl px-4 py-2">
+                <p class="text-sm font-semibold text-gray-600">Contenido alineado al programa de la SEP México</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGame() {
+      const level = gamesByLevel[selectedLevel];
+      const game = level.games.find(g => g.id === selectedGame);
+      const question = questions[currentQuestion];
+      const progress = ((currentQuestion) / totalQuestions) * 100;
+
+      return `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, ${config.background_color} 0%, #fde68a 100%);">
+          <div class="p-4 md:p-6 max-w-3xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4 slide-up">
+              <button onclick="exitGame()" class="bg-white/80 backdrop-blur-sm px-3 py-2 rounded-xl shadow-lg font-bold hover:shadow-xl transition-all text-sm" style="color: ${config.text_color};">
+                ✕ Salir
+              </button>
+              <div class="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
+                <span class="text-2xl">${game.icon}</span>
+                <span class="title-font text-lg font-bold" style="color: ${level.color};">${game.name}</span>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm px-3 py-2 rounded-xl shadow-lg font-bold" style="color: ${config.secondary_color};">
+                ⭐ ${score}
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white/60 rounded-full h-4 mb-6 overflow-hidden shadow-inner slide-up" style="animation-delay: 0.1s;">
+              <div class="progress-bar h-full rounded-full transition-all duration-500" style="width: ${progress}%;"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-6 md:p-8 shadow-xl slide-up" style="animation-delay: 0.2s;">
+              <!-- Question Number -->
+              <div class="text-center mb-4">
+                <span class="bg-gray-100 px-4 py-1 rounded-full text-sm font-bold text-gray-600">
+                  Pregunta ${currentQuestion + 1} de ${totalQuestions}
+                </span>
+                ${streak >= 3 ? `<span class="ml-2 bg-orange-100 px-3 py-1 rounded-full text-sm font-bold text-orange-600">🔥 Racha: ${streak}</span>` : ''}
+              </div>
+
+              <!-- Question -->
+              <div class="text-center mb-6">
+                ${question.display ? `<div class="text-4xl md:text-5xl mb-4 tracking-wider">${question.display}</div>` : ''}
+                <h2 class="title-font text-xl md:text-2xl font-bold" style="color: ${config.text_color};">
+                  ${question.question}
+                </h2>
+                ${question.suffix ? `<p class="text-gray-500 mt-2">(Respuesta en ${question.suffix})</p>` : ''}
+              </div>
+
+              <!-- Options -->
+              <div class="grid grid-cols-2 gap-3 md:gap-4">
+                ${question.options.map((option, index) => `
+                  <button 
+                    onclick="checkAnswer('${option}', this)"
+                    class="option-btn btn-game py-4 px-6 rounded-2xl text-white font-bold text-lg md:text-xl shadow-lg"
+                    style="background: linear-gradient(135deg, ${level.color}, ${adjustColor(level.color, -20)});"
+                  >
+                    ${option}${question.suffix && !question.isText ? ` ${question.suffix}` : ''}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Streak Indicator -->
+            <div class="text-center mt-6 slide-up" style="animation-delay: 0.3s;">
+              <div class="inline-flex gap-1">
+                ${[1,2,3,4,5].map(i => `
+                  <span class="text-2xl ${streak >= i ? 'sparkle-animation' : 'opacity-30'}">${streak >= i ? '⭐' : '☆'}</span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResults() {
+      const level = gamesByLevel[selectedLevel];
+      const game = level.games.find(g => g.id === selectedGame);
+      const percentage = Math.round((answeredCorrectly / totalQuestions) * 100);
+      const stars = percentage >= 90 ? 3 : percentage >= 70 ? 2 : percentage >= 50 ? 1 : 0;
+      
+      let message, emoji;
+      if (percentage >= 90) { message = '¡EXCELENTE! ¡Eres un genio de las matemáticas!'; emoji = '🏆🎉'; }
+      else if (percentage >= 70) { message = '¡MUY BIEN! ¡Sigue practicando!'; emoji = '⭐👏'; }
+      else if (percentage >= 50) { message = '¡BUEN INTENTO! ¡Tú puedes mejorar!'; emoji = '💪😊'; }
+      else { message = '¡SIGUE PRACTICANDO! ¡No te rindas!'; emoji = '📚💪'; }
+
+      return `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, ${config.background_color} 0%, #fde68a 100%);">
+          <div class="p-6 md:p-8 max-w-2xl mx-auto flex items-center justify-center min-h-full">
+            <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center w-full slide-up">
+              <!-- Trophy/Medal -->
+              <div class="text-7xl md:text-8xl mb-4 bounce-animation">${emoji}</div>
+              
+              <h1 class="title-font text-3xl md:text-4xl font-bold mb-2" style="color: ${level.color};">
+                ¡Juego Completado!
+              </h1>
+              <p class="text-xl font-semibold text-gray-600 mb-6">${game.name}</p>
+
+              <!-- Score Card -->
+              <div class="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-2xl p-6 mb-6">
+                <div class="text-6xl font-bold mb-2" style="color: ${config.primary_color};">
+                  ${score}
+                </div>
+                <p class="text-gray-600 font-semibold">Puntos obtenidos</p>
+              </div>
+
+              <!-- Stats -->
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-green-100 rounded-xl p-4">
+                  <div class="text-3xl font-bold text-green-600">${answeredCorrectly}</div>
+                  <p class="text-green-700 font-semibold text-sm">Correctas ✓</p>
+                </div>
+                <div class="bg-red-100 rounded-xl p-4">
+                  <div class="text-3xl font-bold text-red-600">${totalQuestions - answeredCorrectly}</div>
+                  <p class="text-red-700 font-semibold text-sm">Incorrectas ✗</p>
+                </div>
+              </div>
+
+              <!-- Stars -->
+              <div class="flex justify-center gap-2 mb-4">
+                ${[1,2,3].map(i => `
+                  <span class="text-5xl ${stars >= i ? 'star-earned' : 'opacity-30'}">${stars >= i ? '⭐' : '☆'}</span>
+                `).join('')}
+              </div>
+
+              <!-- Message -->
+              <p class="text-xl font-bold mb-6" style="color: ${config.text_color};">${message}</p>
+
+              <!-- Buttons -->
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="playAgain()" class="btn-game px-6 py-3 rounded-xl text-white font-bold text-lg shadow-lg" style="background: linear-gradient(135deg, ${level.color}, ${adjustColor(level.color, -20)});">
+                  🔄 Jugar de Nuevo
+                </button>
+                <button onclick="selectLevel('${selectedLevel}')" class="btn-game px-6 py-3 rounded-xl font-bold text-lg shadow-lg bg-gray-200 hover:bg-gray-300" style="color: ${config.text_color};">
+                  🎮 Otros Juegos
+                </button>
+                <button onclick="goHome()" class="btn-game px-6 py-3 rounded-xl font-bold text-lg shadow-lg bg-gray-100 hover:bg-gray-200" style="color: ${config.text_color};">
+                  🏠 Inicio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function adjustColor(hex, amount) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+      return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+    }
+
+    // Navigation Functions
+    function goHome() {
+      currentScreen = 'home';
+      showingTerms = false;
+      render();
+    }
+
+    function showTerms() {
+      showingTerms = true;
+      currentScreen = 'terms';
+      render();
+    }
+
+    function selectLevel(level) {
+      selectedLevel = level;
+      currentScreen = 'gameSelection';
+      render();
+    }
+
+    function startGame(gameId) {
+      selectedGame = gameId;
+      currentQuestion = 0;
+      score = 0;
+      answeredCorrectly = 0;
+      streak = 0;
+      questions = [];
+      
+      // Generate questions
+      for (let i = 0; i < totalQuestions; i++) {
+        questions.push(questionGenerators[gameId]());
+      }
+      
+      currentScreen = 'game';
+      render();
+    }
+
+    function checkAnswer(answer, button) {
+      const question = questions[currentQuestion];
+      const isCorrect = String(answer) === String(question.answer);
+      
+      // Disable all buttons
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.disabled = true;
+        if (String(btn.textContent.trim().split(' ')[0]) === String(question.answer)) {
+          btn.classList.add('correct');
+        }
+      });
+
+      if (isCorrect) {
+        button.classList.add('correct');
+        streak++;
+        const bonus = Math.min(streak, 5) * 2;
+        score += 10 + bonus;
+        answeredCorrectly++;
+      } else {
+        button.classList.add('incorrect');
+        streak = 0;
+      }
+
+      // Next question after delay
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion >= totalQuestions) {
+          currentScreen = 'results';
+          createConfetti();
+        }
+        render();
+      }, 1200);
+    }
+
+    function playAgain() {
+      startGame(selectedGame);
+    }
+
+    function exitGame() {
+      currentScreen = 'gameSelection';
+      render();
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      switch (currentScreen) {
+        case 'home':
+          app.innerHTML = renderHome();
+          break;
+        case 'terms':
+          app.innerHTML = renderTerms();
+          break;
+        case 'gameSelection':
+          app.innerHTML = renderGameSelection();
+          break;
+        case 'game':
+          app.innerHTML = renderGame();
+          break;
+        case 'results':
+          app.innerHTML = renderResults();
+          break;
+      }
+    }
+
+    // Element SDK Integration
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+      render();
+    }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (value) => { cfg.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (value) => { cfg.primary_color = value; window.elementSdk.setConfig({ primary_color: value }); }
+          },
+          {
+            get: () => cfg.secondary_color || defaultConfig.secondary_color,
+            set: (value) => { cfg.secondary_color = value; window.elementSdk.setConfig({ secondary_color: value }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => { cfg.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          },
+          {
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (value) => { cfg.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['main_title', cfg.main_title || defaultConfig.main_title],
+        ['author_name', cfg.author_name || defaultConfig.author_name]
+      ]);
+    }
+
+    // Initialize
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    } else {
+      render();
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d2482c0533e7c8f',t:'MTc3MTgyNjUwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
